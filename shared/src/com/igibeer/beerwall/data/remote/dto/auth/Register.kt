@@ -1,0 +1,12 @@
+package com.igibeer.beerwall.data.remote.dto.auth
+
+data class RegisterRequest(
+    val email: String,
+    val password: String,
+    val name: String
+)
+
+//data class RegisterResponse(
+//    val userId: String,
+//    val emailVerified: Boolean
+//)
