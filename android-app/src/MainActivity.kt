@@ -9,10 +9,13 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
+import android.nfc.tech.MifareUltralight
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.mutableStateOf
+import java.util.UUID
 
 class MainActivity : ComponentActivity() {
     private var nfcAdapter: NfcAdapter? = null
@@ -65,15 +68,83 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleIntent(intent: Intent) {
-        if (NfcAdapter.ACTION_TAG_DISCOVERED == intent.action) {
+        if (NfcAdapter.ACTION_TAG_DISCOVERED == intent.action ||
+            NfcAdapter.ACTION_TECH_DISCOVERED == intent.action ||
+            NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action) {
 
             val tag: Tag? = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
             tag?.let {
-                val id = it.id.joinToString(":") { byte ->
-                    "%02X".format(byte)
-                }
-                cardId.value = id
+                readCardData(it)
             }
         }
     }
+
+    private fun readCardData(tag: Tag) {
+        try {
+            val mifareUltralight = MifareUltralight.get(tag)
+            mifareUltralight?.let { mifare ->
+                mifare.connect()
+
+                // Read page 4 (reads 4 pages starting from page 4: pages 4, 5, 6, 7)
+                val bytes = mifare.readPages(4)
+
+                mifare.close()
+
+                // Take first 16 bytes and convert to GUID
+                val cardGuid = bytes.toGuidString() // Użycie nowej funkcji rozszerzającej
+                cardId.value = cardGuid
+
+                Log.d("NFC", "Card GUID from page 4: ${cardId.value}")
+                Log.d("NFC", "Raw bytes: ${bytes.joinToString(":") { "%02X".format(it) }}")
+            }
+        } catch (e: Exception) {
+            Log.e("NFC", "Error reading card", e)
+            // Fallback to showing card ID
+            val id = tag.id.joinToString(":") { byte ->
+                "%02X".format(byte)
+            }
+            cardId.value = id
+        }
+    }
+
+    // Extension function zamiast prywatnej metody w klasie
+    private fun ByteArray.toGuidString(): String {
+        return try {
+            if (this.size < 16) throw IllegalArgumentException("Insufficient bytes for GUID")
+            
+            // Convert bytes to GUID format
+            // Assuming the GUID is stored in the first 16 bytes
+            val buffer = java.nio.ByteBuffer.wrap(this, 0, 16)
+            val mostSigBits = buffer.long
+            val leastSigBits = buffer.long
+            val uuid = UUID(mostSigBits, leastSigBits)
+
+            uuid.toString()
+        } catch (e: Exception) {
+            Log.e("NFC", "Error creating GUID", e)
+            this.joinToString(":") { "%02X".format(it) }
+        }
+    }
+    
+    // Usuwamy starą metodę createGuidFromBytes, bo mamy extension function
+    /* 
+    private fun createGuidFromBytes(bytes: ByteArray): String {
+        return try {
+            // Convert bytes to GUID format
+            // Assuming the GUID is stored in the first 16 bytes
+            val guidBytes = bytes.take(16).toByteArray()
+
+            // Create UUID from bytes (matching C# Guid constructor behavior)
+            val buffer = java.nio.ByteBuffer.wrap(guidBytes)
+            val mostSigBits = buffer.long
+            val leastSigBits = buffer.long
+            val uuid = UUID(mostSigBits, leastSigBits)
+
+            uuid.toString()
+        } catch (e: Exception) {
+            Log.e("NFC", "Error creating GUID", e)
+            bytes.joinToString(":") { "%02X".format(it) }
+        }
+    } 
+    */
 }
