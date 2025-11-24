@@ -27,9 +27,6 @@ class MainActivity : ComponentActivity() {
         // Initialize NFC adapter
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
 
-//        // Handle intent if launched from NFC
-//        handleIntent(intent)
-
         setContent {
             Screen(cardId.value)
         }
@@ -91,7 +88,7 @@ class MainActivity : ComponentActivity() {
                 mifare.close()
 
                 // Take first 16 bytes and convert to GUID
-                val cardGuid = bytes.toGuidString() // Użycie nowej funkcji rozszerzającej
+                val cardGuid = bytes.toGuidString()
                 cardId.value = cardGuid
 
                 Log.d("NFC", "Card GUID from page 4: ${cardId.value}")
@@ -99,15 +96,9 @@ class MainActivity : ComponentActivity() {
             }
         } catch (e: Exception) {
             Log.e("NFC", "Error reading card", e)
-            // Fallback to showing card ID
-            val id = tag.id.joinToString(":") { byte ->
-                "%02X".format(byte)
-            }
-            cardId.value = id
         }
     }
 
-    // Extension function zamiast prywatnej metody w klasie
     private fun ByteArray.toGuidString(): String {
         return try {
             if (this.size < 16) throw IllegalArgumentException("Insufficient bytes for GUID")
@@ -125,26 +116,4 @@ class MainActivity : ComponentActivity() {
             this.joinToString(":") { "%02X".format(it) }
         }
     }
-    
-    // Usuwamy starą metodę createGuidFromBytes, bo mamy extension function
-    /* 
-    private fun createGuidFromBytes(bytes: ByteArray): String {
-        return try {
-            // Convert bytes to GUID format
-            // Assuming the GUID is stored in the first 16 bytes
-            val guidBytes = bytes.take(16).toByteArray()
-
-            // Create UUID from bytes (matching C# Guid constructor behavior)
-            val buffer = java.nio.ByteBuffer.wrap(guidBytes)
-            val mostSigBits = buffer.long
-            val leastSigBits = buffer.long
-            val uuid = UUID(mostSigBits, leastSigBits)
-
-            uuid.toString()
-        } catch (e: Exception) {
-            Log.e("NFC", "Error creating GUID", e)
-            bytes.joinToString(":") { "%02X".format(it) }
-        }
-    } 
-    */
 }
