@@ -1,31 +1,27 @@
 package com.igibeer.beerwall.data.remote.dto.cards
 
+enum class CardType {
+    DEFAULT,
+    GOLD
+}
+
 data class CardSummary(
-    val id: String,
-    val last4: String,
-    val brand: String,
-    val active: Boolean
+    val id: String, // GUID format
+    val type: CardType,
+    val isVirtual: Boolean,
+    val isActive: Boolean
 )
 
 data class GetCardsResponse(
-    val cards: List<CardSummary>
-)
-
-data class GetCardDetailsResponse(
-    val id: String,
-    val brand: String,
-    val last4: String,
-    val holderName: String?,
-    val active: Boolean,
-    val createdAt: String
+    val data: List<CardSummary>
 )
 
 data class CardActivationRequest(
-    val cardId: String,
+    val cardId: String, // GUID format
     val active: Boolean
 )
 
 data class CardActivationResponse(
-    val cardId: String,
+    val cardId: String, // GUID format
     val active: Boolean
 )

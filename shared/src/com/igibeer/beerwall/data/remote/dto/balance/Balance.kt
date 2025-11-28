@@ -4,10 +4,16 @@ package com.igibeer.beerwall.data.remote.dto.balance
  * GET balance
  * Example response:
  * {
- *   "data": {
- *     "venueName": "Beer Heaven",
- *     "amount": 150.50
- *   }
+ *   "data": [
+ *     {
+ *       "venueName": "Beer Heaven",
+ *       "amount": 150.50
+ *     },
+ *     {
+ *       "venueName": "Pub Krakowski",
+ *       "amount": 75.25
+ *     }
+ *   ]
  * }
  * Error response:
  * {
@@ -20,17 +26,11 @@ package com.igibeer.beerwall.data.remote.dto.balance
  *   }
  * }
  */
-data class GetBalanceResponse(
+data class BalanceItem(
     val venueName: String,
     val amount: Double
 )
 
-//data class UpdateBalanceRequest(
-//    val delta: Double,
-//    val reason: String? = null
-//)
-//
-//data class UpdateBalanceResponse(
-//    val amount: Double,
-//    val barName: String
-//)
+data class GetBalanceResponse(
+    val data: List<BalanceItem>
+)

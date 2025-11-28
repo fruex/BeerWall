@@ -6,6 +6,10 @@ data class RegisterRequest(
     val name: String
 )
 
+data class GoogleRegisterRequest(
+    val idToken: String
+)
+
 //data class RegisterResponse(
 //    val userId: String,
 //    val emailVerified: Boolean
