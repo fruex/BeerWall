@@ -1,7 +1,3 @@
-/*
- * Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
- */
-
 package com.igibeer.beerwall
 
 import android.app.PendingIntent
@@ -13,14 +9,10 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.igibeer.beerwall.ui.models.CardItem
-import com.igibeer.beerwall.ui.models.LocationBalance
-import com.igibeer.beerwall.ui.models.Transaction
-import com.igibeer.beerwall.ui.models.TransactionGroup
-import com.igibeer.beerwall.ui.models.UserProfile
+import com.igibeer.beerwall.ui.models.*
 import com.igibeer.beerwall.ui.navigation.BeerWallNavHost
 import com.igibeer.beerwall.ui.navigation.NavigationDestination
 
