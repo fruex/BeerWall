@@ -320,6 +320,7 @@ class MainActivity : ComponentActivity() {
     private fun readCardData(tag: Tag) {
         try {
             val mifareUltralight = MifareUltralight.get(tag)
+            // NTAG 213
             mifareUltralight?.let { mifare ->
                 mifare.connect()
 
