@@ -140,7 +140,7 @@ fun AddCardScreen(
 
                         Text(
                             text = if (scannedCardId != null) {
-                                "Karta została pomyślnie zeskanowana"
+                                "Karta została pomyślnie zeskanowana $scannedCardId"
                             } else {
                                 "Przytrzymaj kartę NFC blisko urządzenia, aby ją zarejestrować"
                             },
