@@ -15,6 +15,7 @@ import androidx.compose.runtime.setValue
 import com.igibeer.beerwall.ui.models.*
 import com.igibeer.beerwall.ui.navigation.BeerWallNavHost
 import com.igibeer.beerwall.ui.navigation.NavigationDestination
+import com.igibeer.beerwall.ui.theme.BeerWallTheme
 
 class MainActivity : ComponentActivity() {
     private var nfcAdapter: NfcAdapter? = null
@@ -28,11 +29,12 @@ class MainActivity : ComponentActivity() {
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
 
         setContent {
-            // Example data - replace with real data from your backend
+            BeerWallTheme {
+                // Example data - replace with real data from your backend
             val balances = listOf(
-                LocationBalance("Katowice", 125.50),
-                LocationBalance("Kraków", 89.00),
-                LocationBalance("Warszawa", 45.25)
+                LocationBalance("Pub Lewe", 125.50),
+                LocationBalance("Browariat", 89.00),
+                LocationBalance("Biała Małpa", 45.25)
             )
 
             val cards = listOf(
@@ -270,6 +272,7 @@ class MainActivity : ComponentActivity() {
                 scannedCardId = cardId,
                 isNfcScanning = isNfcScanning
             )
+            }
         }
     }
 
