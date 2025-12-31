@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.NFC" />
     <uses-feature android:name="android.hardware.nfc" android:required="false" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
         <activity android:name="com.igibeer.beerwall.MainActivity"
