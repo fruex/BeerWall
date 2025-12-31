@@ -165,7 +165,7 @@ fun TransactionItem(transaction: Transaction) {
             }
 
             Text(
-                text = String.format("%.2f zł", transaction.amount),
+                text = "${(if (transaction.amount < 0) "" else "+")}${transaction.amount} zł",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = if (transaction.amount < 0) Error else TextPrimary

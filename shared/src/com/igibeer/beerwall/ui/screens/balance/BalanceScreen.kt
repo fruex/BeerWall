@@ -132,7 +132,7 @@ fun BalanceCard(
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = String.format("%.2f zł", balance),
+                    text = "${balance} zł",
                     style = MaterialTheme.typography.displaySmall,
                     fontWeight = FontWeight.Bold,
                     color = DarkBackground
