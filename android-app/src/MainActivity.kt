@@ -12,18 +12,28 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
+import androidx.lifecycle.lifecycleScope
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import kotlinx.coroutines.launch
 import java.lang.String.format
 
 class MainActivity : ComponentActivity() {
     private var nfcAdapter: NfcAdapter? = null
     private var cardId by mutableStateOf<String?>(null)
     private var isNfcScanning by mutableStateOf(false)
+    private lateinit var credentialManager: CredentialManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Initialize NFC adapter
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
+        credentialManager = CredentialManager.create(this)
 
         setContent {
             App(
@@ -35,6 +45,7 @@ class MainActivity : ComponentActivity() {
                 },
                 onGoogleSignIn = {
                     Log.d("MainActivity", "Google Sign In")
+                    signInWithGoogle()
                 },
                 onLogout = {
                     Log.d("MainActivity", "Logout")
@@ -60,6 +71,45 @@ class MainActivity : ComponentActivity() {
                 scannedCardId = cardId,
                 isNfcScanning = isNfcScanning
             )
+        }
+    }
+
+    private fun signInWithGoogle() {
+        val googleIdOption = GetGoogleIdOption.Builder()
+            .setFilterByAuthorizedAccounts(false)
+            .setServerClientId("220522932694-qgcu3mhkgna9jsp37q1g16s813ki5o7l.apps.googleusercontent.com")
+            .setAutoSelectEnabled(true)
+            .build()
+
+        val request = GetCredentialRequest.Builder()
+            .addCredentialOption(googleIdOption)
+            .build()
+
+        lifecycleScope.launch {
+            try {
+                val result = credentialManager.getCredential(
+                    request = request,
+                    context = this@MainActivity
+                )
+                handleSignIn(result)
+            } catch (e: Exception) {
+                Log.e("MainActivity", "Sign in failed", e)
+            }
+        }
+    }
+
+    private fun handleSignIn(result: androidx.credentials.GetCredentialResponse) {
+        val credential = result.credential
+        if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+            try {
+                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                val idToken = googleIdTokenCredential.idToken
+                Log.d("MainActivity", "Google ID Token: $idToken")
+            } catch (e: GoogleIdTokenParsingException) {
+                Log.e("MainActivity", "Received an invalid google id token response", e)
+            }
+        } else {
+             Log.e("MainActivity", "Unexpected type of credential")
         }
     }
 
