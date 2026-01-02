@@ -36,21 +36,18 @@ class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvid
             Log.d("GoogleAuth", "getCredential result received")
             val credential = result.credential
 
-            if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-                GoogleUser(
-                    idToken = googleIdTokenCredential.idToken,
-                    displayName = googleIdTokenCredential.displayName,
-                    email = googleIdTokenCredential.id,
-                    photoUrl = googleIdTokenCredential.profilePictureUri?.toString()
-                )
-            } else if (credential is GoogleIdTokenCredential) {
-                GoogleUser(
-                    idToken = credential.idToken,
-                    displayName = credential.displayName,
-                    email = credential.id,
-                    photoUrl = credential.profilePictureUri?.toString()
-                )
+            val googleIdTokenCredential = when {
+                credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL -> {
+                    GoogleIdTokenCredential.createFrom(credential.data)
+                }
+                credential is GoogleIdTokenCredential -> {
+                    credential
+                }
+                else -> null
+            }
+
+            if (googleIdTokenCredential != null) {
+                googleIdTokenCredential.toGoogleUser()
             } else {
                 Log.d("GoogleAuth", "Unknown credential type: ${credential.type}")
                 null
@@ -60,6 +57,13 @@ class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvid
             null
         }
     }
+
+    private fun GoogleIdTokenCredential.toGoogleUser(): GoogleUser = GoogleUser(
+        idToken = idToken,
+        displayName = displayName,
+        email = id,
+        photoUrl = profilePictureUri?.toString()
+    )
 
     override suspend fun signOut() {
         try {
