@@ -7,6 +7,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -163,7 +165,7 @@ fun ProfileScreen(
                         )
 
                         SettingsItem(
-                            icon = Icons.Default.Help,
+                            icon = Icons.AutoMirrored.Filled.Help,
                             label = "Pomoc i wsparcie",
                             onClick = { /* TODO */ }
                         )
@@ -200,7 +202,7 @@ fun ProfileScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Logout,
+                            imageVector = Icons.AutoMirrored.Filled.Logout,
                             contentDescription = null,
                             tint = Error,
                             modifier = Modifier.size(24.dp)

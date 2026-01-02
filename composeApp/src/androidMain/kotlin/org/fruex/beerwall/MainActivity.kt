@@ -29,7 +29,11 @@ class MainActivity : ComponentActivity() {
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
 
         setContent {
-            App()
+            App(
+                scannedCardId = cardId,
+                isNfcScanning = isNfcScanning,
+                onStartNfcScanning = { isNfcScanning = true }
+            )
         }
     }
 

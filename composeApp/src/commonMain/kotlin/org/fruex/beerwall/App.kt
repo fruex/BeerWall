@@ -1,49 +1,63 @@
 package org.fruex.beerwall
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.painterResource
+import org.fruex.beerwall.ui.models.*
+import org.fruex.beerwall.ui.navigation.BeerWallNavHost
+import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
-import beerwall.composeapp.generated.resources.Res
-import beerwall.composeapp.generated.resources.compose_multiplatform
 
 @Composable
 @Preview
-fun App() {
-    MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
-            }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
+fun App(
+    scannedCardId: String? = null,
+    isNfcScanning: Boolean = false,
+    onStartNfcScanning: () -> Unit = {}
+) {
+    var balances by remember { mutableStateOf(SampleBalances) }
+    var cards by remember { mutableStateOf(SampleCards) }
+    var userProfile by remember { mutableStateOf(SampleUserProfile) }
+    val transactionGroups by remember { mutableStateOf(SampleTransactionGroups) }
+
+    BeerWallTheme {
+        BeerWallNavHost(
+            balances = balances,
+            cards = cards,
+            transactionGroups = transactionGroups,
+            userProfile = userProfile,
+            scannedCardId = scannedCardId,
+            isNfcScanning = isNfcScanning,
+            onStartNfcScanning = onStartNfcScanning,
+            onAddFunds = { location, amount ->
+                balances = balances.map {
+                    if (it.locationName == location) {
+                        it.copy(balance = it.balance + amount)
+                    } else it
                 }
+            },
+            onToggleCardStatus = { cardId ->
+                cards = cards.map {
+                    if (it.id == cardId) {
+                        it.copy(isActive = !it.isActive)
+                    } else it
+                }
+            },
+            onDeleteCard = { cardId ->
+                cards = cards.filter { it.id != cardId }
+                userProfile = userProfile.copy(activeCards = cards.count { it.isActive })
+            },
+            onSaveCard = { name, cardId ->
+                val newCard = CardItem(
+                    id = cardId,
+                    name = name,
+                    isActive = true,
+                    isPhysical = true
+                )
+                cards = cards + newCard
+                userProfile = userProfile.copy(activeCards = cards.count { it.isActive })
+            },
+            onLogout = {
+                // Handle logout
             }
-        }
+        )
     }
 }
