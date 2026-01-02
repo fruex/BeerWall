@@ -111,10 +111,12 @@ fun BeerWallNavHost(
         // Add Funds screen
         composable(NavigationDestination.AddFunds.route) {
             val availableLocations = balances.map { it.locationName }
+            var selectedLocation by remember { mutableStateOf(availableLocations.firstOrNull()) }
+            
             AddFundsScreen(
                 availableLocations = availableLocations,
-                selectedLocation = availableLocations.firstOrNull(),
-                onLocationSelected = {},
+                selectedLocation = selectedLocation,
+                onLocationSelected = { selectedLocation = it },
                 onBackClick = { navController.popBackStack() },
                 onAddFunds = { location, amount ->
                     onAddFunds(location, amount)
@@ -125,12 +127,14 @@ fun BeerWallNavHost(
 
         // Add Funds with pre-selected location
         composable("${NavigationDestination.AddFunds.route}/{location}") { backStackEntry ->
-            val location = backStackEntry.arguments?.getString("location")
+            val locationArg: String? = backStackEntry.savedStateHandle["location"]
             val availableLocations = balances.map { it.locationName }
+            var selectedLocation by remember { mutableStateOf(locationArg ?: availableLocations.firstOrNull()) }
+            
             AddFundsScreen(
                 availableLocations = availableLocations,
-                selectedLocation = location,
-                onLocationSelected = {},
+                selectedLocation = selectedLocation,
+                onLocationSelected = { selectedLocation = it },
                 onBackClick = { navController.popBackStack() },
                 onAddFunds = { loc, amount ->
                     onAddFunds(loc, amount)

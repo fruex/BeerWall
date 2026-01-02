@@ -101,7 +101,7 @@ fun AddFundsScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .menuAnchor()
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                             .background(
                                 color = CardBackground,
                                 shape = RoundedCornerShape(12.dp)
