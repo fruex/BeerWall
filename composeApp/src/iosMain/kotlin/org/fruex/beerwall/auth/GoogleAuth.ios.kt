@@ -12,6 +12,11 @@ class IosGoogleAuthProvider : GoogleAuthProvider {
     override suspend fun signOut() {
         // TODO: Implement Google Sign-Out for iOS
     }
+
+    override suspend fun getSignedInUser(): GoogleUser? {
+        // TODO: Implement Google session check for iOS
+        return null
+    }
 }
 
 @Composable

@@ -8,6 +8,7 @@ data class ApiEnvelope<T>(
     val error: ApiError? = null
 )
 
+@Serializable
 data class ApiError(
     val code: String,
     val message: String,

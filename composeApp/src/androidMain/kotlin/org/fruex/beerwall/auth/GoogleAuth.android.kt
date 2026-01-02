@@ -9,15 +9,47 @@ import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
+import androidx.datastore.core.DataStore
+import androidx.datastore.core.Serializer
+import androidx.datastore.dataStore
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import java.io.InputStream
+import java.io.OutputStream
+
+object GoogleUserSerializer : Serializer<GoogleUser?> {
+    override val defaultValue: GoogleUser? = null
+
+    override suspend fun readFrom(input: InputStream): GoogleUser? {
+        return try {
+            val text = input.readBytes().decodeToString()
+            if (text.isEmpty()) null else Json.decodeFromString<GoogleUser>(text)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    override suspend fun writeTo(t: GoogleUser?, output: OutputStream) {
+        t?.let {
+            val json = Json.encodeToString(GoogleUser.serializer(), it)
+            output.write(json.encodeToByteArray())
+        }
+    }
+}
+
+private val Context.googleUserDataStore: DataStore<GoogleUser?> by dataStore(
+    fileName = "google_user.json",
+    serializer = GoogleUserSerializer
+)
 
 class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvider {
     private val credentialManager = CredentialManager.create(context)
     private val serverClientId = "220522932694-ghamgoqpqtmb0vk9ajnouiqe2h52ateb.apps.googleusercontent.com"
-
+    
     override suspend fun signIn(): GoogleUser? = withContext(Dispatchers.Main) {
         Log.d("GoogleAuth", "Starting sign in process")
         
@@ -47,7 +79,9 @@ class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvid
             }
 
             if (googleIdTokenCredential != null) {
-                googleIdTokenCredential.toGoogleUser()
+                val googleUser = googleIdTokenCredential.toGoogleUser()
+                saveUser(googleUser)
+                googleUser
             } else {
                 Log.d("GoogleAuth", "Unknown credential type: ${credential.type}")
                 null
@@ -56,6 +90,18 @@ class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvid
             Log.e("GoogleAuth", "Error getting credential", e)
             null
         }
+    }
+
+    private suspend fun saveUser(user: GoogleUser) {
+        context.googleUserDataStore.updateData { user }
+    }
+
+    private suspend fun clearUser() {
+        context.googleUserDataStore.updateData { null }
+    }
+
+    override suspend fun getSignedInUser(): GoogleUser? = withContext(Dispatchers.IO) {
+        context.googleUserDataStore.data.firstOrNull()
     }
 
     private fun GoogleIdTokenCredential.toGoogleUser(): GoogleUser = GoogleUser(
@@ -67,6 +113,7 @@ class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvid
 
     override suspend fun signOut() {
         try {
+            clearUser()
             credentialManager.clearCredentialState(ClearCredentialStateRequest())
         } catch (e: Exception) {
             Log.e("GoogleAuth", "Error clearing credential state", e)
