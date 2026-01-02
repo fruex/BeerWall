@@ -1,2 +1,0 @@
-Jeśli w przyszłości będziesz chciał wygenerować to samodzielnie, użyj następującego polecenia w terminalu:
-keytool -list -v -keystore $HOME\.android\debug.keystore -alias androiddebugkey -storepass android -keypass android
