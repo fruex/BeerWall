@@ -14,6 +14,11 @@ dependencies:
     
   - $kotlin.serialization.json
 
+  - io.ktor:ktor-client-core:2.3.11: exported
+  - io.ktor:ktor-client-cio:2.3.11: exported
+  - io.ktor:ktor-client-content-negotiation:2.3.11: exported
+  - io.ktor:ktor-serialization-kotlinx-json:2.3.11: exported
+
 settings:
   compose:
     enabled: true

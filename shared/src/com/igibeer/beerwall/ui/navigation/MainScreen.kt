@@ -72,7 +72,7 @@ fun MainScreen(
     transactionGroups: List<TransactionGroup> = emptyList(),
 
     // Profile data & callbacks
-    userProfile: UserProfile = UserProfile("", "", "", 0, 0),
+    userProfile: UserProfile? = null,
     onLogoutClick: () -> Unit = {},
 ) {
     var selectedTab by remember { mutableStateOf(BottomNavItem.Balance.route) }

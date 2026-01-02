@@ -19,7 +19,7 @@ fun BeerWallNavHost(
     balances: List<LocationBalance> = emptyList(),
     cards: List<CardItem> = emptyList(),
     transactionGroups: List<TransactionGroup> = emptyList(),
-    userProfile: UserProfile = UserProfile("", "", "", 0, 0),
+    userProfile: UserProfile? = null,
     // Callbacks
     onRegister: (email: String, password: String) -> Unit = { _, _ -> },
     onLogin: (email: String, password: String) -> Unit = { _, _ -> },

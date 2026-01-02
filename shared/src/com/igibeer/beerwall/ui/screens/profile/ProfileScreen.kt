@@ -19,7 +19,7 @@ import com.igibeer.beerwall.ui.theme.*
 
 @Composable
 fun ProfileScreen(
-    userProfile: UserProfile,
+    userProfile: UserProfile?,
     onLogoutClick: () -> Unit,
 ) {
     BeerWallTheme {
@@ -54,168 +54,170 @@ fun ProfileScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 24.dp)
             ) {
-                // Profile Card
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = CardBackground
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(32.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                if (userProfile != null) {
+                    // Profile Card
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CardBackground
+                        )
                     ) {
-                        // Avatar
-                        Box(
+                        Column(
                             modifier = Modifier
-                                .size(100.dp)
-                                .background(
-                                    color = GoldPrimary,
-                                    shape = CircleShape
-                                ),
-                            contentAlignment = Alignment.Center
+                                .fillMaxWidth()
+                                .padding(32.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
+                            // Avatar
+                            Box(
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .background(
+                                        color = GoldPrimary,
+                                        shape = CircleShape
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = userProfile.initials,
+                                    style = MaterialTheme.typography.displayMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = DarkBackground
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(20.dp))
+
                             Text(
-                                text = userProfile.initials,
-                                style = MaterialTheme.typography.displayMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = DarkBackground
+                                text = userProfile.name,
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                text = userProfile.email,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = TextSecondary
                             )
                         }
-
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        Text(
-                            text = userProfile.name,
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = userProfile.email,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = TextSecondary
-                        )
                     }
-                }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                // Stats Card
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = CardBackground
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(24.dp)
+                    // Stats Card
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CardBackground
+                        )
                     ) {
-                        StatRow(
-                            icon = Icons.Default.CreditCard,
-                            label = "Aktywne karty",
-                            value = userProfile.activeCards.toString()
-                        )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp)
+                        ) {
+                            StatRow(
+                                icon = Icons.Default.CreditCard,
+                                label = "Aktywne karty",
+                                value = userProfile.activeCards.toString()
+                            )
 
-                        HorizontalDivider(
-                            modifier = Modifier.padding(vertical = 16.dp),
-                            color = TextSecondary.copy(alpha = 0.2f)
-                        )
+                            HorizontalDivider(
+                                modifier = Modifier.padding(vertical = 16.dp),
+                                color = TextSecondary.copy(alpha = 0.2f)
+                            )
 
-                        StatRow(
-                            icon = Icons.Default.Star,
-                            label = "Punkty lojalnościowe",
-                            value = userProfile.loyaltyPoints.toString()
-                        )
+                            StatRow(
+                                icon = Icons.Default.Star,
+                                label = "Punkty lojalnościowe",
+                                value = userProfile.loyaltyPoints.toString()
+                            )
+                        }
                     }
-                }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                // Settings/Actions
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = CardBackground
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth()
+                    // Settings/Actions
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CardBackground
+                        )
                     ) {
-                        SettingsItem(
-                            icon = Icons.Default.Settings,
-                            label = "Ustawienia konta",
-                            onClick = { /* TODO */ }
-                        )
+                        Column(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            SettingsItem(
+                                icon = Icons.Default.Settings,
+                                label = "Ustawienia konta",
+                                onClick = { /* TODO */ }
+                            )
 
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 20.dp),
-                            color = TextSecondary.copy(alpha = 0.2f)
-                        )
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 20.dp),
+                                color = TextSecondary.copy(alpha = 0.2f)
+                            )
 
-                        SettingsItem(
-                            icon = Icons.Default.Help,
-                            label = "Pomoc i wsparcie",
-                            onClick = { /* TODO */ }
-                        )
+                            SettingsItem(
+                                icon = Icons.Default.Help,
+                                label = "Pomoc i wsparcie",
+                                onClick = { /* TODO */ }
+                            )
 
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 20.dp),
-                            color = TextSecondary.copy(alpha = 0.2f)
-                        )
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 20.dp),
+                                color = TextSecondary.copy(alpha = 0.2f)
+                            )
 
-                        SettingsItem(
-                            icon = Icons.Default.Info,
-                            label = "O aplikacji",
-                            onClick = { /* TODO */ }
-                        )
+                            SettingsItem(
+                                icon = Icons.Default.Info,
+                                label = "O aplikacji",
+                                onClick = { /* TODO */ }
+                            )
+                        }
                     }
-                }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                // Logout Button
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = CardBackground
-                    ),
-                    onClick = onLogoutClick
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                    // Logout Button
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CardBackground
+                        ),
+                        onClick = onLogoutClick
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Logout,
-                            contentDescription = null,
-                            tint = Error,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "Wyloguj",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Error
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Logout,
+                                contentDescription = null,
+                                tint = Error,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                text = "Wyloguj",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Error
+                            )
+                        }
                     }
-                }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
             }
         }
     }

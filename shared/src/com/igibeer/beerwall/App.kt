@@ -21,10 +21,10 @@ fun App(
 ) {
     BeerWallTheme {
         BeerWallNavHost(
-            balances = SampleBalances,
-            cards = SampleCards,
-            transactionGroups = SampleTransactionGroups,
-            userProfile = SampleUserProfile,
+            balances = emptyList(),
+            cards = emptyList(),
+            transactionGroups = emptyList(),
+            userProfile = null,
             onGoogleSignIn = onGoogleSignIn,
             onStartNfcScanning = onStartNfcScanning,
             scannedCardId = scannedCardId,
