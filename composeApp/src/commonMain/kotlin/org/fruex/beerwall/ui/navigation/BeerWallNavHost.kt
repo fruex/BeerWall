@@ -26,7 +26,7 @@ fun BeerWallNavHost(
     // Callbacks
     onRegister: (email: String, password: String) -> Unit = { _, _ -> },
     onLogin: (email: String, password: String) -> Unit = { _, _ -> },
-    onGoogleSignIn: () -> Unit = {},
+    onGoogleSignIn: (onSuccess: () -> Unit) -> Unit = { _ -> },
     onLogout: () -> Unit = {},
     onAddFunds: (location: String, amount: Double) -> Unit = { _, _ -> },
     onToggleCardStatus: (String) -> Unit = {},
@@ -49,9 +49,10 @@ fun BeerWallNavHost(
                     }
                 },
                 onGoogleSignInClick = {
-                    onGoogleSignIn()
-                    navController.navigate(NavigationDestination.Main.route) {
-                        popUpTo(NavigationDestination.Registration.route) { inclusive = true }
+                    onGoogleSignIn {
+                        navController.navigate(NavigationDestination.Main.route) {
+                            popUpTo(NavigationDestination.Registration.route) { inclusive = true }
+                        }
                     }
                 },
                 onLoginClick = {
@@ -69,9 +70,10 @@ fun BeerWallNavHost(
                     }
                 },
                 onGoogleSignInClick = {
-                    onGoogleSignIn()
-                    navController.navigate(NavigationDestination.Main.route) {
-                        popUpTo(NavigationDestination.Login.route) { inclusive = true }
+                    onGoogleSignIn {
+                        navController.navigate(NavigationDestination.Main.route) {
+                            popUpTo(NavigationDestination.Login.route) { inclusive = true }
+                        }
                     }
                 },
                 onRegisterClick = {

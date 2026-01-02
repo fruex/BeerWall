@@ -34,16 +34,18 @@ fun App(
             onStartNfcScanning = onStartNfcScanning,
             onLogin = { _, _ -> isLoggedIn = true },
             onRegister = { _, _ -> isLoggedIn = true },
-            onGoogleSignIn = {
+            onGoogleSignIn = { onSuccess ->
                 scope.launch {
                     val user = googleAuthProvider.signIn()
                     if (user != null) {
                         userProfile = userProfile.copy(
                             name = user.displayName ?: userProfile.name,
                             email = user.email ?: userProfile.email,
-                            initials = user.displayName?.split(" ")?.mapNotNull { it.firstOrNull() }?.joinToString("") ?: userProfile.initials
+                            initials = user.displayName?.split(" ")?.mapNotNull { it.firstOrNull() }?.joinToString("") ?: userProfile.initials,
+                            photoUrl = user.photoUrl
                         )
                         isLoggedIn = true
+                        onSuccess()
                     }
                 }
             },

@@ -10,6 +10,7 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,18 +20,19 @@ class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvid
     private val serverClientId = "220522932694-qgcu3mhkgna9jsp37q1g16s813ki5o7l.apps.googleusercontent.com"
 
     override suspend fun signIn(): GoogleUser? = withContext(Dispatchers.Main) {
-        val googleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
-            .setServerClientId(serverClientId)
-            .setAutoSelectEnabled(true)
+        Log.d("GoogleAuth", "Starting sign in process")
+        
+        val signInWithGoogleOption = GetSignInWithGoogleOption.Builder(serverClientId)
             .build()
 
         val request = GetCredentialRequest.Builder()
-            .addCredentialOption(googleIdOption)
+            .addCredentialOption(signInWithGoogleOption)
             .build()
 
         try {
+            Log.d("GoogleAuth", "Calling getCredential")
             val result = credentialManager.getCredential(context, request)
+            Log.d("GoogleAuth", "getCredential result received")
             val credential = result.credential
 
             if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
