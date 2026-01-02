@@ -3,6 +3,7 @@ package org.fruex.beerwall
 import androidx.compose.runtime.*
 import kotlinx.coroutines.launch
 import org.fruex.beerwall.auth.rememberGoogleAuthProvider
+import org.fruex.beerwall.remote.BeerWallApiClient
 import org.fruex.beerwall.ui.models.*
 import org.fruex.beerwall.ui.navigation.BeerWallNavHost
 import org.fruex.beerwall.ui.navigation.NavigationDestination
@@ -22,6 +23,7 @@ fun App(
     var userProfile by remember { mutableStateOf(SampleUserProfile) }
     val transactionGroups by remember { mutableStateOf(SampleTransactionGroups) }
     val googleAuthProvider = rememberGoogleAuthProvider()
+    val apiClient = remember { BeerWallApiClient() }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
@@ -36,6 +38,14 @@ fun App(
             isLoggedIn = true
         }
         isCheckingSession = false
+    }
+
+    LaunchedEffect(isLoggedIn) {
+        if (isLoggedIn) {
+            apiClient.getBalance().onSuccess {
+                balances = it
+            }
+        }
     }
 
     if (isCheckingSession) {
