@@ -16,11 +16,11 @@ import kotlinx.coroutines.withContext
 
 class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvider {
     private val credentialManager = CredentialManager.create(context)
-    private val serverClientId = "220522932694-qgcu3mhkgna9jsp37q1g16s813ki5o7l.apps.googleusercontent.com"
+    private val serverClientId = "220522932694-ghamgoqpqtmb0vk9ajnouiqe2h52ateb.apps.googleusercontent.com"
 
     override suspend fun signIn(): GoogleUser? = withContext(Dispatchers.Main) {
         Log.d("GoogleAuth", "Starting sign in process")
-
+        
         val googleIdOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)
             .setServerClientId(serverClientId)
