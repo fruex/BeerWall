@@ -10,7 +10,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Preview
 fun App(
     scannedCardId: String? = null,
-    isNfcScanning: Boolean = false,
     onStartNfcScanning: () -> Unit = {}
 ) {
     var balances by remember { mutableStateOf(SampleBalances) }
@@ -25,7 +24,6 @@ fun App(
             transactionGroups = transactionGroups,
             userProfile = userProfile,
             scannedCardId = scannedCardId,
-            isNfcScanning = isNfcScanning,
             onStartNfcScanning = onStartNfcScanning,
             onAddFunds = { location, amount ->
                 balances = balances.map {

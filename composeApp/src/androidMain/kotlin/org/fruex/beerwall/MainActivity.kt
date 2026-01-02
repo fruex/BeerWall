@@ -20,7 +20,6 @@ class MainActivity : ComponentActivity() {
 
     private var nfcAdapter: NfcAdapter? = null
     private var cardId by mutableStateOf<String?>(null)
-    private var isNfcScanning by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -31,8 +30,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             App(
                 scannedCardId = cardId,
-                isNfcScanning = isNfcScanning,
-                onStartNfcScanning = { isNfcScanning = true }
+                onStartNfcScanning = { 
+                    cardId = null
+                }
             )
         }
     }
@@ -96,7 +96,6 @@ class MainActivity : ComponentActivity() {
                 // Take first 16 bytes and convert to GUID
                 val cardGuid = bytes.toGuidString()
                 cardId = cardGuid
-                isNfcScanning = false
 
                 Log.d("NFC", "Card GUID from page 4: $cardId")
                 Log.d("NFC", "Raw bytes: ${bytes.joinToString(":") { java.lang.String.format("%02X", it) }}")
