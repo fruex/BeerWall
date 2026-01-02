@@ -15,6 +15,7 @@ fun App(
     scannedCardId: String? = null,
     onStartNfcScanning: () -> Unit = {}
 ) {
+    var isCheckingSession by remember { mutableStateOf(true) }
     var isLoggedIn by remember { mutableStateOf(false) }
     var balances by remember { mutableStateOf(SampleBalances) }
     var cards by remember { mutableStateOf(SampleCards) }
@@ -22,6 +23,25 @@ fun App(
     val transactionGroups by remember { mutableStateOf(SampleTransactionGroups) }
     val googleAuthProvider = rememberGoogleAuthProvider()
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        val user = googleAuthProvider.getSignedInUser()
+        if (user != null) {
+            userProfile = userProfile.copy(
+                name = user.displayName ?: userProfile.name,
+                email = user.email ?: userProfile.email,
+                initials = user.displayName?.split(" ")?.mapNotNull { it.firstOrNull() }?.joinToString("") ?: userProfile.initials,
+                photoUrl = user.photoUrl
+            )
+            isLoggedIn = true
+        }
+        isCheckingSession = false
+    }
+
+    if (isCheckingSession) {
+        // We could show a splash screen here, but for now we just wait
+        return
+    }
 
     BeerWallTheme {
         BeerWallNavHost(
