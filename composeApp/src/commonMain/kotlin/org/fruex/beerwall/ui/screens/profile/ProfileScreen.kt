@@ -14,8 +14,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil3.compose.SubcomposeAsyncImage
 import org.fruex.beerwall.ui.models.UserProfile
 import org.fruex.beerwall.ui.theme.*
 
@@ -71,20 +74,25 @@ fun ProfileScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         // Avatar
-                        Box(
-                            modifier = Modifier
-                                .size(100.dp)
-                                .background(
-                                    color = GoldPrimary,
-                                    shape = CircleShape
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = userProfile.initials,
-                                style = MaterialTheme.typography.displayMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = DarkBackground
+                        if (userProfile.photoUrl != null) {
+                            SubcomposeAsyncImage(
+                                model = userProfile.photoUrl,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop,
+                                loading = {
+                                    DefaultAvatar(userProfile.initials)
+                                },
+                                error = {
+                                    DefaultAvatar(userProfile.initials)
+                                }
+                            )
+                        } else {
+                            DefaultAvatar(
+                                initials = userProfile.initials,
+                                modifier = Modifier.size(100.dp)
                             )
                         }
 
@@ -297,5 +305,27 @@ fun SettingsItem(
                 tint = TextSecondary
             )
         }
+    }
+}
+
+@Composable
+private fun DefaultAvatar(
+    initials: String,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .background(
+                color = GoldPrimary,
+                shape = CircleShape
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = initials,
+            style = MaterialTheme.typography.displayMedium,
+            fontWeight = FontWeight.Bold,
+            color = DarkBackground
+        )
     }
 }

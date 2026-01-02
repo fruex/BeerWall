@@ -34,6 +34,7 @@ kotlin {
             implementation(libs.googleid)
             implementation(libs.datastore)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -47,6 +48,12 @@ kotlin {
             implementation(libs.androidx.navigation.compose)
             implementation(compose.materialIconsExtended)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor3)
+            implementation(libs.ktor.client.core)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
