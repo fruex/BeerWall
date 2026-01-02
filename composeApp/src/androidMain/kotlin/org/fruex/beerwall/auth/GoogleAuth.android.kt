@@ -22,25 +22,28 @@ import org.fruex.beerwall.R
 import java.io.InputStream
 import java.io.OutputStream
 
-private object GoogleUserSerializer : Serializer<GoogleUser?> {
-    override val defaultValue: GoogleUser? = null
+@kotlinx.serialization.Serializable
+private data class GoogleUserSession(val user: GoogleUser? = null)
 
-    override suspend fun readFrom(input: InputStream): GoogleUser? = try {
+private object GoogleUserSerializer : Serializer<GoogleUserSession> {
+    override val defaultValue: GoogleUserSession = GoogleUserSession()
+
+    override suspend fun readFrom(input: InputStream): GoogleUserSession = try {
         val text = input.readBytes().decodeToString()
-        if (text.isEmpty()) null else Json.decodeFromString<GoogleUser>(text)
+        if (text.isEmpty()) defaultValue else Json.decodeFromString<GoogleUserSession>(text)
     } catch (e: Exception) {
-        Log.e("GoogleUserSerializer", "Error reading GoogleUser", e)
-        null
+        Log.e("GoogleUserSerializer", "Error reading GoogleUserSession", e)
+        defaultValue
     }
 
-    override suspend fun writeTo(t: GoogleUser?, output: OutputStream) {
-        t?.let {
-            output.write(Json.encodeToString(GoogleUser.serializer(), it).encodeToByteArray())
+    override suspend fun writeTo(t: GoogleUserSession, output: OutputStream) {
+        withContext(Dispatchers.IO) {
+            output.write(Json.encodeToString(GoogleUserSession.serializer(), t).encodeToByteArray())
         }
     }
 }
 
-private val Context.googleUserDataStore: DataStore<GoogleUser?> by dataStore(
+private val Context.googleUserDataStore: DataStore<GoogleUserSession> by dataStore(
     fileName = "google_user.json",
     serializer = GoogleUserSerializer
 )
@@ -68,7 +71,7 @@ class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvid
     }
 
     override suspend fun getSignedInUser(): GoogleUser? = withContext(Dispatchers.IO) {
-        context.googleUserDataStore.data.firstOrNull()
+        context.googleUserDataStore.data.firstOrNull()?.user
     }
 
     override suspend fun signOut() {
@@ -106,11 +109,11 @@ class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvid
     )
 
     private suspend fun saveUser(user: GoogleUser) {
-        context.googleUserDataStore.updateData { user }
+        context.googleUserDataStore.updateData { it.copy(user = user) }
     }
 
     private suspend fun clearUser() {
-        context.googleUserDataStore.updateData { null }
+        context.googleUserDataStore.updateData { it.copy(user = null) }
     }
 
     companion object {
