@@ -1,5 +1,7 @@
 package org.fruex.beerwall.remote.dto.balance
 
+import kotlinx.serialization.Serializable
+
 /**
  * GET balance
  * Example response:
@@ -26,6 +28,7 @@ package org.fruex.beerwall.remote.dto.balance
  *   }
  * }
  */
+@Serializable
 data class BalanceItem(
     val venueName: String,
     val amount: Double
