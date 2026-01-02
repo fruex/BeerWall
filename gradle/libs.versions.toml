@@ -30,7 +30,7 @@ androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle
 androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
 androidx-credentials = { module = "androidx.credentials:credentials", version = "credentials" }
 androidx-credentials-play = { module = "androidx.credentials:credentials-play-services-auth", version = "credentials" }
-gogleid = { module = "com.google.android.libraries.identity.googleid:googleid", version = "googleid" }
+googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version = "googleid" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
