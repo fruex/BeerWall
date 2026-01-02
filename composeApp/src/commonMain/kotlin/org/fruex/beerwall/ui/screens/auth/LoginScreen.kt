@@ -11,7 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.fruex.beerwall.ui.components.BeerWallButton
 import org.fruex.beerwall.ui.components.BeerWallOutlinedButton
 import org.fruex.beerwall.ui.components.BeerWallTextField
@@ -40,19 +44,38 @@ fun LoginScreen(
         ) {
             Spacer(modifier = Modifier.height(60.dp))
 
-            // Logo placeholder
-            Text(
-                text = "IGI BEER",
-                style = MaterialTheme.typography.displayMedium,
-                color = GoldPrimary,
-                fontWeight = FontWeight.Bold
-            )
+            // Logo placeholder - stylized as in mockup
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Simulating the dot pattern from mockup
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Box(modifier = Modifier.size(8.dp).background(GoldPrimary, CircleShape))
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row {
+                            Box(modifier = Modifier.size(8.dp).background(GoldPrimary, CircleShape))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Box(modifier = Modifier.size(8.dp).background(GoldPrimary, CircleShape))
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Box(modifier = Modifier.size(8.dp).background(GoldPrimary, CircleShape))
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = "IGI BEER",
+                        style = MaterialTheme.typography.displaySmall,
+                        color = GoldPrimary,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 4.sp
+                    )
+                }
+            }
 
-            Spacer(modifier = Modifier.height(60.dp))
+            Spacer(modifier = Modifier.height(48.dp))
 
             Text(
                 text = "Igi Beer System",
-                style = MaterialTheme.typography.displaySmall,
+                style = MaterialTheme.typography.headlineMedium,
+                color = GoldPrimary,
                 fontWeight = FontWeight.SemiBold
             )
 
@@ -64,7 +87,7 @@ fun LoginScreen(
                 color = TextSecondary
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             BeerWallTextField(
                 value = email,
@@ -123,7 +146,8 @@ fun LoginScreen(
 
             BeerWallOutlinedButton(
                 text = "Google",
-                onClick = onGoogleSignInClick
+                onClick = onGoogleSignInClick,
+                icon = Icons.Default.AccountCircle
             )
 
             Spacer(modifier = Modifier.weight(1f))

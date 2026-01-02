@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import org.fruex.beerwall.ui.theme.CardBackground
+import org.fruex.beerwall.ui.theme.InputBackground
 import org.fruex.beerwall.ui.theme.TextPrimary
 import org.fruex.beerwall.ui.theme.TextSecondary
 
@@ -46,10 +46,10 @@ fun BeerWallTextField(
             trailingIcon = trailingIcon,
             isError = isError,
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = CardBackground,
-                unfocusedContainerColor = CardBackground,
-                disabledContainerColor = CardBackground,
-                errorContainerColor = CardBackground,
+                focusedContainerColor = InputBackground,
+                unfocusedContainerColor = InputBackground,
+                disabledContainerColor = InputBackground,
+                errorContainerColor = InputBackground,
                 focusedTextColor = TextPrimary,
                 unfocusedTextColor = TextPrimary,
                 disabledTextColor = TextSecondary,
@@ -58,7 +58,7 @@ fun BeerWallTextField(
                 disabledIndicatorColor = Color.Transparent,
                 errorIndicatorColor = Color.Transparent,
             ),
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(16.dp),
             singleLine = true
         )
         if (isError && errorMessage != null) {
