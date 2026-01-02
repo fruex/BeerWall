@@ -5,6 +5,7 @@ import kotlinx.coroutines.launch
 import org.fruex.beerwall.auth.rememberGoogleAuthProvider
 import org.fruex.beerwall.ui.models.*
 import org.fruex.beerwall.ui.navigation.BeerWallNavHost
+import org.fruex.beerwall.ui.navigation.NavigationDestination
 import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -14,6 +15,7 @@ fun App(
     scannedCardId: String? = null,
     onStartNfcScanning: () -> Unit = {}
 ) {
+    var isLoggedIn by remember { mutableStateOf(false) }
     var balances by remember { mutableStateOf(SampleBalances) }
     var cards by remember { mutableStateOf(SampleCards) }
     var userProfile by remember { mutableStateOf(SampleUserProfile) }
@@ -23,12 +25,15 @@ fun App(
 
     BeerWallTheme {
         BeerWallNavHost(
+            startDestination = if (isLoggedIn) NavigationDestination.Main.route else NavigationDestination.Login.route,
             balances = balances,
             cards = cards,
             transactionGroups = transactionGroups,
             userProfile = userProfile,
             scannedCardId = scannedCardId,
             onStartNfcScanning = onStartNfcScanning,
+            onLogin = { _, _ -> isLoggedIn = true },
+            onRegister = { _, _ -> isLoggedIn = true },
             onGoogleSignIn = {
                 scope.launch {
                     val user = googleAuthProvider.signIn()
@@ -38,6 +43,7 @@ fun App(
                             email = user.email ?: userProfile.email,
                             initials = user.displayName?.split(" ")?.mapNotNull { it.firstOrNull() }?.joinToString("") ?: userProfile.initials
                         )
+                        isLoggedIn = true
                     }
                 }
             },
@@ -72,6 +78,7 @@ fun App(
             onLogout = {
                 scope.launch {
                     googleAuthProvider.signOut()
+                    isLoggedIn = false
                 }
             }
         )
