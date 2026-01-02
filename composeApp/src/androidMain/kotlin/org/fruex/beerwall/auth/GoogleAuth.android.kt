@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import org.fruex.beerwall.R
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -48,7 +49,7 @@ private val Context.googleUserDataStore: DataStore<GoogleUser?> by dataStore(
 
 class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvider {
     private val credentialManager = CredentialManager.create(context)
-    private val serverClientId = "220522932694-ghamgoqpqtmb0vk9ajnouiqe2h52ateb.apps.googleusercontent.com"
+    private val serverClientId = context.getString(R.string.google_server_client_id)
     
     override suspend fun signIn(): GoogleUser? = withContext(Dispatchers.Main) {
         Log.d("GoogleAuth", "Starting sign in process")
