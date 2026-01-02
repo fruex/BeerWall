@@ -9,7 +9,10 @@ import org.fruex.beerwall.ui.models.CardItem
 import org.fruex.beerwall.ui.models.LocationBalance
 import org.fruex.beerwall.ui.models.TransactionGroup
 import org.fruex.beerwall.ui.models.UserProfile
+import org.fruex.beerwall.ui.screens.auth.LoginScreen
 import org.fruex.beerwall.ui.screens.auth.RegistrationScreen
+import org.fruex.beerwall.ui.screens.balance.AddFundsScreen
+import org.fruex.beerwall.ui.screens.cards.AddCardScreen
 
 @Composable
 fun BeerWallNavHost(
