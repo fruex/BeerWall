@@ -26,7 +26,6 @@ import org.fruex.beerwall.ui.theme.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddCardScreen(
-    isScanning: Boolean,
     scannedCardId: String?,
     onBackClick: () -> Unit,
     onStartScanning: () -> Unit,
@@ -35,6 +34,10 @@ fun AddCardScreen(
 ) {
     var cardName by remember { mutableStateOf("") }
     val canSave = scannedCardId != null && cardName.isNotBlank()
+
+    LaunchedEffect(Unit) {
+        onStartScanning()
+    }
 
     BeerWallTheme {
         Column(
@@ -124,7 +127,7 @@ fun AddCardScreen(
                             .padding(32.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        NFCIcon(isScanning = isScanning)
+                        NFCIcon(isScanning = scannedCardId == null)
 
                         Spacer(modifier = Modifier.height(24.dp))
 
@@ -148,25 +151,6 @@ fun AddCardScreen(
                             color = DarkBackground.copy(alpha = 0.8f),
                             textAlign = TextAlign.Center
                         )
-
-                        if (scannedCardId == null && !isScanning) {
-                            Spacer(modifier = Modifier.height(24.dp))
-                            Button(
-                                onClick = onStartScanning,
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = DarkBackground,
-                                    contentColor = GoldPrimary
-                                ),
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "Rozpocznij skanowanie NFC",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier.padding(vertical = 8.dp)
-                                )
-                            }
-                        }
                     }
                 }
 
