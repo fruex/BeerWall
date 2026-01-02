@@ -22,22 +22,20 @@ import org.fruex.beerwall.R
 import java.io.InputStream
 import java.io.OutputStream
 
-object GoogleUserSerializer : Serializer<GoogleUser?> {
+private object GoogleUserSerializer : Serializer<GoogleUser?> {
     override val defaultValue: GoogleUser? = null
 
-    override suspend fun readFrom(input: InputStream): GoogleUser? {
-        return try {
-            val text = input.readBytes().decodeToString()
-            if (text.isEmpty()) null else Json.decodeFromString<GoogleUser>(text)
-        } catch (e: Exception) {
-            null
-        }
+    override suspend fun readFrom(input: InputStream): GoogleUser? = try {
+        val text = input.readBytes().decodeToString()
+        if (text.isEmpty()) null else Json.decodeFromString<GoogleUser>(text)
+    } catch (e: Exception) {
+        Log.e("GoogleUserSerializer", "Error reading GoogleUser", e)
+        null
     }
 
     override suspend fun writeTo(t: GoogleUser?, output: OutputStream) {
         t?.let {
-            val json = Json.encodeToString(GoogleUser.serializer(), it)
-            output.write(json.encodeToByteArray())
+            output.write(Json.encodeToString(GoogleUser.serializer(), it).encodeToByteArray())
         }
     }
 }
@@ -50,59 +48,54 @@ private val Context.googleUserDataStore: DataStore<GoogleUser?> by dataStore(
 class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvider {
     private val credentialManager = CredentialManager.create(context)
     private val serverClientId = context.getString(R.string.google_server_client_id)
-    
+
     override suspend fun signIn(): GoogleUser? = withContext(Dispatchers.Main) {
-        Log.d("GoogleAuth", "Starting sign in process")
-        
+        runCatching {
+            Log.d(TAG, "Starting sign in process")
+            val credential = credentialManager.getCredential(context, buildCredentialRequest()).credential
+            Log.d(TAG, "Credential received")
+
+            credential.toGoogleIdTokenCredential()?.let { googleCredential ->
+                googleCredential.toGoogleUser().also { saveUser(it) }
+            } ?: run {
+                Log.d(TAG, "Unknown credential type: ${credential.type}")
+                null
+            }
+        }.getOrElse { e ->
+            Log.e(TAG, "Error getting credential", e)
+            null
+        }
+    }
+
+    override suspend fun getSignedInUser(): GoogleUser? = withContext(Dispatchers.IO) {
+        context.googleUserDataStore.data.firstOrNull()
+    }
+
+    override suspend fun signOut() {
+        runCatching {
+            clearUser()
+            credentialManager.clearCredentialState(ClearCredentialStateRequest())
+        }.onFailure { e ->
+            Log.e(TAG, "Error clearing credential state", e)
+        }
+    }
+
+    private fun buildCredentialRequest(): GetCredentialRequest {
         val googleIdOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)
             .setServerClientId(serverClientId)
             .build()
 
-        val request = GetCredentialRequest.Builder()
+        return GetCredentialRequest.Builder()
             .addCredentialOption(googleIdOption)
             .build()
-
-        try {
-            Log.d("GoogleAuth", "Calling getCredential")
-            val result = credentialManager.getCredential(context, request)
-            Log.d("GoogleAuth", "getCredential result received")
-            val credential = result.credential
-
-            val googleIdTokenCredential = when {
-                credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL -> {
-                    GoogleIdTokenCredential.createFrom(credential.data)
-                }
-                credential is GoogleIdTokenCredential -> {
-                    credential
-                }
-                else -> null
-            }
-
-            if (googleIdTokenCredential != null) {
-                val googleUser = googleIdTokenCredential.toGoogleUser()
-                saveUser(googleUser)
-                googleUser
-            } else {
-                Log.d("GoogleAuth", "Unknown credential type: ${credential.type}")
-                null
-            }
-        } catch (e: Exception) {
-            Log.e("GoogleAuth", "Error getting credential", e)
-            null
-        }
     }
 
-    private suspend fun saveUser(user: GoogleUser) {
-        context.googleUserDataStore.updateData { user }
-    }
-
-    private suspend fun clearUser() {
-        context.googleUserDataStore.updateData { null }
-    }
-
-    override suspend fun getSignedInUser(): GoogleUser? = withContext(Dispatchers.IO) {
-        context.googleUserDataStore.data.firstOrNull()
+    private fun androidx.credentials.Credential.toGoogleIdTokenCredential(): GoogleIdTokenCredential? = when {
+        this is CustomCredential && type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL ->
+            GoogleIdTokenCredential.createFrom(data)
+        this is GoogleIdTokenCredential -> this
+        else -> null
     }
 
     private fun GoogleIdTokenCredential.toGoogleUser(): GoogleUser = GoogleUser(
@@ -112,13 +105,16 @@ class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvid
         photoUrl = profilePictureUri?.toString()
     )
 
-    override suspend fun signOut() {
-        try {
-            clearUser()
-            credentialManager.clearCredentialState(ClearCredentialStateRequest())
-        } catch (e: Exception) {
-            Log.e("GoogleAuth", "Error clearing credential state", e)
-        }
+    private suspend fun saveUser(user: GoogleUser) {
+        context.googleUserDataStore.updateData { user }
+    }
+
+    private suspend fun clearUser() {
+        context.googleUserDataStore.updateData { null }
+    }
+
+    companion object {
+        private const val TAG = "GoogleAuth"
     }
 }
 
