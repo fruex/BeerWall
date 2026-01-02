@@ -10,7 +10,6 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -21,12 +20,14 @@ class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvid
 
     override suspend fun signIn(): GoogleUser? = withContext(Dispatchers.Main) {
         Log.d("GoogleAuth", "Starting sign in process")
-        
-        val signInWithGoogleOption = GetSignInWithGoogleOption.Builder(serverClientId)
+
+        val googleIdOption = GetGoogleIdOption.Builder()
+            .setFilterByAuthorizedAccounts(false)
+            .setServerClientId(serverClientId)
             .build()
 
         val request = GetCredentialRequest.Builder()
-            .addCredentialOption(signInWithGoogleOption)
+            .addCredentialOption(googleIdOption)
             .build()
 
         try {
