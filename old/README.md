@@ -1,1 +1,0 @@
-# BeerWall - mobile application
