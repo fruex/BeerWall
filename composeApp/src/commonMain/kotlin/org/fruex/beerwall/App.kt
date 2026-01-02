@@ -1,6 +1,8 @@
 package org.fruex.beerwall
 
 import androidx.compose.runtime.*
+import kotlinx.coroutines.launch
+import org.fruex.beerwall.auth.rememberGoogleAuthProvider
 import org.fruex.beerwall.ui.models.*
 import org.fruex.beerwall.ui.navigation.BeerWallNavHost
 import org.fruex.beerwall.ui.theme.BeerWallTheme
@@ -16,6 +18,8 @@ fun App(
     var cards by remember { mutableStateOf(SampleCards) }
     var userProfile by remember { mutableStateOf(SampleUserProfile) }
     val transactionGroups by remember { mutableStateOf(SampleTransactionGroups) }
+    val googleAuthProvider = rememberGoogleAuthProvider()
+    val scope = rememberCoroutineScope()
 
     BeerWallTheme {
         BeerWallNavHost(
@@ -25,6 +29,18 @@ fun App(
             userProfile = userProfile,
             scannedCardId = scannedCardId,
             onStartNfcScanning = onStartNfcScanning,
+            onGoogleSignIn = {
+                scope.launch {
+                    val user = googleAuthProvider.signIn()
+                    if (user != null) {
+                        userProfile = userProfile.copy(
+                            name = user.displayName ?: userProfile.name,
+                            email = user.email ?: userProfile.email,
+                            initials = user.displayName?.split(" ")?.mapNotNull { it.firstOrNull() }?.joinToString("") ?: userProfile.initials
+                        )
+                    }
+                }
+            },
             onAddFunds = { location, amount ->
                 balances = balances.map {
                     if (it.locationName == location) {
@@ -54,7 +70,9 @@ fun App(
                 userProfile = userProfile.copy(activeCards = cards.count { it.isActive })
             },
             onLogout = {
-                // Handle logout
+                scope.launch {
+                    googleAuthProvider.signOut()
+                }
             }
         )
     }
