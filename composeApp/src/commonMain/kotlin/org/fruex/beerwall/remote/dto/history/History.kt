@@ -1,14 +1,13 @@
 package org.fruex.beerwall.remote.dto.history
 
-data class HistoryItem(
-    val id: String,
-    val type: String,        // e.g., "purchase", "topup"
-    val amount: Long,
-    val currency: String,
-    val createdAt: String,
-    val description: String? = null
-)
+import kotlinx.serialization.Serializable
 
-data class GetHistoryResponse(
-    val items: List<HistoryItem>
+@Serializable
+data class TransactionDto(
+    val id: String,
+    val beerName: String,
+    val date: String,
+    val time: String,
+    val amount: Double,
+    val cardNumber: String
 )

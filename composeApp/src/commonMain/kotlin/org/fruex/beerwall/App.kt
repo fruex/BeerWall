@@ -18,16 +18,36 @@ fun App(
 ) {
     var isCheckingSession by remember { mutableStateOf(true) }
     var isLoggedIn by remember { mutableStateOf(false) }
-    var balances by remember { mutableStateOf(SampleBalances) }
-    var cards by remember { mutableStateOf(SampleCards) }
-    var userProfile by remember { mutableStateOf(SampleUserProfile) }
-    val transactionGroups by remember { mutableStateOf(SampleTransactionGroups) }
+    var balances by remember { mutableStateOf(emptyList<LocationBalance>()) }
+    var cards by remember { mutableStateOf(emptyList<CardItem>()) }
+    var userProfile by remember { mutableStateOf(SampleUserProfile.copy(activeCards = 0, loyaltyPoints = 0)) }
+    var transactionGroups by remember { mutableStateOf(emptyList<TransactionGroup>()) }
     val googleAuthProvider = rememberGoogleAuthProvider()
     val apiClient = remember { BeerWallApiClient() }
     val scope = rememberCoroutineScope()
 
+    fun refreshAllData() {
+        scope.launch {
+            apiClient.getBalance().onSuccess { balances = it }
+            apiClient.getCards().onSuccess { 
+                cards = it
+                userProfile = userProfile.copy(activeCards = it.count { card -> card.isActive })
+            }
+            apiClient.getHistory().onSuccess { transactions ->
+                transactionGroups = transactions
+                    .groupBy { it.date }
+                    .map { (date, items) -> TransactionGroup(date.uppercase(), items) }
+            }
+            apiClient.getProfile().onSuccess { points ->
+                userProfile = userProfile.copy(loyaltyPoints = points)
+            }
+        }
+    }
+
     LaunchedEffect(Unit) {
+        println("App: Checking session...")
         val user = googleAuthProvider.getSignedInUser()
+        println("App: Session user: ${user?.email ?: "null"}")
         if (user != null) {
             userProfile = userProfile.copy(
                 name = user.displayName ?: userProfile.name,
@@ -36,15 +56,14 @@ fun App(
                 photoUrl = user.photoUrl
             )
             isLoggedIn = true
+            refreshAllData()
         }
         isCheckingSession = false
     }
 
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {
-            apiClient.getBalance().onSuccess {
-                balances = it
-            }
+            refreshAllData()
         }
     }
 
@@ -62,8 +81,14 @@ fun App(
             userProfile = userProfile,
             scannedCardId = scannedCardId,
             onStartNfcScanning = onStartNfcScanning,
-            onLogin = { _, _ -> isLoggedIn = true },
-            onRegister = { _, _ -> isLoggedIn = true },
+            onLogin = { _, _ -> 
+                isLoggedIn = true
+                refreshAllData()
+            },
+            onRegister = { _, _ -> 
+                isLoggedIn = true
+                refreshAllData()
+            },
             onGoogleSignIn = { onSuccess ->
                 scope.launch {
                     val user = googleAuthProvider.signIn()
@@ -75,13 +100,14 @@ fun App(
                             photoUrl = user.photoUrl
                         )
                         isLoggedIn = true
+                        refreshAllData()
                         onSuccess()
                     }
                 }
             },
             onAddFunds = { location, amount ->
                 balances = balances.map {
-                    if (it.locationName == location) {
+                    if (it.venueName == location) {
                         it.copy(balance = it.balance + amount)
                     } else it
                 }

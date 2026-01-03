@@ -9,11 +9,11 @@ import kotlinx.serialization.Serializable
  *   "data": [
  *     {
  *       "venueName": "Beer Heaven",
- *       "amount": 150.50
+ *       "balance": 150.50
  *     },
  *     {
  *       "venueName": "Pub Krakowski",
- *       "amount": 75.25
+ *       "balance": 75.25
  *     }
  *   ]
  * }
@@ -30,8 +30,8 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class BalanceItem(
-    val venueName: String,
-    val amount: Double
+    val locationName: String,
+    val balance: Double
 )
 
 data class GetBalanceResponse(

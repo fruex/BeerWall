@@ -2,7 +2,7 @@ package org.fruex.beerwall.ui.models
 
 // Balance models
 data class LocationBalance(
-    val locationName: String,
+    val venueName: String,
     val balance: Double
 )
 
