@@ -1,6 +1,12 @@
 package org.fruex.beerwall
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import kotlinx.coroutines.launch
 import org.fruex.beerwall.auth.rememberGoogleAuthProvider
 import org.fruex.beerwall.remote.BeerWallApiClient
@@ -19,9 +25,10 @@ fun App(
     var isCheckingSession by remember { mutableStateOf(true) }
     var isLoggedIn by remember { mutableStateOf(false) }
     var balances by remember { mutableStateOf(SampleBalances) }
-    var cards by remember { mutableStateOf(SampleCards) }
+    var cards by remember { mutableStateOf(emptyList<CardItem>()) }
     var userProfile by remember { mutableStateOf(SampleUserProfile) }
-    val transactionGroups by remember { mutableStateOf(SampleTransactionGroups) }
+    var transactionGroups by remember { mutableStateOf(emptyList<TransactionGroup>()) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
     val googleAuthProvider = rememberGoogleAuthProvider()
     val apiClient = remember { BeerWallApiClient() }
     val scope = rememberCoroutineScope()
@@ -42,9 +49,15 @@ fun App(
 
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {
-            apiClient.getBalance().onSuccess {
-                balances = it
-            }
+            apiClient.getBalance()
+                .onSuccess { balances = it }
+                .onFailure { errorMessage = it.message }
+            apiClient.getCards()
+                .onSuccess { cards = it }
+                .onFailure { errorMessage = it.message }
+            apiClient.getTransactions()
+                .onSuccess { transactionGroups = it }
+                .onFailure { errorMessage = it.message }
         }
     }
 
@@ -54,9 +67,18 @@ fun App(
     }
 
     BeerWallTheme {
-        BeerWallNavHost(
-            startDestination = if (isLoggedIn) NavigationDestination.Main.route else NavigationDestination.Login.route,
-            balances = balances,
+        Column {
+            errorMessage?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            }
+            BeerWallNavHost(
+                startDestination = if (isLoggedIn) NavigationDestination.Main.route else NavigationDestination.Login.route,
+                balances = balances,
             cards = cards,
             transactionGroups = transactionGroups,
             userProfile = userProfile,
@@ -69,9 +91,9 @@ fun App(
                     val user = googleAuthProvider.signIn()
                     if (user != null) {
                         userProfile = userProfile.copy(
-                            name = user.displayName ?: userProfile.name,
-                            email = user.email ?: userProfile.email,
-                            initials = user.displayName?.split(" ")?.mapNotNull { it.firstOrNull() }?.joinToString("") ?: userProfile.initials,
+                            name = user.displayName ?: user-profile.name,
+                            email = user.email ?: user-profile.email,
+                            initials = user.displayName?.split(" ")?.mapNotNull { it.firstOrNull() }?.joinToString("") ?: user-profile.initials,
                             photoUrl = user.photoUrl
                         )
                         isLoggedIn = true
@@ -114,5 +136,6 @@ fun App(
                 }
             }
         )
+        }
     }
 }
