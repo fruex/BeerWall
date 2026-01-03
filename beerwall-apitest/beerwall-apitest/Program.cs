@@ -118,6 +118,11 @@ api.MapGet("/profile", (ClaimsPrincipal user) => {
 
 app.Run();
 
+record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+{
+    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+}
+
 // --- MODELE DTO ---
 record TopUpRequest(double Amount, string Method);
 record Card(string Id, string Name, bool IsActive, bool IsPhysical);
