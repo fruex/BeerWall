@@ -73,17 +73,30 @@ api.MapPost("/balance", (ClaimsPrincipal user, TopUpRequest req) =>
 
 // 2. KARTY (Cards)
 api.MapGet("/cards", (ClaimsPrincipal user) => 
-    Results.Ok(new ApiEnvelope<List<Card>>(new List<Card> { new(1, "4422", true), new(2, "9911", false) })));
+{
+    var sampleCards = new List<Card>
+    {
+        new("550e8400-e29b-41d4-a716-446655440000", "Karta Wirtualna", true, false),
+        new("750e8460-e29b-41d4-a716-446655440001", "Karta fizyczna", true, true)
+    };
+    return Results.Ok(new ApiEnvelope<List<Card>>(sampleCards));
+});
 
-api.MapGet("/cards/{id}", (int id) => 
+api.MapGet("/cards/{id}", (string id) => 
     Results.Ok(new ApiEnvelope<CardDetails>(new CardDetails(id, "4422", "Active", "BeerWall Classic", 1250))));
 
 // 3. HISTORIA I MIEJSCA
 api.MapGet("/history", () => 
-    Results.Ok(new ApiEnvelope<List<Transaction>>(new List<Transaction> { 
-        new(1, "2023-10-20", -25.0, "Browar Stołeczny"), 
-        new(2, "2023-10-19", 100.0, "Top-up") 
-    })));
+{
+    var sampleHistory = new List<Transaction>
+    {
+        new("1", "Pilsner Urquell", "24 lis", "19:30", -12.50, "45:32"),
+        new("2", "Wino Chianti Classico", "24 lis", "20:15", -28.00, "45:32"),
+        new("3", "Guinness Draught", "24 lis", "21:00", -15.00, "89:21"),
+        new("4", "Corona Extra", "23 lis", "18:45", -11.00, "89:21")
+    };
+    return Results.Ok(new ApiEnvelope<List<Transaction>>(sampleHistory));
+});
 
 api.MapGet("/places", () => 
     Results.Ok(new ApiEnvelope<List<Place>>(new List<Place> { 
@@ -100,28 +113,19 @@ api.MapPost("/card-activation", (CardActivationRequest req) =>
 
 // 5. PROFIL (Punkty)
 api.MapGet("/profile", (ClaimsPrincipal user) => {
-    var sub = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    return Results.Ok(new ApiEnvelope<object>(new { 
-        GoogleId = sub, 
-        Points = 1250, 
-        Rank = "Beer Lover" 
-    }));
+    return Results.Ok(new ApiEnvelope<ProfileData>(new ProfileData(250)));
 });
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
-
 // --- MODELE DTO ---
 record TopUpRequest(double Amount, string Method);
-record Card(int Id, string LastFour, bool IsDefault);
-record CardDetails(int Id, string Number, string Status, string Type, int LoyaltyPoints);
-record Transaction(int Id, string Date, double Amount, string Description);
+record Card(string Id, string Name, bool IsActive, bool IsPhysical);
+record CardDetails(string Id, string Number, string Status, string Type, int LoyaltyPoints);
+record Transaction(string Id, string BeerName, string Date, string Time, double Amount, string CardNumber);
 record Place(int Id, string Name, double FundsAvailable);
 record LocationBalance(string LocationName, double Balance);
-record CardActivationRequest(int CardId, bool Activate);
+record CardActivationRequest(string CardId, bool Activate);
+record ProfileData(int LoyaltyPoints);
 
 record ApiEnvelope<T>(T Data);

@@ -15,6 +15,7 @@ import androidx.datastore.dataStore
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -71,7 +72,15 @@ class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvid
     }
 
     override suspend fun getSignedInUser(): GoogleUser? = withContext(Dispatchers.IO) {
-        context.googleUserDataStore.data.firstOrNull()?.user
+        try {
+            Log.d(TAG, "Getting signed in user from DataStore")
+            val session = context.googleUserDataStore.data.first()
+            Log.d(TAG, "Session retrieved: ${session.user?.email ?: "no user"}")
+            session.user
+        } catch (e: Exception) {
+            Log.e(TAG, "Error reading session", e)
+            null
+        }
     }
 
     override suspend fun signOut() {

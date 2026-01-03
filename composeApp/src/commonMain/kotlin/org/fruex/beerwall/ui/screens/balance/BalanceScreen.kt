@@ -66,9 +66,9 @@ fun BalanceScreen(
 
                 items(balances) { locationBalance ->
                     BalanceCard(
-                        locationName = locationBalance.locationName,
+                        venueName = locationBalance.venueName,
                         balance = locationBalance.balance,
-                        onAddFundsClick = { onAddFundsClick(locationBalance.locationName) }
+                        onAddFundsClick = { onAddFundsClick(locationBalance.venueName) }
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                 }
@@ -93,7 +93,7 @@ fun BalanceScreen(
 
 @Composable
 fun BalanceCard(
-    locationName: String,
+    venueName: String,
     balance: Double,
     onAddFundsClick: () -> Unit,
 ) {
@@ -125,7 +125,7 @@ fun BalanceCard(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = locationName,
+                        text = venueName,
                         style = MaterialTheme.typography.bodyMedium,
                         color = DarkBackground
                     )
