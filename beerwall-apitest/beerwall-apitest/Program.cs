@@ -53,7 +53,7 @@ app.MapGet("/weatherforecast", () =>
 })
 .WithName("GetWeatherForecast");
 
-var api = app.MapGroup("/api")/*.RequireAuthorization()*/;
+var api = app.MapGroup("/api").RequireAuthorization();
 
 // 1. SALDO (Balance)
 api.MapGet("/balance", (ClaimsPrincipal user) => 
