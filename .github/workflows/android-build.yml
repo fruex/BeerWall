@@ -29,19 +29,24 @@ jobs:
       run: chmod +x gradlew
 
     - name: Build with Gradle
-      run: ./gradlew :composeApp:assembleDebug
+      run: ./gradlew :composeApp:assembleDebug -PversionName=${{ github.ref_name }}
 
     - name: Run Tests
       run: ./gradlew test
 
-    - name: Rename APK
-      run: mv composeApp/build/outputs/apk/debug/composeApp-debug.apk beerwall-debug.apk
+    - name: Prepare APK for distribution
+      run: |
+        if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+          mv composeApp/build/outputs/apk/debug/composeApp-debug.apk "beerwall-${{ github.ref_name }}.apk"
+        else
+          mv composeApp/build/outputs/apk/debug/composeApp-debug.apk beerwall-latest.apk
+        fi
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: beerwall-app-debug
-        path: beerwall-debug.apk
+        name: beerwall-app
+        path: beerwall-*.apk
 
     - name: Create Release
       if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
@@ -49,7 +54,7 @@ jobs:
       with:
         tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'latest' }}
         name: ${{ startsWith(github.ref, 'refs/tags/v') && format('Release {0}', github.ref_name) || 'Latest Build' }}
-        files: beerwall-debug.apk
+        files: beerwall-*.apk
         prerelease: ${{ !startsWith(github.ref, 'refs/tags/v') }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
