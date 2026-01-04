@@ -1,19 +1,19 @@
 package org.fruex.beerwall.ui.models
 
 val SampleBalances = listOf(
-    LocationBalance("Pub Lewe", 125.50),
-    LocationBalance("Browariat", 89.00),
-    LocationBalance("Biała Małpa", 45.25)
+    VenueBalance("Pub Lewe", 125.50),
+    VenueBalance("Browariat", 89.00),
+    VenueBalance("Biała Małpa", 45.25)
 )
 
 val SampleCards = listOf(
-    CardItem(
+    UserCard(
         id = "550e8400-e29b-41d4-a716-446655440003",
         name = "Karta Wirtualna",
         isActive = true,
         isPhysical = false
     ),
-    CardItem(
+    UserCard(
         id = "750e8460-e29b-41d4-a716-446655440004",
         name = "Karta fizyczna",
         isActive = true,
@@ -22,7 +22,7 @@ val SampleCards = listOf(
 )
 
 val SampleTransactionGroups = listOf(
-    TransactionGroup(
+    DailyTransactions(
         date = "24 LISTOPADA 2025",
         transactions = listOf(
             Transaction("1", "Pilsner Urquell", "24 lis", "19:30", -12.50, "45:32"),
@@ -30,7 +30,7 @@ val SampleTransactionGroups = listOf(
             Transaction("3", "Guinness Draught", "24 lis", "21:00", -15.00, "89:21")
         )
     ),
-    TransactionGroup(
+    DailyTransactions(
         date = "23 LISTOPADA 2025",
         transactions = listOf(
             Transaction("4", "Corona Extra", "23 lis", "18:45", -11.00, "89:21"),
@@ -39,7 +39,7 @@ val SampleTransactionGroups = listOf(
             Transaction("7", "Stella Artois", "23 lis", "21:30", -13.50, "89:21")
         )
     ),
-    TransactionGroup(
+    DailyTransactions(
         date = "22 LISTOPADA 2025",
         transactions = listOf(
             Transaction("8", "Tyskie Gronie", "22 lis", "17:00", -9.50, "45:32"),
@@ -47,7 +47,7 @@ val SampleTransactionGroups = listOf(
             Transaction("10", "IPA Craft Beer", "22 lis", "19:45", -16.00, "45:32")
         )
     ),
-    TransactionGroup(
+    DailyTransactions(
         date = "21 LISTOPADA 2025",
         transactions = listOf(
             Transaction("11", "Żywiec Porter", "21 lis", "20:00", -14.00, "89:21"),
@@ -56,7 +56,7 @@ val SampleTransactionGroups = listOf(
             Transaction("14", "Desperados", "21 lis", "22:15", -11.50, "45:32")
         )
     ),
-    TransactionGroup(
+    DailyTransactions(
         date = "20 LISTOPADA 2025",
         transactions = listOf(
             Transaction("15", "Wino Cabernet Sauvignon", "20 lis", "19:00", -30.00, "45:32"),

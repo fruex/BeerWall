@@ -1,13 +1,13 @@
 package org.fruex.beerwall.ui.models
 
 // Balance models
-data class LocationBalance(
+data class VenueBalance(
     val venueName: String,
     val balance: Double
 )
 
 // Card models
-data class CardItem(
+data class UserCard(
     val id: String,
     val name: String,
     val isActive: Boolean,
@@ -24,7 +24,7 @@ data class Transaction(
     val cardNumber: String
 )
 
-data class TransactionGroup(
+data class DailyTransactions(
     val date: String,
     val transactions: List<Transaction>
 )

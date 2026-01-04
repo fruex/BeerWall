@@ -5,9 +5,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import org.fruex.beerwall.ui.models.CardItem
-import org.fruex.beerwall.ui.models.LocationBalance
-import org.fruex.beerwall.ui.models.TransactionGroup
+import org.fruex.beerwall.ui.models.UserCard
+import org.fruex.beerwall.ui.models.VenueBalance
+import org.fruex.beerwall.ui.models.DailyTransactions
 import org.fruex.beerwall.ui.models.UserProfile
 import org.fruex.beerwall.ui.screens.auth.LoginScreen
 import org.fruex.beerwall.ui.screens.auth.RegistrationScreen
@@ -19,9 +19,9 @@ fun BeerWallNavHost(
     navController: NavHostController = rememberNavController(),
     startDestination: String = NavigationDestination.Main.route,
     // Data
-    balances: List<LocationBalance> = emptyList(),
-    cards: List<CardItem> = emptyList(),
-    transactionGroups: List<TransactionGroup> = emptyList(),
+    balances: List<VenueBalance> = emptyList(),
+    cards: List<UserCard> = emptyList(),
+    transactionGroups: List<DailyTransactions> = emptyList(),
     userProfile: UserProfile = UserProfile("", "", "", 0, 0),
     // Callbacks
     onRegister: (email: String, password: String) -> Unit = { _, _ -> },

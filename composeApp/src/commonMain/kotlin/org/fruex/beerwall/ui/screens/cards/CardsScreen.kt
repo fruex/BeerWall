@@ -15,12 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.fruex.beerwall.ui.components.BeerWallButton
-import org.fruex.beerwall.ui.models.CardItem
+import org.fruex.beerwall.ui.models.UserCard
 import org.fruex.beerwall.ui.theme.*
 
 @Composable
 fun CardsScreen(
-    cards: List<CardItem>,
+    cards: List<UserCard>,
     onAddCardClick: () -> Unit,
     onToggleCardStatus: (String) -> Unit,
     onDeleteCard: (String) -> Unit,
@@ -99,7 +99,7 @@ fun CardsScreen(
 
 @Composable
 fun CardItemView(
-    card: CardItem,
+    card: UserCard,
     onToggleStatus: () -> Unit,
     onDelete: () -> Unit,
 ) {

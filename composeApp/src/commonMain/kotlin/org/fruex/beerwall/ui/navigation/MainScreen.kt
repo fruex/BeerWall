@@ -9,9 +9,9 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import org.fruex.beerwall.ui.models.CardItem
-import org.fruex.beerwall.ui.models.LocationBalance
-import org.fruex.beerwall.ui.models.TransactionGroup
+import org.fruex.beerwall.ui.models.UserCard
+import org.fruex.beerwall.ui.models.VenueBalance
+import org.fruex.beerwall.ui.models.DailyTransactions
 import org.fruex.beerwall.ui.models.UserProfile
 import org.fruex.beerwall.ui.screens.balance.BalanceScreen
 import org.fruex.beerwall.ui.screens.cards.CardsScreen
@@ -59,18 +59,18 @@ sealed class BottomNavItem(
 @Composable
 fun MainScreen(
     // Balance callbacks
-    balances: List<LocationBalance> = emptyList(),
+    balances: List<VenueBalance> = emptyList(),
     onAddFundsClick: (String) -> Unit = {},
     onAddLocationClick: () -> Unit = {},
 
     // Cards callbacks
-    cards: List<CardItem> = emptyList(),
+    cards: List<UserCard> = emptyList(),
     onAddCardClick: () -> Unit = {},
     onToggleCardStatus: (String) -> Unit = {},
     onDeleteCard: (String) -> Unit = {},
 
     // History data
-    transactionGroups: List<TransactionGroup> = emptyList(),
+    transactionGroups: List<DailyTransactions> = emptyList(),
 
     // Profile data & callbacks
     userProfile: UserProfile = UserProfile("", "", "", 0, 0),
