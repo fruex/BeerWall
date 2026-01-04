@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -32,8 +33,8 @@ fun AddFundsScreen(
     onBackClick: () -> Unit,
     onAddFunds: (location: String, amount: Double) -> Unit,
 ) {
-    var amount by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
+    var amount by rememberSaveable { mutableStateOf("") }
+    var expanded by rememberSaveable { mutableStateOf(false) }
     val currentLocation = selectedLocation ?: availableLocations.firstOrNull() ?: ""
 
     BeerWallTheme {

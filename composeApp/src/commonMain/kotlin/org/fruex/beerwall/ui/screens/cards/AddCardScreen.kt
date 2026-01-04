@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Nfc
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -32,7 +33,7 @@ fun AddCardScreen(
     onCardNameChanged: (String) -> Unit,
     onSaveCard: (name: String, cardId: String) -> Unit,
 ) {
-    var cardName by remember { mutableStateOf("") }
+    var cardName by rememberSaveable { mutableStateOf("") }
     val canSave = scannedCardId != null && cardName.isNotBlank()
 
     LaunchedEffect(Unit) {

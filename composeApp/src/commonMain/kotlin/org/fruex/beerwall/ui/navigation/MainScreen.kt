@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import org.fruex.beerwall.ui.models.CardItem
@@ -75,7 +76,7 @@ fun MainScreen(
     userProfile: UserProfile = UserProfile("", "", "", 0, 0),
     onLogoutClick: () -> Unit = {},
 ) {
-    var selectedTab by remember { mutableStateOf(BottomNavItem.Balance.route) }
+    var selectedTab by rememberSaveable { mutableStateOf(BottomNavItem.Balance.route) }
 
     val items = listOf(
         BottomNavItem.Balance,
