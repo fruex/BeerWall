@@ -120,7 +120,7 @@ fun App(
                 }
             },
             onDeleteCard = { cardId ->
-                cards = cards.filter { it.id != cardId }
+                cards = cards.filter { it.id != cardId || !it.isPhysical }
                 userProfile = userProfile.copy(activeCards = cards.count { it.isActive })
             },
             onSaveCard = { name, cardId ->
