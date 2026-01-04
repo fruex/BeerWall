@@ -16,12 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.fruex.beerwall.ui.components.BeerWallButton
-import org.fruex.beerwall.ui.models.LocationBalance
+import org.fruex.beerwall.ui.models.VenueBalance
 import org.fruex.beerwall.ui.theme.*
 
 @Composable
 fun BalanceScreen(
-    balances: List<LocationBalance>,
+    balances: List<VenueBalance>,
     onAddFundsClick: (String) -> Unit,
     onAddLocationClick: () -> Unit,
 ) {

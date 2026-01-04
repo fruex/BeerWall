@@ -16,12 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.fruex.beerwall.ui.models.Transaction
-import org.fruex.beerwall.ui.models.TransactionGroup
+import org.fruex.beerwall.ui.models.DailyTransactions
 import org.fruex.beerwall.ui.theme.*
 
 @Composable
 fun HistoryScreen(
-    transactionGroups: List<TransactionGroup>,
+    transactionGroups: List<DailyTransactions>,
 ) {
     BeerWallTheme {
         Column(

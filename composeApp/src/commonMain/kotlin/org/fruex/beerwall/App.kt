@@ -19,10 +19,10 @@ fun App(
 ) {
     var isCheckingSession by rememberSaveable { mutableStateOf(true) }
     var isLoggedIn by rememberSaveable { mutableStateOf(false) }
-    var balances by remember { mutableStateOf(emptyList<LocationBalance>()) }
-    var cards by remember { mutableStateOf(emptyList<CardItem>()) }
+    var balances by remember { mutableStateOf(emptyList<VenueBalance>()) }
+    var cards by remember { mutableStateOf(emptyList<UserCard>()) }
     var userProfile by remember { mutableStateOf(UserProfile(name = "", email = "", initials = "", activeCards = 0, loyaltyPoints = 0)) }
-    var transactionGroups by remember { mutableStateOf(emptyList<TransactionGroup>()) }
+    var transactionGroups by remember { mutableStateOf(emptyList<DailyTransactions>()) }
     val googleAuthProvider = rememberGoogleAuthProvider()
     val apiClient = remember { BeerWallApiClient() }
     val scope = rememberCoroutineScope()
@@ -37,7 +37,7 @@ fun App(
             apiClient.getHistory().onSuccess { transactions ->
                 transactionGroups = transactions
                     .groupBy { it.date }
-                    .map { (date, items) -> TransactionGroup(date.uppercase(), items) }
+                    .map { (date, items) -> DailyTransactions(date.uppercase(), items) }
             }
             apiClient.getProfile().onSuccess { points ->
                 userProfile = userProfile.copy(loyaltyPoints = points)
@@ -125,7 +125,7 @@ fun App(
                 userProfile = userProfile.copy(activeCards = cards.count { it.isActive })
             },
             onSaveCard = { name, cardId ->
-                val newCard = CardItem(
+                val newCard = UserCard(
                     id = cardId,
                     name = name,
                     isActive = true,

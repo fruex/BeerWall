@@ -12,10 +12,9 @@ import org.fruex.beerwall.remote.dto.balance.BalanceItem
 import org.fruex.beerwall.remote.dto.cards.CardItemDto
 import org.fruex.beerwall.remote.dto.history.TransactionDto
 import org.fruex.beerwall.remote.dto.profile.ProfileDto
-import org.fruex.beerwall.ui.models.CardItem
-import org.fruex.beerwall.ui.models.LocationBalance
+import org.fruex.beerwall.ui.models.UserCard
+import org.fruex.beerwall.ui.models.VenueBalance
 import org.fruex.beerwall.ui.models.Transaction
-import org.fruex.beerwall.ui.models.UserProfile
 
 class BeerWallApiClient {
     private val client = HttpClient {
@@ -30,11 +29,11 @@ class BeerWallApiClient {
 
     private val baseUrl = getPlatform().apiBaseUrl
 
-    suspend fun getBalance(): Result<List<LocationBalance>> = try {
+    suspend fun getBalance(): Result<List<VenueBalance>> = try {
         val response: ApiEnvelope<List<BalanceItem>> = client.get("$baseUrl/balance").body()
         if (response.data != null) {
             Result.success(response.data.map {
-                LocationBalance(
+                VenueBalance(
                     venueName = it.locationName,
                     balance = it.balance
                 )
@@ -46,11 +45,11 @@ class BeerWallApiClient {
         Result.failure(e)
     }
 
-    suspend fun getCards(): Result<List<CardItem>> = try {
+    suspend fun getCards(): Result<List<UserCard>> = try {
         val response: ApiEnvelope<List<CardItemDto>> = client.get("$baseUrl/cards").body()
         if (response.data != null) {
             Result.success(response.data.map {
-                CardItem(
+                UserCard(
                     id = it.id,
                     name = it.name,
                     isActive = it.isActive,
