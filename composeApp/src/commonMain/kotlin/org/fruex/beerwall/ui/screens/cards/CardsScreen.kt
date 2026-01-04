@@ -213,15 +213,17 @@ fun CardItemView(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.End
             ) {
-                IconButton(
-                    onClick = onDelete,
-                    modifier = Modifier.size(40.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Usuń kartę",
-                        tint = TextSecondary
-                    )
+                if (card.isPhysical) {
+                    IconButton(
+                        onClick = onDelete,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Usuń kartę",
+                            tint = TextSecondary
+                        )
+                    }
                 }
                 TextButton(
                     onClick = onToggleStatus,
