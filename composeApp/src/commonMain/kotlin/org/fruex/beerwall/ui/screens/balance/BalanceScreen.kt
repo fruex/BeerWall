@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,18 +20,26 @@ import org.fruex.beerwall.ui.components.BeerWallButton
 import org.fruex.beerwall.ui.models.VenueBalance
 import org.fruex.beerwall.ui.theme.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BalanceScreen(
     balances: List<VenueBalance>,
+    isRefreshing: Boolean = false,
+    onRefresh: () -> Unit = {},
     onAddFundsClick: (String) -> Unit,
     onAddLocationClick: () -> Unit,
 ) {
     BeerWallTheme {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(DarkBackground)
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+            modifier = Modifier.fillMaxSize()
         ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(DarkBackground)
+            ) {
             // Header
             Column(
                 modifier = Modifier
@@ -89,6 +98,7 @@ fun BalanceScreen(
             }
         }
     }
+}
 }
 
 @Composable

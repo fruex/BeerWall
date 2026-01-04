@@ -19,6 +19,7 @@ fun App(
 ) {
     var isCheckingSession by rememberSaveable { mutableStateOf(true) }
     var isLoggedIn by rememberSaveable { mutableStateOf(false) }
+    var isRefreshing by remember { mutableStateOf(false) }
     var balances by remember { mutableStateOf(emptyList<VenueBalance>()) }
     var cards by remember { mutableStateOf(emptyList<UserCard>()) }
     var userProfile by remember { mutableStateOf(UserProfile(name = "", email = "", initials = "", activeCards = 0, loyaltyPoints = 0)) }
@@ -29,6 +30,7 @@ fun App(
 
     fun refreshAllData() {
         scope.launch {
+            isRefreshing = true
             apiClient.getBalance().onSuccess { balances = it }
             apiClient.getCards().onSuccess { 
                 cards = it
@@ -42,6 +44,27 @@ fun App(
             apiClient.getProfile().onSuccess { points ->
                 userProfile = userProfile.copy(loyaltyPoints = points)
             }
+            isRefreshing = false
+        }
+    }
+
+    fun refreshHistory() {
+        scope.launch {
+            isRefreshing = true
+            apiClient.getHistory().onSuccess { transactions ->
+                transactionGroups = transactions
+                    .groupBy { it.date }
+                    .map { (date, items) -> DailyTransactions(date.uppercase(), items) }
+            }
+            isRefreshing = false
+        }
+    }
+
+    fun refreshBalance() {
+        scope.launch {
+            isRefreshing = true
+            apiClient.getBalance().onSuccess { balances = it }
+            isRefreshing = false
         }
     }
 
@@ -80,8 +103,11 @@ fun App(
             cards = cards,
             transactionGroups = transactionGroups,
             userProfile = userProfile,
+            isRefreshing = isRefreshing,
             scannedCardId = scannedCardId,
             onStartNfcScanning = onStartNfcScanning,
+            onRefreshHistory = ::refreshHistory,
+            onRefreshBalance = ::refreshBalance,
             onLogin = { _, _ -> 
                 isLoggedIn = true
                 refreshAllData()

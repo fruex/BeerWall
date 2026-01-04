@@ -62,6 +62,7 @@ fun MainScreen(
     balances: List<VenueBalance> = emptyList(),
     onAddFundsClick: (String) -> Unit = {},
     onAddLocationClick: () -> Unit = {},
+    onRefreshBalance: () -> Unit = {},
 
     // Cards callbacks
     cards: List<UserCard> = emptyList(),
@@ -71,6 +72,10 @@ fun MainScreen(
 
     // History data
     transactionGroups: List<DailyTransactions> = emptyList(),
+    onRefreshHistory: () -> Unit = {},
+
+    // Global state
+    isRefreshing: Boolean = false,
 
     // Profile data & callbacks
     userProfile: UserProfile = UserProfile("", "", "", 0, 0),
@@ -84,6 +89,13 @@ fun MainScreen(
         BottomNavItem.History,
         BottomNavItem.Profile
     )
+
+    LaunchedEffect(selectedTab) {
+        when (selectedTab) {
+            BottomNavItem.Balance.route -> onRefreshBalance()
+            BottomNavItem.History.route -> onRefreshHistory()
+        }
+    }
 
     BeerWallTheme {
         Scaffold(
@@ -124,6 +136,8 @@ fun MainScreen(
                     BottomNavItem.Balance.route -> {
                         BalanceScreen(
                             balances = balances,
+                            isRefreshing = isRefreshing,
+                            onRefresh = onRefreshBalance,
                             onAddFundsClick = onAddFundsClick,
                             onAddLocationClick = onAddLocationClick
                         )
@@ -138,7 +152,9 @@ fun MainScreen(
                     }
                     BottomNavItem.History.route -> {
                         HistoryScreen(
-                            transactionGroups = transactionGroups
+                            transactionGroups = transactionGroups,
+                            isRefreshing = isRefreshing,
+                            onRefresh = onRefreshHistory
                         )
                     }
                     BottomNavItem.Profile.route -> {
