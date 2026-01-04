@@ -20,7 +20,7 @@ fun App(
     var isLoggedIn by remember { mutableStateOf(false) }
     var balances by remember { mutableStateOf(emptyList<LocationBalance>()) }
     var cards by remember { mutableStateOf(emptyList<CardItem>()) }
-    var userProfile by remember { mutableStateOf(SampleUserProfile.copy(activeCards = 0, loyaltyPoints = 0)) }
+    var userProfile by remember { mutableStateOf(UserProfile(name = "", email = "", initials = "", activeCards = 0, loyaltyPoints = 0)) }
     var transactionGroups by remember { mutableStateOf(emptyList<TransactionGroup>()) }
     val googleAuthProvider = rememberGoogleAuthProvider()
     val apiClient = remember { BeerWallApiClient() }
