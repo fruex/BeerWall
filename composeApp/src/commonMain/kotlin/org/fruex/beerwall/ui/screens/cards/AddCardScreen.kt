@@ -34,7 +34,7 @@ fun AddCardScreen(
     onSaveCard: (name: String, cardId: String) -> Unit,
 ) {
     var cardName by rememberSaveable { mutableStateOf("") }
-    val canSave = scannedCardId != null && cardName.isNotBlank()
+    val canSave = scannedCardId != null
 
     LaunchedEffect(Unit) {
         onStartScanning()
@@ -68,14 +68,14 @@ fun AddCardScreen(
                         onClick = {
                             scannedCardId?.let { cardId ->
                                 if (canSave) {
-                                    onSaveCard(cardName, cardId)
+                                    onSaveCard(cardName.ifBlank { "Karta NFC" }, cardId)
                                 }
                             }
                         },
                         enabled = canSave
                     ) {
                         Text(
-                            text = "Anuluj",
+                            text = "Zapisz",
                             color = if (canSave) GoldPrimary else TextSecondary
                         )
                     }
