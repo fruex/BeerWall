@@ -60,7 +60,7 @@ sealed class BottomNavItem(
 fun MainScreen(
     // Balance callbacks
     balances: List<VenueBalance> = emptyList(),
-    onAddFundsClick: (String) -> Unit = {},
+    onAddFundsClick: (venueName: String) -> Unit = {},
     onAddLocationClick: () -> Unit = {},
     onRefreshBalance: () -> Unit = {},
 

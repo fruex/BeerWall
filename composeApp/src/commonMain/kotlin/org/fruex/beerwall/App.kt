@@ -3,6 +3,8 @@ package org.fruex.beerwall
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import org.fruex.beerwall.auth.rememberGoogleAuthProvider
 import org.fruex.beerwall.remote.BeerWallApiClient
 import org.fruex.beerwall.ui.models.*
@@ -31,20 +33,61 @@ fun App(
     fun refreshAllData() {
         scope.launch {
             isRefreshing = true
-            apiClient.getBalance().onSuccess { balances = it }
-            apiClient.getCards().onSuccess { 
+            
+            val balanceDeferred = async { apiClient.getBalance() }
+            val cardsDeferred = async { apiClient.getCards() }
+            val historyDeferred = async { apiClient.getHistory() }
+            val profileDeferred = async { apiClient.getProfile() }
+
+            val balanceResult = balanceDeferred.await()
+            val cardsResult = cardsDeferred.await()
+            val historyResult = historyDeferred.await()
+            val profileResult = profileDeferred.await()
+
+            balanceResult.onSuccess { balances = it }
+            cardsResult.onSuccess { 
                 cards = it
                 userProfile = userProfile.copy(activeCards = it.count { card -> card.isActive })
             }
-            apiClient.getHistory().onSuccess { transactions ->
+            historyResult.onSuccess { transactions ->
                 transactionGroups = transactions
                     .groupBy { it.date }
                     .map { (date, items) -> DailyTransactions(date.uppercase(), items) }
             }
-            apiClient.getProfile().onSuccess { points ->
+            profileResult.onSuccess { points ->
                 userProfile = userProfile.copy(loyaltyPoints = points)
             }
+            
             isRefreshing = false
+        }
+    }
+
+    fun onAddFunds(venueName: String, amount: Double) {
+        scope.launch {
+            apiClient.topUp(amount, venueName).onSuccess { newBalance ->
+                balances = balances.map {
+                    if (it.venueName == venueName) {
+                        it.copy(balance = newBalance)
+                    } else it
+                }
+            }.onFailure {
+                // Here we could show an error
+                println("Failed to top up: ${it.message}")
+            }
+        }
+    }
+
+    fun onToggleCardStatus(cardId: String) {
+        val card = cards.find { it.id == cardId } ?: return
+        scope.launch {
+            apiClient.toggleCardStatus(cardId, !card.isActive).onSuccess { isActive ->
+                cards = cards.map {
+                    if (it.id == cardId) {
+                        it.copy(isActive = isActive)
+                    } else it
+                }
+                userProfile = userProfile.copy(activeCards = cards.count { it.isActive })
+            }
         }
     }
 
@@ -80,7 +123,6 @@ fun App(
                 photoUrl = user.photoUrl
             )
             isLoggedIn = true
-            refreshAllData()
         }
         isCheckingSession = false
     }
@@ -110,11 +152,9 @@ fun App(
             onRefreshBalance = ::refreshBalance,
             onLogin = { _, _ -> 
                 isLoggedIn = true
-                refreshAllData()
             },
             onRegister = { _, _ -> 
                 isLoggedIn = true
-                refreshAllData()
             },
             onGoogleSignIn = { onSuccess ->
                 scope.launch {
@@ -127,25 +167,12 @@ fun App(
                             photoUrl = user.photoUrl
                         )
                         isLoggedIn = true
-                        refreshAllData()
                         onSuccess()
                     }
                 }
             },
-            onAddFunds = { location, amount ->
-                balances = balances.map {
-                    if (it.venueName == location) {
-                        it.copy(balance = it.balance + amount)
-                    } else it
-                }
-            },
-            onToggleCardStatus = { cardId ->
-                cards = cards.map {
-                    if (it.id == cardId) {
-                        it.copy(isActive = !it.isActive)
-                    } else it
-                }
-            },
+            onAddFunds = ::onAddFunds,
+            onToggleCardStatus = ::onToggleCardStatus,
             onDeleteCard = { cardId ->
                 cards = cards.filter { it.id != cardId || !it.isPhysical }
                 userProfile = userProfile.copy(activeCards = cards.count { it.isActive })

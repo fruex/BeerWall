@@ -29,7 +29,7 @@ fun BeerWallNavHost(
     onLogin: (email: String, password: String) -> Unit = { _, _ -> },
     onGoogleSignIn: (onSuccess: () -> Unit) -> Unit = { _ -> },
     onLogout: () -> Unit = {},
-    onAddFunds: (location: String, amount: Double) -> Unit = { _, _ -> },
+    onAddFunds: (venueName: String, amount: Double) -> Unit = { _, _ -> },
     onToggleCardStatus: (String) -> Unit = {},
     onDeleteCard: (String) -> Unit = {},
     onSaveCard: (name: String, cardId: String) -> Unit = { _, _ -> },
@@ -89,8 +89,8 @@ fun BeerWallNavHost(
         composable(NavigationDestination.Main.route) {
             MainScreen(
                 balances = balances,
-                onAddFundsClick = { location ->
-                    navController.navigate("${NavigationDestination.AddFunds.route}/$location")
+                onAddFundsClick = { venueName ->
+                    navController.navigate("${NavigationDestination.AddFunds.route}/$venueName")
                 },
                 onAddLocationClick = {
                     navController.navigate(NavigationDestination.AddFunds.route)
@@ -117,34 +117,34 @@ fun BeerWallNavHost(
 
         // Add Funds screen
         composable(NavigationDestination.AddFunds.route) {
-            val availableLocations = balances.map { it.venueName }
-            var selectedLocation by remember { mutableStateOf(availableLocations.firstOrNull()) }
+            val availableVenues = balances.map { it.venueName }
+            var selectedVenue by remember { mutableStateOf(availableVenues.firstOrNull()) }
             
             AddFundsScreen(
-                availableLocations = availableLocations,
-                selectedLocation = selectedLocation,
-                onLocationSelected = { selectedLocation = it },
+                availableVenues = availableVenues,
+                selectedVenue = selectedVenue,
+                onVenueSelected = { selectedVenue = it },
                 onBackClick = { navController.popBackStack() },
-                onAddFunds = { location, amount ->
-                    onAddFunds(location, amount)
+                onAddFunds = { venueName, amount ->
+                    onAddFunds(venueName, amount)
                     navController.popBackStack()
                 }
             )
         }
 
-        // Add Funds with pre-selected location
-        composable("${NavigationDestination.AddFunds.route}/{location}") { backStackEntry ->
-            val locationArg: String? = backStackEntry.savedStateHandle["location"]
-            val availableLocations = balances.map { it.venueName }
-            var selectedLocation by remember { mutableStateOf(locationArg ?: availableLocations.firstOrNull()) }
+        // Add Funds with pre-selected venue
+        composable("${NavigationDestination.AddFunds.route}/{venueName}") { backStackEntry ->
+            val venueNameArg: String? = backStackEntry.savedStateHandle.get<String>("venueName")
+            val availableVenues = balances.map { it.venueName }
+            var selectedVenue by remember { mutableStateOf(venueNameArg ?: availableVenues.firstOrNull()) }
             
             AddFundsScreen(
-                availableLocations = availableLocations,
-                selectedLocation = selectedLocation,
-                onLocationSelected = { selectedLocation = it },
+                availableVenues = availableVenues,
+                selectedVenue = selectedVenue,
+                onVenueSelected = { selectedVenue = it },
                 onBackClick = { navController.popBackStack() },
-                onAddFunds = { loc, amount ->
-                    onAddFunds(loc, amount)
+                onAddFunds = { ven, amount ->
+                    onAddFunds(ven, amount)
                     navController.popBackStack()
                 }
             )

@@ -1,10 +1,11 @@
 package org.fruex.beerwall.remote.dto.operators
 
-data class PaymentOperator(
-    val id: String,
-    val name: String
-)
+import kotlinx.serialization.Serializable
+import org.fruex.beerwall.remote.common.ApiError
+import org.fruex.beerwall.remote.common.ApiResponse
 
+@Serializable
 data class GetPaymentOperatorsResponse(
-    val operators: List<PaymentOperator>
-)
+    override val data: List<String>? = null,
+    override val error: ApiError? = null
+) : ApiResponse<List<String>>

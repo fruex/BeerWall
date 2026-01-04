@@ -26,7 +26,7 @@ fun BalanceScreen(
     balances: List<VenueBalance>,
     isRefreshing: Boolean = false,
     onRefresh: () -> Unit = {},
-    onAddFundsClick: (String) -> Unit,
+    onAddFundsClick: (venueName: String) -> Unit,
     onAddLocationClick: () -> Unit,
 ) {
     BeerWallTheme {
@@ -73,11 +73,11 @@ fun BalanceScreen(
                     )
                 }
 
-                items(balances) { locationBalance ->
+                items(balances) { venueBalance ->
                     BalanceCard(
-                        venueName = locationBalance.venueName,
-                        balance = locationBalance.balance,
-                        onAddFundsClick = { onAddFundsClick(locationBalance.venueName) }
+                        venueName = venueBalance.venueName,
+                        balance = venueBalance.balance,
+                        onAddFundsClick = { onAddFundsClick(venueBalance.venueName) }
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                 }
