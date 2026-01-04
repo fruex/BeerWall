@@ -23,6 +23,7 @@ fun BeerWallNavHost(
     cards: List<UserCard> = emptyList(),
     transactionGroups: List<DailyTransactions> = emptyList(),
     userProfile: UserProfile = UserProfile("", "", "", 0, 0),
+    isRefreshing: Boolean = false,
     // Callbacks
     onRegister: (email: String, password: String) -> Unit = { _, _ -> },
     onLogin: (email: String, password: String) -> Unit = { _, _ -> },
@@ -33,6 +34,8 @@ fun BeerWallNavHost(
     onDeleteCard: (String) -> Unit = {},
     onSaveCard: (name: String, cardId: String) -> Unit = { _, _ -> },
     onStartNfcScanning: () -> Unit = {},
+    onRefreshHistory: () -> Unit = {},
+    onRefreshBalance: () -> Unit = {},
     scannedCardId: String? = null,
 ) {
     NavHost(
@@ -92,6 +95,7 @@ fun BeerWallNavHost(
                 onAddLocationClick = {
                     navController.navigate(NavigationDestination.AddFunds.route)
                 },
+                onRefreshBalance = onRefreshBalance,
                 cards = cards,
                 onAddCardClick = {
                     navController.navigate(NavigationDestination.AddCard.route)
@@ -99,6 +103,8 @@ fun BeerWallNavHost(
                 onToggleCardStatus = onToggleCardStatus,
                 onDeleteCard = onDeleteCard,
                 transactionGroups = transactionGroups,
+                onRefreshHistory = onRefreshHistory,
+                isRefreshing = isRefreshing,
                 userProfile = userProfile,
                 onLogoutClick = {
                     onLogout()
