@@ -1,4 +1,5 @@
-@beerwall_apitest_HostAddress = http://localhost:5254/api
+#@beerwall_apitest_HostAddress = http://localhost:5254/api
+@beerwall_apitest_HostAddress = https://beerwall-apitest-cjcfgfehh9grhne5.polandcentral-01.azurewebsites.net/api
 
 GET {{beerwall_apitest_HostAddress}}/balance
 Accept: application/json
