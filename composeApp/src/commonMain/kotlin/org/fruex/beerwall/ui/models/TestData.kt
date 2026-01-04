@@ -8,13 +8,13 @@ val SampleBalances = listOf(
 
 val SampleCards = listOf(
     CardItem(
-        id = "550e8400-e29b-41d4-a716-446655440000",
+        id = "550e8400-e29b-41d4-a716-446655440003",
         name = "Karta Wirtualna",
         isActive = true,
         isPhysical = false
     ),
     CardItem(
-        id = "750e8460-e29b-41d4-a716-446655440001",
+        id = "750e8460-e29b-41d4-a716-446655440004",
         name = "Karta fizyczna",
         isActive = true,
         isPhysical = true
