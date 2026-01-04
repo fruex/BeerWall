@@ -4,9 +4,14 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ApiEnvelope<T>(
-    val data: T? = null,
-    val error: ApiError? = null
-)
+    override val data: T? = null,
+    override val error: ApiError? = null
+) : ApiResponse<T>
+
+interface ApiResponse<T> {
+    val data: T?
+    val error: ApiError?
+}
 
 @Serializable
 data class ApiError(

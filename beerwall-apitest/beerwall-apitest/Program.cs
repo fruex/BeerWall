@@ -58,14 +58,14 @@ var api = app.MapGroup("/api")/*.RequireAuthorization()*/;
 // 1. SALDO (Balance)
 api.MapGet("/balance", (ClaimsPrincipal user) => 
 {
-    var sampleBalances = new List<LocationBalance>
+    var sampleVenueBalances = new List<VenueBalance>
     {
         new("Pub Lewe", 125.50),
         new("Browariat", 89.00),
         new("Biała Małpa", 45.25),
         new("Czarna Małpa", 250.00),
     };
-    return Results.Ok(new ApiEnvelope<List<LocationBalance>>(sampleBalances));
+    return Results.Ok(new ApiEnvelope<List<VenueBalance>>(sampleVenueBalances));
 });
 
 api.MapPost("/balance", (ClaimsPrincipal user, TopUpRequest req) => 
@@ -128,8 +128,8 @@ record TopUpRequest(double Amount, string Method);
 record Card(string Id, string Name, bool IsActive, bool IsPhysical);
 record CardDetails(string Id, string Number, string Status, string Type, int LoyaltyPoints);
 record Transaction(string Id, string BeerName, string Date, string Time, double Amount, string CardNumber);
-record Place(int Id, string Name, double FundsAvailable);
-record LocationBalance(string LocationName, double Balance);
+record Place(int Id, string VenueName, double FundsAvailable);
+record VenueBalance(string VenueName, double Balance);
 record CardActivationRequest(string CardId, bool Activate);
 record ProfileData(int LoyaltyPoints);
 

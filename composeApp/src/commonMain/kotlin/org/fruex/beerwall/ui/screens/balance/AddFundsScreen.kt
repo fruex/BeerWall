@@ -27,15 +27,15 @@ import org.fruex.beerwall.ui.theme.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddFundsScreen(
-    availableLocations: List<String>,
-    selectedLocation: String?,
-    onLocationSelected: (String) -> Unit,
+    availableVenues: List<String>,
+    selectedVenue: String?,
+    onVenueSelected: (String) -> Unit,
     onBackClick: () -> Unit,
-    onAddFunds: (location: String, amount: Double) -> Unit,
+    onAddFunds: (venueName: String, amount: Double) -> Unit,
 ) {
     var amount by rememberSaveable { mutableStateOf("") }
     var expanded by rememberSaveable { mutableStateOf(false) }
-    val currentLocation = selectedLocation ?: availableLocations.firstOrNull() ?: ""
+    val currentVenue = selectedVenue ?: availableVenues.firstOrNull() ?: ""
 
     BeerWallTheme {
         Column(
@@ -88,13 +88,13 @@ fun AddFundsScreen(
                 Spacer(modifier = Modifier.height(32.dp))
 
                 Text(
-                    text = "Lokalizacja",
+                    text = "Miejsce",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Location Dropdown
+                // Venue Dropdown
                 ExposedDropdownMenuBox(
                     expanded = expanded,
                     onExpandedChange = { expanded = !expanded }
@@ -126,7 +126,7 @@ fun AddFundsScreen(
                                 )
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Text(
-                                    text = currentLocation,
+                                    text = currentVenue,
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                             }
@@ -143,11 +143,11 @@ fun AddFundsScreen(
                         onDismissRequest = { expanded = false },
                         modifier = Modifier.background(CardBackground)
                     ) {
-                        availableLocations.forEach { location ->
+                        availableVenues.forEach { venue ->
                             DropdownMenuItem(
-                                text = { Text(location) },
+                                text = { Text(venue) },
                                 onClick = {
-                                    onLocationSelected(location)
+                                    onVenueSelected(venue)
                                     expanded = false
                                 },
                                 colors = MenuDefaults.itemColors(
@@ -270,7 +270,7 @@ fun AddFundsScreen(
                     onClick = {
                         amount.toDoubleOrNull()?.let { amountValue ->
                             if (amountValue > 0) {
-                                onAddFunds(currentLocation, amountValue)
+                                onAddFunds(currentVenue, amountValue)
                             }
                         }
                     },
