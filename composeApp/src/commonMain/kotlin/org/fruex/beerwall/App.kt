@@ -1,6 +1,7 @@
 package org.fruex.beerwall
 
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import kotlinx.coroutines.launch
 import org.fruex.beerwall.auth.rememberGoogleAuthProvider
 import org.fruex.beerwall.remote.BeerWallApiClient
@@ -16,8 +17,8 @@ fun App(
     scannedCardId: String? = null,
     onStartNfcScanning: () -> Unit = {}
 ) {
-    var isCheckingSession by remember { mutableStateOf(true) }
-    var isLoggedIn by remember { mutableStateOf(false) }
+    var isCheckingSession by rememberSaveable { mutableStateOf(true) }
+    var isLoggedIn by rememberSaveable { mutableStateOf(false) }
     var balances by remember { mutableStateOf(emptyList<LocationBalance>()) }
     var cards by remember { mutableStateOf(emptyList<CardItem>()) }
     var userProfile by remember { mutableStateOf(UserProfile(name = "", email = "", initials = "", activeCards = 0, loyaltyPoints = 0)) }
