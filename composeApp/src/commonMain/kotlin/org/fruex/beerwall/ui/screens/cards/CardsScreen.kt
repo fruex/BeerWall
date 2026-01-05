@@ -25,73 +25,74 @@ fun CardsScreen(
     onToggleCardStatus: (String) -> Unit,
     onDeleteCard: (String) -> Unit,
 ) {
-    BeerWallTheme {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(DarkBackground)
+    ) {
+        // Header
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .background(DarkBackground)
+                .fillMaxWidth()
+                .padding(24.dp)
         ) {
-            // Header
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp)
-            ) {
+            Text(
+                text = "Igi Beer System",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Twój cyfrowy portfel piwny",
+                style = MaterialTheme.typography.bodyMedium,
+                color = TextSecondary
+            )
+        }
+
+        // Content
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
+        ) {
+            item(key = "header") {
                 Text(
-                    text = "Igi Beer System",
-                    style = MaterialTheme.typography.headlineMedium,
+                    text = "Moje karty",
+                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Twój cyfrowy portfel piwny",
+                    text = "${cards.size} karty połączone",
                     style = MaterialTheme.typography.bodyMedium,
                     color = TextSecondary
                 )
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // Content
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
-            ) {
-                item {
-                    Text(
-                        text = "Moje karty",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "${cards.size} karty połączone",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
+            items(
+                items = cards,
+                key = { it.id }
+            ) { card ->
+                CardItemView(
+                    card = card,
+                    onToggleStatus = { onToggleCardStatus(card.id) },
+                    onDelete = { onDeleteCard(card.id) }
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
 
-                items(cards) { card ->
-                    CardItemView(
-                        card = card,
-                        onToggleStatus = { onToggleCardStatus(card.id) },
-                        onDelete = { onDeleteCard(card.id) }
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                }
+            item(key = "add_card_button") {
+                Spacer(modifier = Modifier.height(8.dp))
+                BeerWallButton(
+                    text = "Dodaj nową kartę",
+                    onClick = onAddCardClick,
+                )
+            }
 
-                item {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    BeerWallButton(
-                        text = "Dodaj nową kartę",
-                        onClick = onAddCardClick,
-                    )
-                }
-
-                item {
-                    Spacer(modifier = Modifier.height(24.dp))
-                    NFCInfoCard()
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
+            item(key = "nfc_info") {
+                Spacer(modifier = Modifier.height(24.dp))
+                NFCInfoCard()
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }

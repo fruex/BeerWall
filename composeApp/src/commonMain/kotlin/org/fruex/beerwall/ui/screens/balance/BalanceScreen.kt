@@ -18,7 +18,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.fruex.beerwall.ui.components.BeerWallButton
 import org.fruex.beerwall.ui.models.VenueBalance
-import org.fruex.beerwall.ui.theme.*
+import org.fruex.beerwall.ui.theme.CardBackground
+import org.fruex.beerwall.ui.theme.DarkBackground
+import org.fruex.beerwall.ui.theme.GoldPrimary
+import org.fruex.beerwall.ui.theme.TextSecondary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,17 +32,16 @@ fun BalanceScreen(
     onAddFundsClick: (venueName: String) -> Unit,
     onAddLocationClick: () -> Unit,
 ) {
-    BeerWallTheme {
-        PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = onRefresh,
-            modifier = Modifier.fillMaxSize()
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(DarkBackground)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(DarkBackground)
-            ) {
             // Header
             Column(
                 modifier = Modifier
@@ -64,7 +66,7 @@ fun BalanceScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
             ) {
-                item {
+                item(key = "header") {
                     Text(
                         text = "Dostępne saldo",
                         style = MaterialTheme.typography.titleLarge,
@@ -73,7 +75,10 @@ fun BalanceScreen(
                     )
                 }
 
-                items(balances) { venueBalance ->
+                items(
+                    items = balances,
+                    key = { it.venueName }
+                ) { venueBalance ->
                     BalanceCard(
                         venueName = venueBalance.venueName,
                         balance = venueBalance.balance,
@@ -82,7 +87,7 @@ fun BalanceScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                 }
 
-                item {
+                item(key = "add_funds_button") {
                     Spacer(modifier = Modifier.height(8.dp))
                     BeerWallButton(
                         text = "Dodaj środki",
@@ -90,7 +95,7 @@ fun BalanceScreen(
                     )
                 }
 
-                item {
+                item(key = "info_card") {
                     Spacer(modifier = Modifier.height(24.dp))
                     InfoCard()
                     Spacer(modifier = Modifier.height(24.dp))
@@ -98,7 +103,6 @@ fun BalanceScreen(
             }
         }
     }
-}
 }
 
 @Composable

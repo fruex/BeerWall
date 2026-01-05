@@ -29,75 +29,76 @@ fun HistoryScreen(
     isRefreshing: Boolean = false,
     onRefresh: () -> Unit = {}
 ) {
-    BeerWallTheme {
-        PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = onRefresh,
-            modifier = Modifier.fillMaxSize()
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(DarkBackground)
         ) {
+            // Header
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(DarkBackground)
+                    .fillMaxWidth()
+                    .padding(24.dp)
             ) {
-                // Header
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp)
+                Text(
+                    text = "Igi Beer System",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Twój cyfrowy portfel piwny",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary
+                )
+            }
+
+            // Content
+            if (transactionGroups.isEmpty()) {
+                EmptyHistoryView()
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
                 ) {
-                    Text(
-                        text = "Igi Beer System",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Twój cyfrowy portfel piwny",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
-                    )
-                }
-
-                // Content
-                if (transactionGroups.isEmpty()) {
-                    EmptyHistoryView()
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
-                    ) {
-                        transactionGroups.forEach { group ->
-                            item {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    modifier = Modifier.padding(vertical = 16.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.CalendarToday,
-                                        contentDescription = null,
-                                        tint = GoldPrimary,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Text(
-                                        text = group.date,
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = GoldPrimary
-                                    )
-                                }
-                            }
-
-                            items(group.transactions) { transaction ->
-                                TransactionItem(transaction)
-                                Spacer(modifier = Modifier.height(12.dp))
+                    transactionGroups.forEach { group ->
+                        item(key = "header_${group.date}") {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.padding(vertical = 16.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.CalendarToday,
+                                    contentDescription = null,
+                                    tint = GoldPrimary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Text(
+                                    text = group.date,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = GoldPrimary
+                                )
                             }
                         }
 
-                        item {
-                            Spacer(modifier = Modifier.height(24.dp))
+                        items(
+                            items = group.transactions,
+                            key = { it.id }
+                        ) { transaction ->
+                            TransactionItem(transaction)
+                            Spacer(modifier = Modifier.height(12.dp))
                         }
+                    }
+
+                    item(key = "footer_spacer") {
+                        Spacer(modifier = Modifier.height(24.dp))
                     }
                 }
             }
