@@ -25,11 +25,14 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
+    - name: Decode Keystore
+      run: echo "${{ secrets.DEBUG_KEYSTORE_BASE64_FROM_MAC }}" | base64 --decode > shared/debug.keystore
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Build with Gradle
-      run: ./gradlew :composeApp:assembleDebug -PversionName=${{ github.ref_name }}
+    - name: Clean and Build with Gradle
+      run: ./gradlew clean :composeApp:assembleDebug -PversionName=${{ github.ref_name }}
 
     - name: Run Tests
       run: ./gradlew test
@@ -39,22 +42,22 @@ jobs:
         if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
           mv composeApp/build/outputs/apk/debug/composeApp-debug.apk "beerwall-${{ github.ref_name }}.apk"
         else
-          mv composeApp/build/outputs/apk/debug/composeApp-debug.apk beerwall-latest.apk
+          mv composeApp/build/outputs/apk/debug/composeApp-debug.apk "beerwall-${{ github.ref_name }}.apk"
         fi
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: beerwall-app
+        name: beerwall-app-${{ github.ref_name }}
         path: beerwall-*.apk
 
     - name: Create Release
-      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'latest' }}
-        name: ${{ startsWith(github.ref, 'refs/tags/v') && format('Release {0}', github.ref_name) || 'Latest Build' }}
+        tag_name: ${{ github.ref_name }}
+        name: "Release ${{ github.ref_name }}"
         files: beerwall-*.apk
-        prerelease: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
