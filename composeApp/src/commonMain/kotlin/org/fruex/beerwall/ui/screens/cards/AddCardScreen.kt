@@ -20,8 +20,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import org.fruex.beerwall.ui.components.BeerWallButton
-import org.fruex.beerwall.ui.components.BeerWallTextField
+import org.fruex.beerwall.ui.components.*
 import org.fruex.beerwall.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -158,36 +157,10 @@ fun AddCardScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // Info Card
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = CardBackground
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = null,
-                            tint = GoldPrimary,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(
-                                text = "Upewnij się, że NFC jest włączone na urządzeniu. Karta zostanie połączona z Twoim kontem i można jej używać przy każdym kranie Beer Wall.",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = TextSecondary
-                            )
-                        }
-                    }
-                }
+                BeerWallInfoCard(
+                    icon = Icons.Default.Info,
+                    description = "Upewnij się, że NFC jest włączone na urządzeniu. Karta zostanie połączona z Twoim kontem i można jej używać przy każdym kranie Beer Wall."
+                )
 
                 Spacer(modifier = Modifier.height(32.dp))
 

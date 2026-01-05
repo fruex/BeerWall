@@ -14,8 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import org.fruex.beerwall.ui.components.AppHeader
-import org.fruex.beerwall.ui.components.BeerWallButton
+import org.fruex.beerwall.ui.components.*
 import org.fruex.beerwall.ui.models.UserCard
 import org.fruex.beerwall.ui.theme.*
 
@@ -118,77 +117,72 @@ fun CardItemView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+            // Card icon
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .background(
+                        color = if (card.isPhysical) {
+                            GoldPrimary
+                        } else {
+                            // Lighter gold for virtual cards
+                            GoldPrimary.copy(alpha = 0.25f)
+                        },
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .then(
+                        if (!card.isPhysical) {
+                            Modifier.border(
+                                width = 1.dp,
+                                color = GoldPrimary.copy(alpha = 0.4f),
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                        } else Modifier
+                    ),
+                contentAlignment = Alignment.Center
             ) {
-                // Card icon
-                Box(
-                    modifier = Modifier
-                        .size(56.dp)
-                        .background(
-                            color = if (card.isPhysical) {
-                                GoldPrimary
-                            } else {
-                                // Lighter gold for virtual cards
-                                GoldPrimary.copy(alpha = 0.25f)
-                            },
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                        .then(
-                            if (!card.isPhysical) {
-                                Modifier.border(
-                                    width = 1.dp,
-                                    color = GoldPrimary.copy(alpha = 0.4f),
-                                    shape = RoundedCornerShape(12.dp)
-                                )
-                            } else Modifier
-                        ),
-                    contentAlignment = Alignment.Center
+                Icon(
+                    imageVector = Icons.Default.CreditCard,
+                    contentDescription = null,
+                    tint = if (card.isPhysical) DarkBackground else GoldPrimary,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = card.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = card.id,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Icons.Default.CreditCard,
+                        imageVector = if (card.isActive) Icons.Default.CheckCircle else Icons.Default.Cancel,
                         contentDescription = null,
-                        tint = if (card.isPhysical) DarkBackground else GoldPrimary,
-                        modifier = Modifier.size(28.dp)
+                        tint = if (card.isActive) Success else TextSecondary,
+                        modifier = Modifier.size(16.dp)
                     )
-                }
-
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
                     Text(
-                        text = card.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
+                        text = if (card.isActive) "Aktywna" else "Nieaktywna",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (card.isActive) Success else TextSecondary
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = card.id,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = if (card.isActive) Icons.Default.CheckCircle else Icons.Default.Cancel,
-                            contentDescription = null,
-                            tint = if (card.isActive) Success else TextSecondary,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Text(
-                            text = if (card.isActive) "Aktywna" else "Nieaktywna",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (card.isActive) Success else TextSecondary
-                        )
-                    }
                 }
             }
 
@@ -236,50 +230,10 @@ fun CardItemView(
 
 @Composable
 fun NFCInfoCard() {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = CardBackground
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .background(
-                        color = GoldPrimary.copy(alpha = 0.2f),
-                        shape = RoundedCornerShape(12.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Nfc,
-                    contentDescription = null,
-                    tint = GoldPrimary,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = "Karty NFC",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Twoje fizyczne karty są połączone z Twoim kontem. Po prostu dotknij dowolnej karty przy kranie Beer Wall, aby nalać i zapłacić.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
-                )
-            }
-        }
-    }
+    BeerWallInfoCard(
+        icon = Icons.Default.Nfc,
+        title = "Karty NFC",
+        description = "Twoje fizyczne karty są połączone z Twoim kontem. Po prostu dotknij dowolnej karty przy kranie Beer Wall, aby nalać i zapłacić.",
+        iconBackground = GoldPrimary.copy(alpha = 0.2f)
+    )
 }
