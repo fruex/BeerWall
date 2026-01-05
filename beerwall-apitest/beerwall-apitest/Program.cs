@@ -93,7 +93,20 @@ api.MapGet("/history", () =>
         new("1", "Pilsner Urquell", "24 lis", "19:30", -12.50, "45:32"),
         new("2", "Wino Chianti Classico", "24 lis", "20:15", -28.00, "45:32"),
         new("3", "Guinness Draught", "24 lis", "21:00", -15.00, "89:21"),
-        new("4", "Corona Extra", "23 lis", "18:45", -11.00, "89:21")
+        new("4", "Corona Extra", "23 lis", "18:45", -11.00, "89:21"),
+        new("5", "Prosecco", "23 lis", "19:30", -22.00, "45:32"),
+        new("6", "Heineken", "23 lis", "20:15", -10.50, "45:32"),
+        new("7", "Stella Artois", "23 lis", "21:30", -13.50, "89:21"),
+        new("8", "Tyskie Gronie", "22 lis", "17:00", -9.50, "45:32"),
+        new("9", "Wino Malbec", "22 lis", "18:30", -32.00, "89:21"),
+        new("10", "IPA Craft Beer", "22 lis", "19:45", -16.00, "45:32"),
+        new("11", "Żywiec Porter", "21 lis", "20:00", -14.00, "89:21"),
+        new("12", "Wino Sauvignon Blanc", "21 lis", "20:45", -25.00, "45:32"),
+        new("13", "Peroni Nastro Azzurro", "21 lis", "21:30", -12.00, "89:21"),
+        new("14", "Desperados", "21 lis", "22:15", -11.50, "45:32"),
+        new("15", "Wino Cabernet Sauvignon", "20 lis", "19:00", -30.00, "45:32"),
+        new("16", "Carlsberg", "20 lis", "20:30", -10.00, "89:21"),
+        new("17", "Hoegaarden", "20 lis", "21:15", -13.00, "45:32")
     };
     return Results.Ok(new ApiEnvelope<List<Transaction>>(sampleHistory));
 });
