@@ -45,54 +45,53 @@ fun LoginScreen(
             .background(DarkBackground)
             .verticalScroll(rememberScrollState())
             .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp) // Default spacing
     ) {
-        Spacer(modifier = Modifier.height(60.dp))
+        Spacer(modifier = Modifier.height(44.dp)) // 60 - 16
 
-        // Logo placeholder - stylized as in mockup
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                // Simulating the dot pattern from mockup
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        // Logo
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            // Simulating the dot pattern from mockup
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(modifier = Modifier.size(8.dp).background(GoldPrimary, CircleShape))
+                Spacer(modifier = Modifier.height(4.dp))
+                Row {
                     Box(modifier = Modifier.size(8.dp).background(GoldPrimary, CircleShape))
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Row {
-                        Box(modifier = Modifier.size(8.dp).background(GoldPrimary, CircleShape))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Box(modifier = Modifier.size(8.dp).background(GoldPrimary, CircleShape))
-                    }
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
                     Box(modifier = Modifier.size(8.dp).background(GoldPrimary, CircleShape))
                 }
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = "IGI BEER",
-                    style = MaterialTheme.typography.displaySmall,
-                    color = GoldPrimary,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 4.sp
-                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Box(modifier = Modifier.size(8.dp).background(GoldPrimary, CircleShape))
             }
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = "IGI BEER",
+                style = MaterialTheme.typography.displaySmall,
+                color = GoldPrimary,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 4.sp
+            )
         }
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(32.dp)) // 48 - 16
 
-        Text(
-            text = "Igi Beer System",
-            style = MaterialTheme.typography.headlineMedium,
-            color = GoldPrimary,
-            fontWeight = FontWeight.SemiBold
-        )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = "Igi Beer System",
+                style = MaterialTheme.typography.headlineMedium,
+                color = GoldPrimary,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Zaloguj do konta",
+                style = MaterialTheme.typography.bodyLarge,
+                color = TextSecondary
+            )
+        }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "Zaloguj do konta",
-            style = MaterialTheme.typography.bodyLarge,
-            color = TextSecondary
-        )
-
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(24.dp)) // 40 - 16
 
         BeerWallTextField(
             value = email,
@@ -103,8 +102,6 @@ fun LoginScreen(
             ),
             modifier = Modifier.fillMaxWidth()
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         BeerWallTextField(
             value = password,
@@ -117,7 +114,7 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(8.dp)) // 24 - 16
 
         BeerWallButton(
             text = "Zaloguj",
@@ -125,7 +122,7 @@ fun LoginScreen(
             enabled = email.isNotBlank() && password.isNotBlank()
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(8.dp)) // 24 - 16
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -147,7 +144,7 @@ fun LoginScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(8.dp)) // 24 - 16
 
         BeerWallOutlinedButton(
             text = "Google",
@@ -156,8 +153,7 @@ fun LoginScreen(
         )
 
         Spacer(modifier = Modifier.weight(1f))
-        Spacer(modifier = Modifier.height(24.dp))
-
+        
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
@@ -165,7 +161,8 @@ fun LoginScreen(
             Text(
                 text = "Nie masz konta? ",
                 color = TextSecondary,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.align(Alignment.CenterVertically)
             )
             TextButton(
                 onClick = onRegisterClick,

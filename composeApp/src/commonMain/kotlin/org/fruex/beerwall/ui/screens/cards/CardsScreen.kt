@@ -25,36 +25,32 @@ fun CardsScreen(
     onToggleCardStatus: (String) -> Unit,
     onDeleteCard: (String) -> Unit,
 ) {
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkBackground)
+            .background(DarkBackground),
+        contentPadding = PaddingValues(24.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         // Header
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp)
-        ) {
-            Text(
-                text = "Igi Beer System",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "Twój cyfrowy portfel piwny",
-                style = MaterialTheme.typography.bodyMedium,
-                color = TextSecondary
-            )
+        item(key = "app_header") {
+            Column(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                Text(
+                    text = "Igi Beer System",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Twój cyfrowy portfel piwny",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary
+                )
+            }
         }
 
-        // Content
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
-        ) {
-            item(key = "header") {
+        item(key = "section_title") {
+            Column {
                 Text(
                     text = "Moje karty",
                     style = MaterialTheme.typography.titleLarge,
@@ -66,34 +62,32 @@ fun CardsScreen(
                     style = MaterialTheme.typography.bodyMedium,
                     color = TextSecondary
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(4.dp))
             }
+        }
 
-            items(
-                items = cards,
-                key = { it.id }
-            ) { card ->
-                CardItemView(
-                    card = card,
-                    onToggleStatus = { onToggleCardStatus(card.id) },
-                    onDelete = { onDeleteCard(card.id) }
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-            }
+        items(
+            items = cards,
+            key = { it.id }
+        ) { card ->
+            CardItemView(
+                card = card,
+                onToggleStatus = { onToggleCardStatus(card.id) },
+                onDelete = { onDeleteCard(card.id) }
+            )
+        }
 
-            item(key = "add_card_button") {
-                Spacer(modifier = Modifier.height(8.dp))
-                BeerWallButton(
-                    text = "Dodaj nową kartę",
-                    onClick = onAddCardClick,
-                )
-            }
+        item(key = "add_card_button") {
+            BeerWallButton(
+                text = "Dodaj nową kartę",
+                onClick = onAddCardClick,
+            )
+        }
 
-            item(key = "nfc_info") {
-                Spacer(modifier = Modifier.height(24.dp))
-                NFCInfoCard()
-                Spacer(modifier = Modifier.height(24.dp))
-            }
+        item(key = "nfc_info") {
+            Spacer(modifier = Modifier.height(12.dp))
+            NFCInfoCard()
+            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
