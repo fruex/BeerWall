@@ -1,0 +1,52 @@
+Struktura projektu:
+org.fruex.beerwall/
+├── domain/              # Warstwa domenowa (Business Logic)
+│   ├── model/          # Modele domenowe
+│   │   ├── Balance.kt
+│   │   ├── Card.kt
+│   │   └── Transaction.kt
+│   ├── repository/     # Interfejsy repozytoriów
+│   │   ├── BalanceRepository.kt
+│   │   ├── CardRepository.kt
+│   │   ├── TransactionRepository.kt
+│   │   └── ProfileRepository.kt
+│   └── usecase/        # Use Cases
+│       ├── GetBalancesUseCase.kt
+│       ├── TopUpBalanceUseCase.kt
+│       ├── GetCardsUseCase.kt
+│       ├── ToggleCardStatusUseCase.kt
+│       ├── GetTransactionsUseCase.kt
+│       ├── GetLoyaltyPointsUseCase.kt
+│       └── RefreshAllDataUseCase.kt
+│
+├── data/               # Warstwa danych
+│   ├── remote/        # Data source
+│   │   └── BeerWallDataSource.kt
+│   ├── repository/    # Implementacje repozytoriów
+│   │   ├── BalanceRepositoryImpl.kt
+│   │   ├── CardRepositoryImpl.kt
+│   │   ├── TransactionRepositoryImpl.kt
+│   │   └── ProfileRepositoryImpl.kt
+│   └── mapper/        # Mappery DTO → Domain
+│       ├── BalanceMapper.kt
+│       ├── CardMapper.kt
+│       └── TransactionMapper.kt
+│
+└── presentation/       # Warstwa prezentacji
+└── mapper/        # Mappery Domain → UI
+├── BalanceUiMapper.kt
+├── CardUiMapper.kt
+└── TransactionUiMapper.kt
+
+Korzyści z refaktoryzacji:
+Separacja warstw - każda warstwa ma swoją odpowiedzialność
+Testowalność - łatwe mockowanie zależności
+Skalowalność - łatwe dodawanie nowych funkcji
+Czytelność - przejrzysta struktura kodu
+Łatwiejsza konserwacja - zmiany w jednej warstwie nie wpływają na pozostałe
+Dependency Injection - gotowe do implementacji Koin/Dagger
+
+Przepływ danych:
+UI → ViewModel → UseCase → Repository → DataSource → API
+                                ↓
+                            Domain Models

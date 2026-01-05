@@ -2,20 +2,23 @@ package org.fruex.beerwall
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.fruex.beerwall.auth.GoogleUser
-import org.fruex.beerwall.remote.BeerWallApiClient
+import org.fruex.beerwall.domain.usecase.*
+import org.fruex.beerwall.presentation.mapper.*
 import org.fruex.beerwall.ui.BeerWallUiState
-import org.fruex.beerwall.ui.models.DailyTransactions
 import org.fruex.beerwall.ui.models.UserCard
 
 class BeerWallViewModel(
-    private val apiClient: BeerWallApiClient = BeerWallApiClient()
+    private val refreshAllDataUseCase: RefreshAllDataUseCase,
+    private val getBalancesUseCase: GetBalancesUseCase,
+    private val topUpBalanceUseCase: TopUpBalanceUseCase,
+    private val getTransactionsUseCase: GetTransactionsUseCase,
+    private val toggleCardStatusUseCase: ToggleCardStatusUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BeerWallUiState())
@@ -73,32 +76,24 @@ class BeerWallViewModel(
         viewModelScope.launch {
             setLoading(true)
 
-            val balanceDeferred = async { apiClient.getBalance() }
-            val cardsDeferred = async { apiClient.getCards() }
-            val historyDeferred = async { apiClient.getHistory() }
-            val profileDeferred = async { apiClient.getProfile() }
-
-            val balanceResult = balanceDeferred.await()
-            val cardsResult = cardsDeferred.await()
-            val historyResult = historyDeferred.await()
-            val profileResult = profileDeferred.await()
+            val allData = refreshAllDataUseCase()
 
             _uiState.update { currentState ->
                 var newState = currentState
 
-                balanceResult.onSuccess { balances ->
-                    newState = newState.copy(balances = balances)
+                allData.balances?.let { balances ->
+                    newState = newState.copy(balances = balances.toUi())
                 }
-                cardsResult.onSuccess { cards ->
+                allData.cards?.let { cards ->
                     newState = newState.copy(
-                        cards = cards,
+                        cards = cards.toUi(),
                         userProfile = newState.userProfile.copy(activeCards = cards.count { it.isActive })
                     )
                 }
-                historyResult.onSuccess { transactions ->
-                    newState = newState.copy(transactionGroups = groupTransactionsByDate(transactions))
+                allData.transactions?.let { transactions ->
+                    newState = newState.copy(transactionGroups = transactions.groupByDate())
                 }
-                profileResult.onSuccess { points ->
+                allData.loyaltyPoints?.let { points ->
                     newState = newState.copy(
                         userProfile = newState.userProfile.copy(loyaltyPoints = points)
                     )
@@ -112,7 +107,7 @@ class BeerWallViewModel(
 
     fun onAddFunds(venueName: String, amount: Double, blikCode: String) {
         viewModelScope.launch {
-            apiClient.topUp(amount, venueName)
+            topUpBalanceUseCase(amount, venueName)
                 .onSuccess { newBalance -> updateVenueBalance(venueName, newBalance) }
                 .onFailure { setError("Nie udało się doładować konta: ${it.message}") }
         }
@@ -130,7 +125,7 @@ class BeerWallViewModel(
     fun onToggleCardStatus(cardId: String) {
         val card = _uiState.value.cards.find { it.id == cardId } ?: return
         viewModelScope.launch {
-            apiClient.toggleCardStatus(cardId, !card.isActive)
+            toggleCardStatusUseCase(cardId, !card.isActive)
                 .onSuccess { isActive -> updateCardStatus(cardId, isActive) }
                 .onFailure { setError("Nie udało się zmienić statusu karty: ${it.message}") }
         }
@@ -150,16 +145,16 @@ class BeerWallViewModel(
 
     fun refreshHistory() {
         launchWithLoading {
-            apiClient.getHistory().onSuccess { transactions ->
-                _uiState.update { it.copy(transactionGroups = groupTransactionsByDate(transactions)) }
+            getTransactionsUseCase().onSuccess { transactions ->
+                _uiState.update { it.copy(transactionGroups = transactions.groupByDate()) }
             }
         }
     }
 
     fun refreshBalance() {
         launchWithLoading {
-            apiClient.getBalance().onSuccess { balances ->
-                _uiState.update { it.copy(balances = balances) }
+            getBalancesUseCase().onSuccess { balances ->
+                _uiState.update { it.copy(balances = balances.toUi()) }
             }
         }
     }
@@ -203,11 +198,5 @@ class BeerWallViewModel(
 
     private fun getUserInitials(displayName: String?, fallback: String): String {
         return displayName?.split(" ")?.mapNotNull { it.firstOrNull() }?.joinToString("") ?: fallback
-    }
-
-    private fun groupTransactionsByDate(transactions: List<org.fruex.beerwall.ui.models.Transaction>): List<DailyTransactions> {
-        return transactions
-            .groupBy { it.date }
-            .map { (date, items) -> DailyTransactions(date.uppercase(), items) }
     }
 }
