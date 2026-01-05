@@ -92,10 +92,6 @@ fun HistoryScreen(
                         TransactionItem(transaction)
                     }
                 }
-
-                item(key = "footer_spacer") {
-                    Spacer(modifier = Modifier.height(12.dp))
-                }
             }
         }
     }

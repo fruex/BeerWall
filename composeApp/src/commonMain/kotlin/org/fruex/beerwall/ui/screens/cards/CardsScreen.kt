@@ -76,7 +76,6 @@ fun CardsScreen(
         item(key = "nfc_info") {
             Spacer(modifier = Modifier.height(12.dp))
             NFCInfoCard()
-            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
