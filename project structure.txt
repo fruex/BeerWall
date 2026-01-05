@@ -33,10 +33,10 @@ org.fruex.beerwall/
 │       └── TransactionMapper.kt
 │
 └── presentation/       # Warstwa prezentacji
-└── mapper/        # Mappery Domain → UI
-├── BalanceUiMapper.kt
-├── CardUiMapper.kt
-└── TransactionUiMapper.kt
+    └── mapper/        # Mappery Domain → UI
+        ├── BalanceUiMapper.kt
+        ├── CardUiMapper.kt
+        └── TransactionUiMapper.kt
 
 Korzyści z refaktoryzacji:
 Separacja warstw - każda warstwa ma swoją odpowiedzialność
