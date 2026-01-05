@@ -29,7 +29,7 @@ fun BeerWallNavHost(
     onLogin: (email: String, password: String) -> Unit = { _, _ -> },
     onGoogleSignIn: (onSuccess: () -> Unit) -> Unit = { _ -> },
     onLogout: () -> Unit = {},
-    onAddFunds: (venueName: String, amount: Double) -> Unit = { _, _ -> },
+    onAddFunds: (venueName: String, amount: Double, blikCode: String) -> Unit = { _, _, _ -> },
     onToggleCardStatus: (String) -> Unit = {},
     onDeleteCard: (String) -> Unit = {},
     onSaveCard: (name: String, cardId: String) -> Unit = { _, _ -> },
@@ -125,8 +125,8 @@ fun BeerWallNavHost(
                 selectedVenue = selectedVenue,
                 onVenueSelected = { selectedVenue = it },
                 onBackClick = { navController.popBackStack() },
-                onAddFunds = { venueName, amount ->
-                    onAddFunds(venueName, amount)
+                onAddFunds = { venueName, amount, blikCode ->
+                    onAddFunds(venueName, amount, blikCode)
                     navController.popBackStack()
                 }
             )
@@ -143,8 +143,8 @@ fun BeerWallNavHost(
                 selectedVenue = selectedVenue,
                 onVenueSelected = { selectedVenue = it },
                 onBackClick = { navController.popBackStack() },
-                onAddFunds = { ven, amount ->
-                    onAddFunds(ven, amount)
+                onAddFunds = { ven, amount, blikCode ->
+                    onAddFunds(ven, amount, blikCode)
                     navController.popBackStack()
                 }
             )

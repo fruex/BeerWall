@@ -31,11 +31,52 @@ fun AddFundsScreen(
     selectedVenue: String?,
     onVenueSelected: (String) -> Unit,
     onBackClick: () -> Unit,
-    onAddFunds: (venueName: String, amount: Double) -> Unit,
+    onAddFunds: (venueName: String, amount: Double, blikCode: String) -> Unit,
 ) {
     var amount by rememberSaveable { mutableStateOf("") }
+    var blikCode by rememberSaveable { mutableStateOf("") }
     var expanded by rememberSaveable { mutableStateOf(false) }
+    var isProcessing by remember { mutableStateOf(false) }
     val currentVenue = selectedVenue ?: availableVenues.firstOrNull() ?: ""
+    val isBlikCodeValid = blikCode.length == 6 && blikCode.all { it.isDigit() }
+
+    if (isProcessing) {
+        LaunchedEffect(Unit) {
+            kotlinx.coroutines.delay(3000)
+            amount.toDoubleOrNull()?.let { amountValue ->
+                onAddFunds(currentVenue, amountValue, blikCode)
+            }
+            isProcessing = false
+        }
+
+        AlertDialog(
+            onDismissRequest = { },
+            confirmButton = { },
+            title = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator(color = GoldPrimary)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Łączenie z bankiem...",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = TextPrimary
+                    )
+                }
+            },
+            text = {
+                Text(
+                    text = "Proszę zaakceptować płatność w aplikacji bankowej.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary
+                )
+            },
+            containerColor = CardBackground,
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
 
     BeerWallTheme {
         Column(
@@ -263,21 +304,51 @@ fun AddFundsScreen(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Kod BLIK",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+
+                BeerWallTextField(
+                    value = blikCode,
+                    onValueChange = { newValue ->
+                        if (newValue.length <= 6 && newValue.all { it.isDigit() }) {
+                            blikCode = newValue
+                        }
+                    },
+                    placeholder = "",
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number
+                    ),
+                    isError = blikCode.isNotEmpty() && !isBlikCodeValid
+                )
+
+                if (blikCode.isNotEmpty() && !isBlikCodeValid) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Kod BLIK musi składać się z 6 cyfr",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(32.dp))
 
                 BeerWallButton(
                     text = "Dodaj ${amount.ifBlank { "0.00" }} PLN do salda",
                     onClick = {
                         amount.toDoubleOrNull()?.let { amountValue ->
-                            if (amountValue > 0) {
-                                onAddFunds(currentVenue, amountValue)
+                            if (amountValue > 0 && isBlikCodeValid) {
+                                isProcessing = true
                             }
                         }
                     },
-                    enabled = amount.toDoubleOrNull()?.let { it > 0 } == true
+                    enabled = amount.toDoubleOrNull()?.let { it > 0 } == true && isBlikCodeValid && !isProcessing
                 )
-
-                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }

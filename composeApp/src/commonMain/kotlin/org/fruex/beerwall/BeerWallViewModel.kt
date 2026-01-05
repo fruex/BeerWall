@@ -87,7 +87,7 @@ class BeerWallViewModel : ViewModel() {
         }
     }
 
-    fun onAddFunds(venueName: String, amount: Double) {
+    fun onAddFunds(venueName: String, amount: Double, blikCode: String) {
         viewModelScope.launch {
             apiClient.topUp(amount, venueName).onSuccess { newBalance ->
                 _uiState.update { currentState ->
