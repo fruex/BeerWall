@@ -17,7 +17,6 @@ import org.fruex.beerwall.ui.screens.balance.BalanceScreen
 import org.fruex.beerwall.ui.screens.cards.CardsScreen
 import org.fruex.beerwall.ui.screens.history.HistoryScreen
 import org.fruex.beerwall.ui.screens.profile.ProfileScreen
-import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.CardBackground
 import org.fruex.beerwall.ui.theme.GoldPrimary
 
@@ -83,12 +82,14 @@ fun MainScreen(
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(BottomNavItem.Balance.route) }
 
-    val items = listOf(
-        BottomNavItem.Balance,
-        BottomNavItem.Cards,
-        BottomNavItem.History,
-        BottomNavItem.Profile
-    )
+    val items = remember {
+        listOf(
+            BottomNavItem.Balance,
+            BottomNavItem.Cards,
+            BottomNavItem.History,
+            BottomNavItem.Profile
+        )
+    }
 
     LaunchedEffect(selectedTab) {
         when (selectedTab) {
@@ -97,72 +98,70 @@ fun MainScreen(
         }
     }
 
-    BeerWallTheme {
-        Scaffold(
-            bottomBar = {
-                NavigationBar(
-                    containerColor = CardBackground,
-                    contentColor = GoldPrimary
-                ) {
-                    items.forEach { item ->
-                        NavigationBarItem(
-                            icon = {
-                                Icon(
-                                    imageVector = if (selectedTab == item.route) {
-                                        item.selectedIcon
-                                    } else {
-                                        item.unselectedIcon
-                                    },
-                                    contentDescription = item.label
-                                )
-                            },
-                            label = { Text(item.label) },
-                            selected = selectedTab == item.route,
-                            onClick = { selectedTab = item.route },
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = GoldPrimary,
-                                selectedTextColor = GoldPrimary,
-                                indicatorColor = GoldPrimary.copy(alpha = 0.2f),
-                                unselectedIconColor = GoldPrimary.copy(alpha = 0.5f),
-                                unselectedTextColor = GoldPrimary.copy(alpha = 0.5f)
+    Scaffold(
+        bottomBar = {
+            NavigationBar(
+                containerColor = CardBackground,
+                contentColor = GoldPrimary
+            ) {
+                items.forEach { item ->
+                    NavigationBarItem(
+                        icon = {
+                            Icon(
+                                imageVector = if (selectedTab == item.route) {
+                                    item.selectedIcon
+                                } else {
+                                    item.unselectedIcon
+                                },
+                                contentDescription = item.label
                             )
+                        },
+                        label = { Text(item.label) },
+                        selected = selectedTab == item.route,
+                        onClick = { selectedTab = item.route },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = GoldPrimary,
+                            selectedTextColor = GoldPrimary,
+                            indicatorColor = GoldPrimary.copy(alpha = 0.2f),
+                            unselectedIconColor = GoldPrimary.copy(alpha = 0.5f),
+                            unselectedTextColor = GoldPrimary.copy(alpha = 0.5f)
                         )
-                    }
+                    )
                 }
             }
-        ) { paddingValues ->
-            Box(modifier = Modifier.padding(paddingValues)) {
-                when (selectedTab) {
-                    BottomNavItem.Balance.route -> {
-                        BalanceScreen(
-                            balances = balances,
-                            isRefreshing = isRefreshing,
-                            onRefresh = onRefreshBalance,
-                            onAddFundsClick = onAddFundsClick,
-                            onAddLocationClick = onAddLocationClick
-                        )
-                    }
-                    BottomNavItem.Cards.route -> {
-                        CardsScreen(
-                            cards = cards,
-                            onAddCardClick = onAddCardClick,
-                            onToggleCardStatus = onToggleCardStatus,
-                            onDeleteCard = onDeleteCard
-                        )
-                    }
-                    BottomNavItem.History.route -> {
-                        HistoryScreen(
-                            transactionGroups = transactionGroups,
-                            isRefreshing = isRefreshing,
-                            onRefresh = onRefreshHistory
-                        )
-                    }
-                    BottomNavItem.Profile.route -> {
-                        ProfileScreen(
-                            userProfile = userProfile,
-                            onLogoutClick = onLogoutClick
-                        )
-                    }
+        }
+    ) { paddingValues ->
+        Box(modifier = Modifier.padding(paddingValues)) {
+            when (selectedTab) {
+                BottomNavItem.Balance.route -> {
+                    BalanceScreen(
+                        balances = balances,
+                        isRefreshing = isRefreshing,
+                        onRefresh = onRefreshBalance,
+                        onAddFundsClick = onAddFundsClick,
+                        onAddLocationClick = onAddLocationClick
+                    )
+                }
+                BottomNavItem.Cards.route -> {
+                    CardsScreen(
+                        cards = cards,
+                        onAddCardClick = onAddCardClick,
+                        onToggleCardStatus = onToggleCardStatus,
+                        onDeleteCard = onDeleteCard
+                    )
+                }
+                BottomNavItem.History.route -> {
+                    HistoryScreen(
+                        transactionGroups = transactionGroups,
+                        isRefreshing = isRefreshing,
+                        onRefresh = onRefreshHistory
+                    )
+                }
+                BottomNavItem.Profile.route -> {
+                    ProfileScreen(
+                        userProfile = userProfile,
+                        onLogoutClick = onLogoutClick
+                    )
                 }
             }
         }

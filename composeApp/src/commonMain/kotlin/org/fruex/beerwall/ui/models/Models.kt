@@ -1,12 +1,16 @@
 package org.fruex.beerwall.ui.models
 
+import androidx.compose.runtime.Immutable
+
 // Balance models
+@Immutable
 data class VenueBalance(
     val venueName: String,
     val balance: Double
 )
 
 // Card models
+@Immutable
 data class UserCard(
     val id: String,
     val name: String,
@@ -15,6 +19,7 @@ data class UserCard(
 )
 
 // History models
+@Immutable
 data class Transaction(
     val id: String,
     val beerName: String,
@@ -24,12 +29,14 @@ data class Transaction(
     val cardNumber: String
 )
 
+@Immutable
 data class DailyTransactions(
     val date: String,
     val transactions: List<Transaction>
 )
 
 // Profile models
+@Immutable
 data class UserProfile(
     val name: String,
     val email: String,
