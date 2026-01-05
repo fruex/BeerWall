@@ -26,13 +26,15 @@ jobs:
         cache: gradle
 
     - name: Decode Keystore
-      run: echo "${{ secrets.DEBUG_KEYSTORE_BASE64_FROM_MAC }}" | base64 --decode > shared/debug.keystore
+      run: |
+        mkdir -p shared
+        echo "${{ secrets.DEBUG_KEYSTORE_BASE64_FROM_MAC }}" | base64 --decode > shared/debug.keystore
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Clean and Build with Gradle
-      run: ./gradlew clean :composeApp:assembleDebug -PversionName=${{ github.ref_name }}
+    - name: Build with Gradle
+      run: ./gradlew :composeApp:assembleDebug -PversionName=${{ github.ref_name }}
 
     - name: Run Tests
       run: ./gradlew test
