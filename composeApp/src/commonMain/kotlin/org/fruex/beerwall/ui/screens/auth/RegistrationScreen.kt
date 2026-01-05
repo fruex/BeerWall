@@ -39,22 +39,19 @@ fun RegistrationScreen(
             .fillMaxSize()
             .background(DarkBackground)
             .verticalScroll(rememberScrollState())
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(start = 24.dp, end = 24.dp, bottom = 24.dp, top = 80.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(44.dp))
-
         AppLogo()
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(48.dp))
 
         AuthHeader(
             title = "Igi Beer System",
             subtitle = "Utwórz konto"
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
         BeerWallTextField(
             value = email,
@@ -65,6 +62,8 @@ fun RegistrationScreen(
             ),
             modifier = Modifier.fillMaxWidth()
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         BeerWallTextField(
             value = password,
@@ -77,7 +76,7 @@ fun RegistrationScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         BeerWallButton(
             text = "Utwórz konto",
@@ -85,11 +84,11 @@ fun RegistrationScreen(
             enabled = email.isNotBlank() && password.isNotBlank()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         SocialDivider()
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         BeerWallOutlinedButton(
             text = "Google",
