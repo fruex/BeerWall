@@ -1,4 +1,4 @@
-package org.fruex.beerwall
+package org.fruex.beerwall.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +13,21 @@ import org.fruex.beerwall.presentation.mapper.*
 import org.fruex.beerwall.ui.BeerWallUiState
 import org.fruex.beerwall.ui.models.UserCard
 
+/**
+ * ViewModel zarządzający stanem aplikacji BeerWall
+ *
+ * Odpowiedzialny za:
+ * - Zarządzanie stanem UI (balanse, karty, transakcje, profil użytkownika)
+ * - Komunikację z warstwą domenową poprzez Use Cases
+ * - Obsługę akcji użytkownika (logowanie, dodawanie środków, zarządzanie kartami)
+ * - Obsługę błędów i stanów ładowania
+ *
+ * @param refreshAllDataUseCase Use case do odświeżania wszystkich danych jednocześnie
+ * @param getBalancesUseCase Use case do pobierania sald
+ * @param topUpBalanceUseCase Use case do doładowania konta
+ * @param getTransactionsUseCase Use case do pobierania historii transakcji
+ * @param toggleCardStatusUseCase Use case do przełączania statusu karty
+ */
 class BeerWallViewModel(
     private val refreshAllDataUseCase: RefreshAllDataUseCase,
     private val getBalancesUseCase: GetBalancesUseCase,

@@ -17,6 +17,17 @@ import org.fruex.beerwall.remote.dto.cards.*
 import org.fruex.beerwall.remote.dto.history.*
 import org.fruex.beerwall.remote.dto.profile.*
 
+/**
+ * Data Source do komunikacji z API BeerWall
+ *
+ * Odpowiedzialny za:
+ * - Wykonywanie requestów HTTP do API
+ * - Obsługę serializacji/deserializacji JSON
+ * - Obsługę błędów sieciowych
+ * - Zwracanie wyników w postaci Result<T>
+ *
+ * Używa Ktor Client z Content Negotiation dla JSON
+ */
 class BeerWallDataSource {
     private val client = HttpClient {
         install(ContentNegotiation) {

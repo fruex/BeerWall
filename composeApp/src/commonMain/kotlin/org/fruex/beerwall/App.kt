@@ -9,9 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import org.fruex.beerwall.auth.rememberGoogleAuthProvider
-import org.fruex.beerwall.data.remote.BeerWallDataSource
-import org.fruex.beerwall.data.repository.*
-import org.fruex.beerwall.domain.usecase.*
+import org.fruex.beerwall.di.AppContainer
+import org.fruex.beerwall.presentation.BeerWallViewModel
 import org.fruex.beerwall.ui.navigation.BeerWallNavHost
 import org.fruex.beerwall.ui.navigation.NavigationDestination
 import org.fruex.beerwall.ui.theme.BeerWallTheme
@@ -23,39 +22,9 @@ fun App(
     scannedCardId: String? = null,
     onStartNfcScanning: () -> Unit = {}
 ) {
+    val appContainer = remember { AppContainer() }
     val viewModel: BeerWallViewModel = viewModel {
-        // Data Layer
-        val dataSource = BeerWallDataSource()
-
-        // Repository Layer
-        val balanceRepository = BalanceRepositoryImpl(dataSource)
-        val cardRepository = CardRepositoryImpl(dataSource)
-        val transactionRepository = TransactionRepositoryImpl(dataSource)
-        val profileRepository = ProfileRepositoryImpl(dataSource)
-
-        // Use Cases
-        val getBalancesUseCase = GetBalancesUseCase(balanceRepository)
-        val topUpBalanceUseCase = TopUpBalanceUseCase(balanceRepository)
-        val getCardsUseCase = GetCardsUseCase(cardRepository)
-        val toggleCardStatusUseCase = ToggleCardStatusUseCase(cardRepository)
-        val getTransactionsUseCase = GetTransactionsUseCase(transactionRepository)
-        val getLoyaltyPointsUseCase = GetLoyaltyPointsUseCase(profileRepository)
-
-        val refreshAllDataUseCase = RefreshAllDataUseCase(
-            getBalancesUseCase,
-            getCardsUseCase,
-            getTransactionsUseCase,
-            getLoyaltyPointsUseCase
-        )
-
-        // ViewModel
-        BeerWallViewModel(
-            refreshAllDataUseCase,
-            getBalancesUseCase,
-            topUpBalanceUseCase,
-            getTransactionsUseCase,
-            toggleCardStatusUseCase
-        )
+        appContainer.createBeerWallViewModel()
     }
     val uiState by viewModel.uiState.collectAsState()
 
