@@ -13,6 +13,7 @@ import org.fruex.beerwall.remote.BeerWallApiClient
 import org.fruex.beerwall.ui.navigation.BeerWallNavHost
 import org.fruex.beerwall.ui.navigation.NavigationDestination
 import org.fruex.beerwall.ui.theme.BeerWallTheme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
