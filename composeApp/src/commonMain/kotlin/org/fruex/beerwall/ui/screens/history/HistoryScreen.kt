@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.fruex.beerwall.ui.components.AppHeader
 import org.fruex.beerwall.ui.models.DailyTransactions
 import org.fruex.beerwall.ui.models.Transaction
 import org.fruex.beerwall.ui.theme.*
@@ -40,19 +41,7 @@ fun HistoryScreen(
                     .background(DarkBackground)
                     .padding(24.dp)
             ) {
-                Column(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                    Text(
-                        text = "Igi Beer System",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Twój cyfrowy portfel piwny",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
-                    )
-                }
+                AppHeader()
                 
                 Box(
                     modifier = Modifier.weight(1f).fillMaxWidth(),
@@ -71,19 +60,7 @@ fun HistoryScreen(
             ) {
                 // Header
                 item(key = "app_header") {
-                    Column(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                        Text(
-                            text = "Igi Beer System",
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "Twój cyfrowy portfel piwny",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary
-                        )
-                    }
+                    AppHeader()
                 }
 
                 transactionGroups.forEach { group ->

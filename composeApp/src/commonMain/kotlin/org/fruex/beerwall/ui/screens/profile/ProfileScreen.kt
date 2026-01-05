@@ -19,6 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
+import org.fruex.beerwall.ui.components.AppHeader
 import org.fruex.beerwall.ui.models.UserProfile
 import org.fruex.beerwall.ui.theme.*
 
@@ -36,19 +37,7 @@ fun ProfileScreen(
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         // Header
-        Column(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-            Text(
-                text = "Igi Beer System",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "Twój cyfrowy portfel piwny",
-                style = MaterialTheme.typography.bodyMedium,
-                color = TextSecondary
-            )
-        }
+        AppHeader()
 
         // Profile Card
         Card(

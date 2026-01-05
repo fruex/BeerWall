@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.fruex.beerwall.ui.components.AppHeader
 import org.fruex.beerwall.ui.components.BeerWallButton
 import org.fruex.beerwall.ui.models.VenueBalance
 import org.fruex.beerwall.ui.theme.CardBackground
@@ -46,19 +47,7 @@ fun BalanceScreen(
         ) {
             // Header
             item(key = "app_header") {
-                Column(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                    Text(
-                        text = "Igi Beer System",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Twój cyfrowy portfel piwny",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
-                    )
-                }
+                AppHeader()
             }
 
             item(key = "section_title") {
