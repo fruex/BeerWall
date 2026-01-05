@@ -12,5 +12,6 @@ data class BeerWallUiState(
     val balances: List<VenueBalance> = emptyList(),
     val cards: List<UserCard> = emptyList(),
     val userProfile: UserProfile = UserProfile(name = "", email = "", initials = "", activeCards = 0, loyaltyPoints = 0),
-    val transactionGroups: List<DailyTransactions> = emptyList()
+    val transactionGroups: List<DailyTransactions> = emptyList(),
+    val errorMessage: String? = null
 )
