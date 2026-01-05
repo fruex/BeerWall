@@ -110,61 +110,56 @@ fun TransactionItem(transaction: Transaction) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.weight(1f)
+            // Icon
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .background(
+                        color = GoldPrimary,
+                        shape = RoundedCornerShape(12.dp)
+                    ),
+                contentAlignment = Alignment.Center
             ) {
-                // Icon
-                Box(
-                    modifier = Modifier
-                        .size(56.dp)
-                        .background(
-                            color = GoldPrimary,
-                            shape = RoundedCornerShape(12.dp)
-                        ),
-                    contentAlignment = Alignment.Center
+                Icon(
+                    imageVector = Icons.Default.Wallet,
+                    contentDescription = null,
+                    tint = DarkBackground,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = transaction.beerName,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "${transaction.date}, ${transaction.time}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondary
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Wallet,
+                        imageVector = Icons.Default.CreditCard,
                         contentDescription = null,
-                        tint = DarkBackground,
-                        modifier = Modifier.size(28.dp)
+                        tint = TextSecondary,
+                        modifier = Modifier.size(14.dp)
                     )
-                }
-
-                Column {
                     Text(
-                        text = transaction.beerName,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "${transaction.date}, ${transaction.time}",
+                        text = "Karta •••• ${transaction.cardNumber}",
                         style = MaterialTheme.typography.bodySmall,
                         color = TextSecondary
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.CreditCard,
-                            contentDescription = null,
-                            tint = TextSecondary,
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Text(
-                            text = "Karta •••• ${transaction.cardNumber}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = TextSecondary
-                        )
-                    }
                 }
             }
 

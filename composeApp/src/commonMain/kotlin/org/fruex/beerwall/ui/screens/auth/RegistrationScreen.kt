@@ -20,9 +20,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.fruex.beerwall.ui.components.BeerWallButton
-import org.fruex.beerwall.ui.components.BeerWallOutlinedButton
-import org.fruex.beerwall.ui.components.BeerWallTextField
+import org.fruex.beerwall.ui.components.*
 import org.fruex.beerwall.ui.theme.DarkBackground
 import org.fruex.beerwall.ui.theme.GoldPrimary
 import org.fruex.beerwall.ui.theme.TextSecondary
@@ -47,46 +45,14 @@ fun RegistrationScreen(
     ) {
         Spacer(modifier = Modifier.height(44.dp))
 
-        // Logo
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            // Simulating the dot pattern from mockup
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Box(modifier = Modifier.size(8.dp).background(GoldPrimary, CircleShape))
-                Spacer(modifier = Modifier.height(4.dp))
-                Row {
-                    Box(modifier = Modifier.size(8.dp).background(GoldPrimary, CircleShape))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Box(modifier = Modifier.size(8.dp).background(GoldPrimary, CircleShape))
-                }
-                Spacer(modifier = Modifier.height(4.dp))
-                Box(modifier = Modifier.size(8.dp).background(GoldPrimary, CircleShape))
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                text = "IGI BEER",
-                style = MaterialTheme.typography.displaySmall,
-                color = GoldPrimary,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 4.sp
-            )
-        }
+        AppLogo()
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = "Igi Beer System",
-                style = MaterialTheme.typography.headlineMedium,
-                color = GoldPrimary,
-                fontWeight = FontWeight.SemiBold
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Utwórz konto",
-                style = MaterialTheme.typography.bodyLarge,
-                color = TextSecondary
-            )
-        }
+        AuthHeader(
+            title = "Igi Beer System",
+            subtitle = "Utwórz konto"
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -121,25 +87,7 @@ fun RegistrationScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            HorizontalDivider(
-                modifier = Modifier.weight(1f),
-                color = TextSecondary.copy(alpha = 0.3f)
-            )
-            Text(
-                text = "lub kontynuuj z",
-                modifier = Modifier.padding(horizontal = 16.dp),
-                color = TextSecondary,
-                style = MaterialTheme.typography.bodyMedium
-            )
-            HorizontalDivider(
-                modifier = Modifier.weight(1f),
-                color = TextSecondary.copy(alpha = 0.3f)
-            )
-        }
+        SocialDivider()
 
         Spacer(modifier = Modifier.height(8.dp))
 

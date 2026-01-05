@@ -16,8 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import org.fruex.beerwall.ui.components.AppHeader
-import org.fruex.beerwall.ui.components.BeerWallButton
+import org.fruex.beerwall.ui.components.*
 import org.fruex.beerwall.ui.models.VenueBalance
 import org.fruex.beerwall.ui.theme.CardBackground
 import org.fruex.beerwall.ui.theme.DarkBackground
@@ -154,40 +153,9 @@ fun BalanceCard(
 
 @Composable
 fun InfoCard() {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = CardBackground
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Info,
-                contentDescription = null,
-                tint = GoldPrimary,
-                modifier = Modifier.size(24.dp)
-            )
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = "Jak to działa",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Dodaj środki do salda i używaj podłączonych kart NFC przy każdym kranie Beer Wall. Saldo zostanie automatycznie odliczone podczas nalewania.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
-                )
-            }
-        }
-    }
+    BeerWallInfoCard(
+        icon = Icons.Default.Info,
+        title = "Jak to działa",
+        description = "Dodaj środki do salda i używaj podłączonych kart NFC przy każdym kranie Beer Wall. Saldo zostanie automatycznie odliczone podczas nalewania."
+    )
 }
