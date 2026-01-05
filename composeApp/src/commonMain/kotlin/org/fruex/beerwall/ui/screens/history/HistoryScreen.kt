@@ -11,15 +11,13 @@ import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import org.fruex.beerwall.ui.models.Transaction
 import org.fruex.beerwall.ui.models.DailyTransactions
+import org.fruex.beerwall.ui.models.Transaction
 import org.fruex.beerwall.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,72 +32,92 @@ fun HistoryScreen(
         onRefresh = onRefresh,
         modifier = Modifier.fillMaxSize()
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(DarkBackground)
-        ) {
-            // Header
+        if (transactionGroups.isEmpty()) {
+            // Header + Empty View
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
+                    .background(DarkBackground)
                     .padding(24.dp)
             ) {
-                Text(
-                    text = "Igi Beer System",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Twój cyfrowy portfel piwny",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
-                )
-            }
-
-            // Content
-            if (transactionGroups.isEmpty()) {
-                EmptyHistoryView()
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
+                Column(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                    Text(
+                        text = "Igi Beer System",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Twój cyfrowy portfel piwny",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                }
+                
+                Box(
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    transactionGroups.forEach { group ->
-                        item(key = "header_${group.date}") {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                modifier = Modifier.padding(vertical = 16.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.CalendarToday,
-                                    contentDescription = null,
-                                    tint = GoldPrimary,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                                Text(
-                                    text = group.date,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = GoldPrimary
-                                )
-                            }
-                        }
+                    EmptyHistoryView()
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(DarkBackground),
+                contentPadding = PaddingValues(24.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Header
+                item(key = "app_header") {
+                    Column(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                        Text(
+                            text = "Igi Beer System",
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Twój cyfrowy portfel piwny",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary
+                        )
+                    }
+                }
 
-                        items(
-                            items = group.transactions,
-                            key = { it.id }
-                        ) { transaction ->
-                            TransactionItem(transaction)
-                            Spacer(modifier = Modifier.height(12.dp))
+                transactionGroups.forEach { group ->
+                    item(key = "header_${group.date}") {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CalendarToday,
+                                contentDescription = null,
+                                tint = GoldPrimary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                text = group.date,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = GoldPrimary
+                            )
                         }
                     }
 
-                    item(key = "footer_spacer") {
-                        Spacer(modifier = Modifier.height(24.dp))
+                    items(
+                        items = group.transactions,
+                        key = { it.id }
+                    ) { transaction ->
+                        TransactionItem(transaction)
                     }
+                }
+
+                item(key = "footer_spacer") {
+                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
         }
@@ -189,33 +207,26 @@ fun TransactionItem(transaction: Transaction) {
 
 @Composable
 fun EmptyHistoryView() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        contentAlignment = Alignment.Center
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.CalendarToday,
-                contentDescription = null,
-                tint = TextSecondary,
-                modifier = Modifier.size(64.dp)
-            )
-            Text(
-                text = "Brak transakcji",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = TextSecondary
-            )
-            Text(
-                text = "Twoje transakcje pojawią się tutaj",
-                style = MaterialTheme.typography.bodyMedium,
-                color = TextSecondary
-            )
-        }
+        Icon(
+            imageVector = Icons.Default.CalendarToday,
+            contentDescription = null,
+            tint = TextSecondary,
+            modifier = Modifier.size(64.dp)
+        )
+        Text(
+            text = "Brak transakcji",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = TextSecondary
+        )
+        Text(
+            text = "Twoje transakcje pojawią się tutaj",
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextSecondary
+        )
     }
 }

@@ -37,69 +37,61 @@ fun BalanceScreen(
         onRefresh = onRefresh,
         modifier = Modifier.fillMaxSize()
     ) {
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(DarkBackground)
+                .background(DarkBackground),
+            contentPadding = PaddingValues(24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Header
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp)
-            ) {
+            item(key = "app_header") {
+                Column(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                    Text(
+                        text = "Igi Beer System",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Twój cyfrowy portfel piwny",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                }
+            }
+
+            item(key = "section_title") {
                 Text(
-                    text = "Igi Beer System",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Twój cyfrowy portfel piwny",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
+                    text = "Dostępne saldo",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(bottom = 4.dp)
                 )
             }
 
-            // Content
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
-            ) {
-                item(key = "header") {
-                    Text(
-                        text = "Dostępne saldo",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-                }
+            items(
+                items = balances,
+                key = { it.venueName }
+            ) { venueBalance ->
+                BalanceCard(
+                    venueName = venueBalance.venueName,
+                    balance = venueBalance.balance,
+                    onAddFundsClick = { onAddFundsClick(venueBalance.venueName) }
+                )
+            }
 
-                items(
-                    items = balances,
-                    key = { it.venueName }
-                ) { venueBalance ->
-                    BalanceCard(
-                        venueName = venueBalance.venueName,
-                        balance = venueBalance.balance,
-                        onAddFundsClick = { onAddFundsClick(venueBalance.venueName) }
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                }
+            item(key = "add_funds_button") {
+                BeerWallButton(
+                    text = "Dodaj środki",
+                    onClick = onAddLocationClick,
+                )
+            }
 
-                item(key = "add_funds_button") {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    BeerWallButton(
-                        text = "Dodaj środki",
-                        onClick = onAddLocationClick,
-                    )
-                }
-
-                item(key = "info_card") {
-                    Spacer(modifier = Modifier.height(24.dp))
-                    InfoCard()
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
+            item(key = "info_card") {
+                Spacer(modifier = Modifier.height(12.dp))
+                InfoCard()
+                Spacer(modifier = Modifier.height(12.dp))
             }
         }
     }

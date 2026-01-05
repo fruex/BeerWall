@@ -31,13 +31,12 @@ fun ProfileScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(DarkBackground)
+            .verticalScroll(rememberScrollState())
+            .padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         // Header
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp)
-        ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
             Text(
                 text = "Igi Beer System",
                 style = MaterialTheme.typography.headlineMedium,
@@ -51,182 +50,169 @@ fun ProfileScreen(
             )
         }
 
-        // Content
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp)
+        // Profile Card
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = CardBackground
+            )
         ) {
-            // Profile Card
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = CardBackground
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Avatar
+                if (userProfile.photoUrl != null) {
+                    SubcomposeAsyncImage(
+                        model = userProfile.photoUrl,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop,
+                        loading = {
+                            DefaultAvatar(userProfile.initials)
+                        },
+                        error = {
+                            DefaultAvatar(userProfile.initials)
+                        }
+                    )
+                } else {
+                    DefaultAvatar(
+                        initials = userProfile.initials,
+                        modifier = Modifier.size(100.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text(
+                    text = userProfile.name,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
                 )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(32.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Avatar
-                    if (userProfile.photoUrl != null) {
-                        SubcomposeAsyncImage(
-                            model = userProfile.photoUrl,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(100.dp)
-                                .clip(CircleShape),
-                            contentScale = ContentScale.Crop,
-                            loading = {
-                                DefaultAvatar(userProfile.initials)
-                            },
-                            error = {
-                                DefaultAvatar(userProfile.initials)
-                            }
-                        )
-                    } else {
-                        DefaultAvatar(
-                            initials = userProfile.initials,
-                            modifier = Modifier.size(100.dp)
-                        )
-                    }
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-                    Text(
-                        text = userProfile.name,
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = userProfile.email,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = TextSecondary
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Stats Card
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = CardBackground
+                Text(
+                    text = userProfile.email,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = TextSecondary
                 )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp)
-                ) {
-                    StatRow(
-                        icon = Icons.Default.CreditCard,
-                        label = "Aktywne karty",
-                        value = userProfile.activeCards.toString()
-                    )
-
-                    HorizontalDivider(
-                        modifier = Modifier.padding(vertical = 16.dp),
-                        color = TextSecondary.copy(alpha = 0.2f)
-                    )
-
-                    StatRow(
-                        icon = Icons.Default.Star,
-                        label = "Punkty lojalnościowe",
-                        value = userProfile.loyaltyPoints.toString()
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Settings/Actions
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = CardBackground
-                )
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    SettingsItem(
-                        icon = Icons.Default.Settings,
-                        label = "Ustawienia konta",
-                        onClick = { /* TODO */ }
-                    )
-
-                    HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = 20.dp),
-                        color = TextSecondary.copy(alpha = 0.2f)
-                    )
-
-                    SettingsItem(
-                        icon = Icons.AutoMirrored.Filled.Help,
-                        label = "Pomoc i wsparcie",
-                        onClick = { /* TODO */ }
-                    )
-
-                    HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = 20.dp),
-                        color = TextSecondary.copy(alpha = 0.2f)
-                    )
-
-                    SettingsItem(
-                        icon = Icons.Default.Info,
-                        label = "O aplikacji",
-                        onClick = { /* TODO */ }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Logout Button
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = CardBackground
-                ),
-                onClick = onLogoutClick
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.Logout,
-                            contentDescription = null,
-                            tint = Error,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "Wyloguj",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Error
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
             }
         }
+
+        // Stats Card
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = CardBackground
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
+            ) {
+                StatRow(
+                    icon = Icons.Default.CreditCard,
+                    label = "Aktywne karty",
+                    value = userProfile.activeCards.toString()
+                )
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 16.dp),
+                    color = TextSecondary.copy(alpha = 0.2f)
+                )
+
+                StatRow(
+                    icon = Icons.Default.Star,
+                    label = "Punkty lojalnościowe",
+                    value = userProfile.loyaltyPoints.toString()
+                )
+            }
+        }
+
+        // Settings/Actions
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = CardBackground
+            )
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                SettingsItem(
+                    icon = Icons.Default.Settings,
+                    label = "Ustawienia konta",
+                    onClick = { /* TODO */ }
+                )
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    color = TextSecondary.copy(alpha = 0.2f)
+                )
+
+                SettingsItem(
+                    icon = Icons.AutoMirrored.Filled.Help,
+                    label = "Pomoc i wsparcie",
+                    onClick = { /* TODO */ }
+                )
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    color = TextSecondary.copy(alpha = 0.2f)
+                )
+
+                SettingsItem(
+                    icon = Icons.Default.Info,
+                    label = "O aplikacji",
+                    onClick = { /* TODO */ }
+                )
+            }
+        }
+
+        // Logout Button
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = CardBackground
+            ),
+            onClick = onLogoutClick
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.Logout,
+                    contentDescription = null,
+                    tint = Error,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = "Wyloguj",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Error
+                )
+            }
+        }
+        
+        // Bottom spacer
+        Spacer(modifier = Modifier.height(8.dp))
+    }
 }
 
 @Composable
