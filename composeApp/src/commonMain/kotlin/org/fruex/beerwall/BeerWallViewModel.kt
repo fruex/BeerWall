@@ -13,13 +13,34 @@ import org.fruex.beerwall.remote.BeerWallApiClient
 import org.fruex.beerwall.ui.BeerWallUiState
 import org.fruex.beerwall.ui.models.DailyTransactions
 import org.fruex.beerwall.ui.models.UserCard
-import org.fruex.beerwall.ui.models.VenueBalance
 
-class BeerWallViewModel : ViewModel() {
-    private val apiClient = BeerWallApiClient()
+class BeerWallViewModel(
+    private val apiClient: BeerWallApiClient = BeerWallApiClient()
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BeerWallUiState())
     val uiState: StateFlow<BeerWallUiState> = _uiState.asStateFlow()
+
+    private fun setLoading(isLoading: Boolean) {
+        _uiState.update { it.copy(isRefreshing = isLoading) }
+    }
+
+    private fun setError(message: String) {
+        _uiState.update { it.copy(errorMessage = message) }
+    }
+
+    private fun launchWithLoading(block: suspend () -> Unit) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isRefreshing = true, errorMessage = null) }
+            try {
+                block()
+            } catch (e: Exception) {
+                setError(e.message ?: "Wystąpił nieoczekiwany błąd")
+            } finally {
+                setLoading(false)
+            }
+        }
+    }
 
     fun onSessionCheckComplete(user: GoogleUser?) {
         if (user != null) {
@@ -40,13 +61,17 @@ class BeerWallViewModel : ViewModel() {
         refreshAllData()
     }
 
+    fun onClearError() {
+        _uiState.update { it.copy(errorMessage = null) }
+    }
+
     fun onLogout() {
         _uiState.update { it.copy(isLoggedIn = false) }
     }
 
     fun refreshAllData() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isRefreshing = true) }
+            setLoading(true)
 
             val balanceDeferred = async { apiClient.getBalance() }
             val cardsDeferred = async { apiClient.getCards() }
@@ -67,14 +92,11 @@ class BeerWallViewModel : ViewModel() {
                 cardsResult.onSuccess { cards ->
                     newState = newState.copy(
                         cards = cards,
-                        userProfile = newState.userProfile.copy(activeCards = cards.count { card -> card.isActive })
+                        userProfile = newState.userProfile.copy(activeCards = cards.count { it.isActive })
                     )
                 }
                 historyResult.onSuccess { transactions ->
-                    val transactionGroups = transactions
-                        .groupBy { it.date }
-                        .map { (date, items) -> DailyTransactions(date.uppercase(), items) }
-                    newState = newState.copy(transactionGroups = transactionGroups)
+                    newState = newState.copy(transactionGroups = groupTransactionsByDate(transactions))
                 }
                 profileResult.onSuccess { points ->
                     newState = newState.copy(
@@ -82,89 +104,43 @@ class BeerWallViewModel : ViewModel() {
                     )
                 }
 
-                newState.copy(isRefreshing = false)
+                newState
             }
+            setLoading(false)
         }
     }
 
     fun onAddFunds(venueName: String, amount: Double, blikCode: String) {
         viewModelScope.launch {
-            apiClient.topUp(amount, venueName).onSuccess { newBalance ->
-                _uiState.update { currentState ->
-                    val updatedBalances = currentState.balances.map {
-                        if (it.venueName == venueName) {
-                            it.copy(balance = newBalance)
-                        } else it
-                    }
-                    currentState.copy(balances = updatedBalances)
-                }
-            }.onFailure {
-                // Handle error
-                println("Failed to top up: ${it.message}")
+            apiClient.topUp(amount, venueName)
+                .onSuccess { newBalance -> updateVenueBalance(venueName, newBalance) }
+                .onFailure { setError("Nie udało się doładować konta: ${it.message}") }
+        }
+    }
+
+    private fun updateVenueBalance(venueName: String, newBalance: Double) {
+        _uiState.update { currentState ->
+            val updatedBalances = currentState.balances.map {
+                if (it.venueName == venueName) it.copy(balance = newBalance) else it
             }
+            currentState.copy(balances = updatedBalances)
         }
     }
 
     fun onToggleCardStatus(cardId: String) {
         val card = _uiState.value.cards.find { it.id == cardId } ?: return
         viewModelScope.launch {
-            apiClient.toggleCardStatus(cardId, !card.isActive).onSuccess { isActive ->
-                _uiState.update { currentState ->
-                    val updatedCards = currentState.cards.map {
-                        if (it.id == cardId) {
-                            it.copy(isActive = isActive)
-                        } else it
-                    }
-                    currentState.copy(
-                        cards = updatedCards,
-                        userProfile = currentState.userProfile.copy(activeCards = updatedCards.count { it.isActive })
-                    )
-                }
-            }
+            apiClient.toggleCardStatus(cardId, !card.isActive)
+                .onSuccess { isActive -> updateCardStatus(cardId, isActive) }
+                .onFailure { setError("Nie udało się zmienić statusu karty: ${it.message}") }
         }
     }
 
-    fun refreshHistory() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isRefreshing = true) }
-            apiClient.getHistory().onSuccess { transactions ->
-                val transactionGroups = transactions
-                    .groupBy { it.date }
-                    .map { (date, items) -> DailyTransactions(date.uppercase(), items) }
-                _uiState.update {
-                    it.copy(
-                        transactionGroups = transactionGroups,
-                        isRefreshing = false
-                    )
-                }
-            }
-            // Ensure isRefreshing is set to false even on failure
-            if (_uiState.value.isRefreshing) {
-                 _uiState.update { it.copy(isRefreshing = false) }
-            }
-        }
-    }
-
-    fun refreshBalance() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isRefreshing = true) }
-            apiClient.getBalance().onSuccess { balances ->
-                _uiState.update {
-                    it.copy(
-                        balances = balances,
-                        isRefreshing = false
-                    )
-                }
-            }
-             if (_uiState.value.isRefreshing) {
-                 _uiState.update { it.copy(isRefreshing = false) }
-            }
-        }
-    }
-
-    fun onDeleteCard(cardId: String) {
+    private fun updateCardStatus(cardId: String, isActive: Boolean) {
         _uiState.update { currentState ->
-            val updatedCards = currentState.cards.filter { it.id != cardId || !it.isPhysical }
+            val updatedCards = currentState.cards.map {
+                if (it.id == cardId) it.copy(isActive = isActive) else it
+            }
             currentState.copy(
                 cards = updatedCards,
                 userProfile = currentState.userProfile.copy(activeCards = updatedCards.count { it.isActive })
@@ -172,15 +148,39 @@ class BeerWallViewModel : ViewModel() {
         }
     }
 
+    fun refreshHistory() {
+        launchWithLoading {
+            apiClient.getHistory().onSuccess { transactions ->
+                _uiState.update { it.copy(transactionGroups = groupTransactionsByDate(transactions)) }
+            }
+        }
+    }
+
+    fun refreshBalance() {
+        launchWithLoading {
+            apiClient.getBalance().onSuccess { balances ->
+                _uiState.update { it.copy(balances = balances) }
+            }
+        }
+    }
+
+    fun onDeleteCard(cardId: String) {
+        updateCards { cards -> cards.filter { it.id != cardId || !it.isPhysical } }
+    }
+
     fun onSaveCard(name: String, cardId: String) {
-         val newCard = UserCard(
+        val newCard = UserCard(
             id = cardId,
             name = name,
             isActive = true,
             isPhysical = true
         )
+        updateCards { cards -> cards + newCard }
+    }
+
+    private fun updateCards(transform: (List<UserCard>) -> List<UserCard>) {
         _uiState.update { currentState ->
-            val updatedCards = currentState.cards + newCard
+            val updatedCards = transform(currentState.cards)
             currentState.copy(
                 cards = updatedCards,
                 userProfile = currentState.userProfile.copy(activeCards = updatedCards.count { it.isActive })
@@ -194,10 +194,20 @@ class BeerWallViewModel : ViewModel() {
                 userProfile = currentState.userProfile.copy(
                     name = user.displayName ?: currentState.userProfile.name,
                     email = user.email ?: currentState.userProfile.email,
-                    initials = user.displayName?.split(" ")?.mapNotNull { it.firstOrNull() }?.joinToString("") ?: currentState.userProfile.initials,
+                    initials = getUserInitials(user.displayName, currentState.userProfile.initials),
                     photoUrl = user.photoUrl
                 )
             )
         }
+    }
+
+    private fun getUserInitials(displayName: String?, fallback: String): String {
+        return displayName?.split(" ")?.mapNotNull { it.firstOrNull() }?.joinToString("") ?: fallback
+    }
+
+    private fun groupTransactionsByDate(transactions: List<org.fruex.beerwall.ui.models.Transaction>): List<DailyTransactions> {
+        return transactions
+            .groupBy { it.date }
+            .map { (date, items) -> DailyTransactions(date.uppercase(), items) }
     }
 }
