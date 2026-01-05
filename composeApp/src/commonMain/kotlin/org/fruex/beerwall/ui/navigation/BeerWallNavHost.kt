@@ -1,6 +1,7 @@
 package org.fruex.beerwall.ui.navigation
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,6 +17,7 @@ import org.fruex.beerwall.ui.screens.cards.AddCardScreen
 
 @Composable
 fun BeerWallNavHost(
+    modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     startDestination: String = NavigationDestination.Main.route,
     // Data
@@ -40,7 +42,8 @@ fun BeerWallNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = startDestination,
+        modifier = modifier
     ) {
         // Auth screens
         composable(NavigationDestination.Registration.route) {
