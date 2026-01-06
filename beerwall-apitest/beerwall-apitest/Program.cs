@@ -76,13 +76,6 @@ api.MapGet("/history", () =>
     return Results.Ok(new ApiEnvelope<List<TransactionResponse>>(sampleHistory));
 });
 
-api.MapGet("/places", () =>
-    Results.Ok(new ApiEnvelope<List<PlaceResponse>>(new List<PlaceResponse>
-    {
-        new(1, "Browar Stołeczny", 45.0),
-        new(2, "Pub pod Kuflem", 12.50)
-    })));
-
 api.MapGet("/payment-operators", () =>
 {
     var paymentOperators = new List<PaymentOperatorResponse>
@@ -108,7 +101,6 @@ record TopUpRequest(int VenueId, int PaymentMethodId, double Amount);
 // --- RESPONSE MODELS ---
 record VenueBalanceResponse(int VenueId, string VenueName, double Balance, int LoyaltyPoints);
 record TransactionResponse(string Id, string BeverageName, DateTime Timestamp, double Amount, int VolumeMilliliters);
-record PlaceResponse(int Id, string VenueName, double FundsAvailable);
 record ProfileResponse(int LoyaltyPoints);
 record PaymentMethodResponse(int Id, string Name, string Description, string Image, string Status);
 record PaymentOperatorResponse(string Type, List<PaymentMethodResponse> PaymentMethods);
