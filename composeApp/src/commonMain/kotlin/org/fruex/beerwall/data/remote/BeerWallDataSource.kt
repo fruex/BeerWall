@@ -60,13 +60,15 @@ class BeerWallDataSource {
             get("$baseUrl/balance").body()
         }
 
-    suspend fun topUp(paymentMethodId: Int, balance: Double): Result<TopUpResponseData> =
-        safeCall<TopUpResponse, TopUpResponseData> {
-            post("$baseUrl/balance") {
-                contentType(ContentType.Application.Json)
-                setBody(TopUpRequest(balance, paymentMethodId))
-            }.body()
+    suspend fun topUp(venueId: Int, paymentMethodId: Int, balance: Double): Result<Unit> = try {
+        client.post("$baseUrl/balance") {
+            contentType(ContentType.Application.Json)
+            setBody(TopUpRequest(venueId, paymentMethodId, balance))
         }
+        Result.success(Unit)
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
 
     suspend fun getPaymentOperators(): Result<List<PaymentOperator>> =
         safeCall<GetPaymentOperatorsResponse, List<PaymentOperator>> {

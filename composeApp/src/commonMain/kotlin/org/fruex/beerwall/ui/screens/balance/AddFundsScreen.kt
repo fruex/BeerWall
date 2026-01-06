@@ -33,6 +33,7 @@ fun AddFundsScreen(
     availablePaymentMethods: List<PaymentMethod>,
     onBackClick: () -> Unit,
     onAddFunds: (paymentMethodId: Int, balance: Double) -> Unit,
+    venueName: String? = null,
 ) {
     var selectedAmount by rememberSaveable { mutableStateOf("") }
     var customAmount by rememberSaveable { mutableStateOf("") }
