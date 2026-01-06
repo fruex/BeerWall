@@ -143,6 +143,15 @@ fun TransactionItem(transaction: Transaction) {
                     style = MaterialTheme.typography.bodySmall,
                     color = TextSecondary
                 )
+            }
+
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = "${(if (transaction.amount < 0) "" else "+")}${transaction.amount} zł",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = if (transaction.amount < 0) Error else TextPrimary
+                )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "${transaction.volumeMilliliters}ml",
@@ -150,13 +159,6 @@ fun TransactionItem(transaction: Transaction) {
                     color = TextSecondary
                 )
             }
-
-            Text(
-                text = "${(if (transaction.amount < 0) "" else "+")}${transaction.amount} zł",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = if (transaction.amount < 0) Error else TextPrimary
-            )
         }
     }
 }
