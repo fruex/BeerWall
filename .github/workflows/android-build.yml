@@ -39,18 +39,19 @@ jobs:
     - name: Run Tests
       run: ./gradlew test
 
+    - name: Sanitize Ref Name
+      run: |
+        SANITIZED_REF_NAME=$(echo "${{ github.ref_name }}" | tr '/' '-')
+        echo "SANITIZED_REF_NAME=$SANITIZED_REF_NAME" >> $GITHUB_ENV
+
     - name: Prepare APK for distribution
       run: |
-        if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-          mv composeApp/build/outputs/apk/debug/composeApp-debug.apk "beerwall-${{ github.ref_name }}.apk"
-        else
-          mv composeApp/build/outputs/apk/debug/composeApp-debug.apk "beerwall-${{ github.ref_name }}.apk"
-        fi
+        mv composeApp/build/outputs/apk/debug/composeApp-debug.apk "beerwall-${{ env.SANITIZED_REF_NAME }}.apk"
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: beerwall-app-${{ github.ref_name }}
+        name: beerwall-app-${{ env.SANITIZED_REF_NAME }}
         path: beerwall-*.apk
 
     - name: Create Release
