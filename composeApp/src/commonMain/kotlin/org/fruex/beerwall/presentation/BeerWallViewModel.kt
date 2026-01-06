@@ -134,12 +134,11 @@ class BeerWallViewModel(
         }
     }
 
-    fun onAddFunds(paymentMethodId: Int, balance: Double) {
+    fun onAddFunds(venueId: Int, paymentMethodId: Int, balance: Double) {
         viewModelScope.launch {
-            topUpBalanceUseCase(paymentMethodId, balance)
+            topUpBalanceUseCase(venueId, paymentMethodId, balance)
                 .onSuccess {
-                    // Odświeżamy wszystkie salda po doładowaniu
-                    refreshBalance()
+                    // Odpowiedź przyjdzie przez webhook, nie czekamy na response
                 }
                 .onFailure { setError("Nie udało się doładować konta: ${it.message}") }
         }

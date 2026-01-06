@@ -5,7 +5,7 @@ import org.fruex.beerwall.domain.repository.BalanceRepository
 class TopUpBalanceUseCase(
     private val balanceRepository: BalanceRepository
 ) {
-    suspend operator fun invoke(paymentMethodId: Int, balance: Double): Result<Double> {
-        return balanceRepository.topUp(paymentMethodId, balance)
+    suspend operator fun invoke(venueId: Int, paymentMethodId: Int, balance: Double): Result<Unit> {
+        return balanceRepository.topUp(venueId, paymentMethodId, balance)
     }
 }

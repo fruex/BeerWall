@@ -31,7 +31,7 @@ fun BalanceScreen(
     balances: List<VenueBalance>,
     isRefreshing: Boolean = false,
     onRefresh: () -> Unit = {},
-    onAddFundsClick: (venueName: String) -> Unit,
+    onAddFundsClick: (venueId: Int) -> Unit,
     onAddLocationClick: () -> Unit,
 ) {
     PullToRefreshBox(
@@ -62,13 +62,13 @@ fun BalanceScreen(
 
             items(
                 items = balances,
-                key = { it.venueName }
+                key = { it.venueId }
             ) { venueBalance ->
                 BalanceCard(
                     venueName = venueBalance.venueName,
                     balance = venueBalance.balance,
                     loyaltyPoints = venueBalance.loyaltyPoints,
-                    onAddFundsClick = { onAddFundsClick(venueBalance.venueName) }
+                    onAddFundsClick = { onAddFundsClick(venueBalance.venueId) }
                 )
             }
 
@@ -121,17 +121,9 @@ fun BalanceCard(
                     )
                 }
                 Spacer(modifier = Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                Column(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(
-                        text = "${balance} zł",
-                        style = MaterialTheme.typography.displaySmall,
-                        fontWeight = FontWeight.Bold,
-                        color = DarkBackground
-                    )
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -146,6 +138,22 @@ fun BalanceCard(
                             text = "$loyaltyPoints pkt",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
+                            color = DarkBackground
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "💰",
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "${balance} zł",
+                            style = MaterialTheme.typography.displaySmall,
+                            fontWeight = FontWeight.Bold,
                             color = DarkBackground
                         )
                     }

@@ -33,6 +33,7 @@ import org.fruex.beerwall.remote.common.ApiResponse
  */
 @Serializable
 data class BalanceItem(
+    val venueId: Int,
     @SerialName("venueName")
     val venueName: String,
     val balance: Double,
@@ -41,8 +42,9 @@ data class BalanceItem(
 
 @Serializable
 data class TopUpRequest(
-    val amount: Double,
-    val paymentMethodId: Int
+    val venueId: Int,
+    val paymentMethodId: Int,
+    val amount: Double
 )
 
 @Serializable

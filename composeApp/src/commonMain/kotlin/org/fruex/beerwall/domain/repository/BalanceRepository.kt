@@ -5,6 +5,6 @@ import org.fruex.beerwall.remote.dto.operators.PaymentOperator
 
 interface BalanceRepository {
     suspend fun getBalances(): Result<List<Balance>>
-    suspend fun topUp(paymentMethodId: Int, balance: Double): Result<Double>
+    suspend fun topUp(venueId: Int, paymentMethodId: Int, balance: Double): Result<Unit>
     suspend fun getPaymentOperators(): Result<List<PaymentOperator>>
 }
