@@ -24,6 +24,8 @@ data class UserCard(
 @Immutable
 data class Transaction(
     val id: String,
+    val venueId: Int,
+    val venueName: String,
     val beerName: String,
     val date: String,
     val time: String,

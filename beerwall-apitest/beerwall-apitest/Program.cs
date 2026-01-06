@@ -40,10 +40,10 @@ api.MapGet("/balance", (ClaimsPrincipal user) =>
 {
     var sampleVenueBalances = new List<VenueBalanceResponse>
     {
-        new("Pub Lewe", 125.50, 250),
-        new("Browariat", 89.00, 250),
-        new("Biała Małpa", 45.25, 250),
-        new("Czarna Małpa", 250.00, 250),
+        new(1, "Pub Lewe", 125.50, 250),
+        new(2, "Browariat", 89.00, 250),
+        new(3, "Biała Małpa", 45.25, 250),
+        new(4, "Czarna Małpa", 250.00, 250),
     };
     return Results.Ok(new ApiEnvelope<List<VenueBalanceResponse>>(sampleVenueBalances));
 });
@@ -103,10 +103,10 @@ api.MapGet("/profile", (ClaimsPrincipal user) => {
 app.Run();
 
 // --- REQUEST MODELS ---
-record TopUpRequest(int PaymentMethodId, double Amount);
+record TopUpRequest(int VenueId, int PaymentMethodId, double Amount);
 
 // --- RESPONSE MODELS ---
-record VenueBalanceResponse(string VenueName, double Balance, int LoyaltyPoints);
+record VenueBalanceResponse(int VenueId, string VenueName, double Balance, int LoyaltyPoints);
 record TransactionResponse(string Id, string BeverageName, DateTime Timestamp, double Amount, int VolumeMilliliters);
 record PlaceResponse(int Id, string VenueName, double FundsAvailable);
 record ProfileResponse(int LoyaltyPoints);
