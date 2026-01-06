@@ -6,9 +6,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -66,13 +66,6 @@ fun BalanceScreen(
                     venueName = venueBalance.venueName,
                     balance = venueBalance.balance,
                     onAddFundsClick = { onAddFundsClick(venueBalance.venueName) }
-                )
-            }
-
-            item(key = "add_funds_button") {
-                BeerWallButton(
-                    text = "Dodaj środki",
-                    onClick = onAddLocationClick,
                 )
             }
 
@@ -142,9 +135,10 @@ fun BalanceCard(
                     )
             ) {
                 Icon(
-                    imageVector = Icons.Default.Wallet,
+                    imageVector = Icons.Default.Add,
                     contentDescription = "Dodaj środki",
-                    tint = DarkBackground
+                    tint = DarkBackground,
+                    modifier = Modifier.size(28.dp)
                 )
             }
         }
