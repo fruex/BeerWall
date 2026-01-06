@@ -48,6 +48,16 @@ api.MapGet("/balance", (ClaimsPrincipal user) =>
     return Results.Ok(new ApiEnvelope<List<VenueBalanceResponse>>(sampleVenueBalances));
 });
 
+api.MapGet("/cards", (ClaimsPrincipal user) =>
+{
+    var sampleCards = new List<Card>
+    {
+        new("550e8400-e29b-41d4-a716-446655440000", "Karta Wirtualna", true, false),
+        new("750e8460-e29b-41d4-a716-446655440001", "Karta fizyczna", true, true)
+    };
+    return Results.Ok(new ApiEnvelope<List<Card>>(sampleCards));
+});
+
 api.MapGet("/history", () =>
 {
     var sampleHistory = new List<TransactionResponse>
