@@ -35,7 +35,8 @@ import org.fruex.beerwall.remote.common.ApiResponse
 data class BalanceItem(
     @SerialName("venueName")
     val venueName: String,
-    val balance: Double
+    val balance: Double,
+    val loyaltyPoints: Int
 )
 
 @Serializable

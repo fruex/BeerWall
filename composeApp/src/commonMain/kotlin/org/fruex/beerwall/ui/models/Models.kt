@@ -6,7 +6,8 @@ import androidx.compose.runtime.Immutable
 @Immutable
 data class VenueBalance(
     val venueName: String,
-    val balance: Double
+    val balance: Double,
+    val loyaltyPoints: Int
 )
 
 // Card models
