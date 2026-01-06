@@ -34,92 +34,58 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return Results.Ok(new ApiEnvelope<WeatherForecast[]>(forecast));
-})
-.WithName("GetWeatherForecast");
-
 var api = app.MapGroup("/api")/*.RequireAuthorization()*/;
 
-// 1. SALDO (Balance)
-api.MapGet("/balance", (ClaimsPrincipal user) => 
+api.MapGet("/balance", (ClaimsPrincipal user) =>
 {
-    var sampleVenueBalances = new List<VenueBalance>
+    var sampleVenueBalances = new List<VenueBalanceResponse>
     {
-        new("Pub Lewe", 125.50),
-        new("Browariat", 89.00),
-        new("Biała Małpa", 45.25),
-        new("Czarna Małpa", 250.00),
+        new("Pub Lewe", 125.50, 250),
+        new("Browariat", 89.00, 250),
+        new("Biała Małpa", 45.25, 250),
+        new("Czarna Małpa", 250.00, 250),
     };
-    return Results.Ok(new ApiEnvelope<List<VenueBalance>>(sampleVenueBalances));
+    return Results.Ok(new ApiEnvelope<List<VenueBalanceResponse>>(sampleVenueBalances));
 });
 
 api.MapPost("/balance", (ClaimsPrincipal user, TopUpRequest req) =>
-    Results.Ok(new ApiEnvelope<object>(new { Message = $"Doładowano kwotą {req.Amount} metodą {req.PaymentMethodId}", NewBalance = 150.50 + req.Amount })));
+    Results.Ok(new ApiEnvelope<TopUpResponse>(new TopUpResponse($"Doładowano kwotą {req.Amount} metodą {req.PaymentMethodId}", 150.50 + req.Amount))));
 
-// 2. KARTY (Cards)
-api.MapGet("/cards", (ClaimsPrincipal user) => 
+api.MapGet("/history", () =>
 {
-    var sampleCards = new List<Card>
+    var sampleHistory = new List<TransactionResponse>
     {
-        new("550e8400-e29b-41d4-a716-446655440000", "Karta Wirtualna", true, false),
-        new("750e8460-e29b-41d4-a716-446655440001", "Karta fizyczna", true, true)
+        new("1", "Pilsner Urquell", new DateTime(2024, 11, 24, 19, 30, 0), -12.50, 500),
+        new("2", "Wino Chianti Classico", new DateTime(2024, 11, 24, 20, 15, 0), -28.00, 150),
+        new("3", "Guinness Draught", new DateTime(2024, 11, 24, 21, 0, 0), -15.00, 500),
+        new("4", "Corona Extra", new DateTime(2024, 11, 23, 18, 45, 0), -11.00, 330),
+        new("5", "Prosecco", new DateTime(2024, 11, 23, 19, 30, 0), -22.00, 200),
+        new("6", "Heineken", new DateTime(2024, 11, 23, 20, 15, 0), -10.50, 500),
+        new("7", "Stella Artois", new DateTime(2024, 11, 23, 21, 30, 0), -13.50, 500),
+        new("8", "Tyskie Gronie", new DateTime(2024, 11, 22, 17, 0, 0), -9.50, 500),
+        new("9", "Wino Malbec", new DateTime(2024, 11, 22, 18, 30, 0), -32.00, 150),
+        new("10", "IPA Craft Beer", new DateTime(2024, 11, 22, 19, 45, 0), -16.00, 500),
+        new("11", "Żywiec Porter", new DateTime(2024, 11, 21, 20, 0, 0), -14.00, 500),
+        new("12", "Wino Sauvignon Blanc", new DateTime(2024, 11, 21, 20, 45, 0), -25.00, 150),
+        new("13", "Peroni Nastro Azzurro", new DateTime(2024, 11, 21, 21, 30, 0), -12.00, 330),
+        new("14", "Desperados", new DateTime(2024, 11, 21, 22, 15, 0), -11.50, 400),
+        new("15", "Wino Cabernet Sauvignon", new DateTime(2024, 11, 20, 19, 0, 0), -30.00, 150),
+        new("16", "Carlsberg", new DateTime(2024, 11, 20, 20, 30, 0), -10.00, 500),
+        new("17", "Hoegaarden", new DateTime(2024, 11, 20, 21, 15, 0), -13.00, 330)
     };
-    return Results.Ok(new ApiEnvelope<List<Card>>(sampleCards));
+    return Results.Ok(new ApiEnvelope<List<TransactionResponse>>(sampleHistory));
 });
 
-api.MapGet("/cards/{id}", (string id) => 
-    Results.Ok(new ApiEnvelope<CardDetails>(new CardDetails(id, "4422", "Active", "BeerWall Classic", 1250))));
-
-// 3. HISTORIA I MIEJSCA
-api.MapGet("/history", () => 
-{
-    var sampleHistory = new List<Transaction>
+api.MapGet("/places", () =>
+    Results.Ok(new ApiEnvelope<List<PlaceResponse>>(new List<PlaceResponse>
     {
-        new("1", "Pilsner Urquell", "24 lis", "19:30", -12.50, "45:32"),
-        new("2", "Wino Chianti Classico", "24 lis", "20:15", -28.00, "45:32"),
-        new("3", "Guinness Draught", "24 lis", "21:00", -15.00, "89:21"),
-        new("4", "Corona Extra", "23 lis", "18:45", -11.00, "89:21"),
-        new("5", "Prosecco", "23 lis", "19:30", -22.00, "45:32"),
-        new("6", "Heineken", "23 lis", "20:15", -10.50, "45:32"),
-        new("7", "Stella Artois", "23 lis", "21:30", -13.50, "89:21"),
-        new("8", "Tyskie Gronie", "22 lis", "17:00", -9.50, "45:32"),
-        new("9", "Wino Malbec", "22 lis", "18:30", -32.00, "89:21"),
-        new("10", "IPA Craft Beer", "22 lis", "19:45", -16.00, "45:32"),
-        new("11", "Żywiec Porter", "21 lis", "20:00", -14.00, "89:21"),
-        new("12", "Wino Sauvignon Blanc", "21 lis", "20:45", -25.00, "45:32"),
-        new("13", "Peroni Nastro Azzurro", "21 lis", "21:30", -12.00, "89:21"),
-        new("14", "Desperados", "21 lis", "22:15", -11.50, "45:32"),
-        new("15", "Wino Cabernet Sauvignon", "20 lis", "19:00", -30.00, "45:32"),
-        new("16", "Carlsberg", "20 lis", "20:30", -10.00, "89:21"),
-        new("17", "Hoegaarden", "20 lis", "21:15", -13.00, "45:32")
-    };
-    return Results.Ok(new ApiEnvelope<List<Transaction>>(sampleHistory));
-});
-
-api.MapGet("/places", () => 
-    Results.Ok(new ApiEnvelope<List<Place>>(new List<Place> { 
-        new(1, "Browar Stołeczny", 45.0), 
-        new(2, "Pub pod Kuflem", 12.50) 
+        new(1, "Browar Stołeczny", 45.0),
+        new(2, "Pub pod Kuflem", 12.50)
     })));
 
 api.MapGet("/payment-operators", () =>
 {
-    var paymentOperators = new List<PaymentOperatorDto>
+    var paymentOperators = new List<PaymentOperatorResponse>
     {
         new("BLIK",
         [
@@ -127,34 +93,25 @@ api.MapGet("/payment-operators", () =>
                 "ENABLED")
         ])
     };
-    return Results.Ok(new ApiEnvelope<List<PaymentOperatorDto>>(paymentOperators));
+    return Results.Ok(new ApiEnvelope<List<PaymentOperatorResponse>>(paymentOperators));
 });
 
-api.MapPost("/card-activation", (CardActivationRequest req) => 
-    Results.Ok(new ApiEnvelope<object>(new { CardId = req.CardId, IsActive = req.Activate, Status = "Success" })));
-
-// 5. PROFIL (Punkty)
 api.MapGet("/profile", (ClaimsPrincipal user) => {
-    return Results.Ok(new ApiEnvelope<ProfileData>(new ProfileData(250)));
+    return Results.Ok(new ApiEnvelope<ProfileResponse>(new ProfileResponse(250)));
 });
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
-
-// --- MODELE DTO ---
+// --- REQUEST MODELS ---
 record TopUpRequest(int PaymentMethodId, double Amount);
-record Card(string Id, string Name, bool IsActive, bool IsPhysical);
-record CardDetails(string Id, string Number, string Status, string Type, int LoyaltyPoints);
-record Transaction(string Id, string BeerName, string Date, string Time, double Amount, string CardNumber);
-record Place(int Id, string VenueName, double FundsAvailable);
-record VenueBalance(string VenueName, double Balance);
-record CardActivationRequest(string CardId, bool Activate);
-record ProfileData(int LoyaltyPoints);
-record PaymentMethodDto(int Id, string Name, string Description, string Image, string Status);
-record PaymentOperatorDto(string Type, List<PaymentMethodDto> PaymentMethods);
+
+// --- RESPONSE MODELS ---
+record VenueBalanceResponse(string VenueName, double Balance, int LoyaltyPoints);
+record TransactionResponse(string Id, string BeverageName, DateTime Timestamp, double Amount, int VolumeMilliliters);
+record PlaceResponse(int Id, string VenueName, double FundsAvailable);
+record ProfileResponse(int LoyaltyPoints);
+record PaymentMethodResponse(int Id, string Name, string Description, string Image, string Status);
+record PaymentOperatorResponse(string Type, List<PaymentMethodResponse> PaymentMethods);
+record TopUpResponse(string Message, double NewBalance);
 
 record ApiEnvelope<T>(T Data);

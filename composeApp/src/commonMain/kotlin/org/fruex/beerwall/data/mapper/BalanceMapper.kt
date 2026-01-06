@@ -6,7 +6,8 @@ import org.fruex.beerwall.remote.dto.balance.BalanceItem
 fun BalanceItem.toDomain(): Balance {
     return Balance(
         venueName = venueName,
-        amount = balance
+        amount = balance,
+        loyaltyPoints = loyaltyPoints
     )
 }
 
