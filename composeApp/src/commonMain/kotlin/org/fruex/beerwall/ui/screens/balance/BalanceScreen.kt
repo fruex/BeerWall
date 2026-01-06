@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -27,6 +28,7 @@ import org.fruex.beerwall.ui.theme.TextSecondary
 @Composable
 fun BalanceScreen(
     balances: List<VenueBalance>,
+    loyaltyPoints: Int,
     isRefreshing: Boolean = false,
     onRefresh: () -> Unit = {},
     onAddFundsClick: (venueName: String) -> Unit,
@@ -67,6 +69,11 @@ fun BalanceScreen(
                     balance = venueBalance.balance,
                     onAddFundsClick = { onAddFundsClick(venueBalance.venueName) }
                 )
+            }
+
+            item(key = "loyalty_points") {
+                Spacer(modifier = Modifier.height(12.dp))
+                LoyaltyPointsCard(loyaltyPoints = loyaltyPoints)
             }
 
             item(key = "info_card") {
@@ -139,6 +146,46 @@ fun BalanceCard(
                     contentDescription = "Dodaj środki",
                     tint = DarkBackground,
                     modifier = Modifier.size(28.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun LoyaltyPointsCard(loyaltyPoints: Int) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = CardBackground
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Star,
+                contentDescription = null,
+                tint = GoldPrimary,
+                modifier = Modifier.size(32.dp)
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Punkty lojalnościowe",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = TextSecondary
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "$loyaltyPoints pkt",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = GoldPrimary
                 )
             }
         }

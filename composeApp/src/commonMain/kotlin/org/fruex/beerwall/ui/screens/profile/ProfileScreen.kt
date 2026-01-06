@@ -94,38 +94,6 @@ fun ProfileScreen(
             }
         }
 
-        // Stats Card
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = CardBackground
-            )
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp)
-            ) {
-                StatRow(
-                    icon = Icons.Default.CreditCard,
-                    label = "Aktywne karty",
-                    value = userProfile.activeCards.toString()
-                )
-
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 16.dp),
-                    color = TextSecondary.copy(alpha = 0.2f)
-                )
-
-                StatRow(
-                    icon = Icons.Default.Star,
-                    label = "Punkty lojalnościowe",
-                    value = userProfile.loyaltyPoints.toString()
-                )
-            }
-        }
-
         // Settings/Actions
         Card(
             modifier = Modifier.fillMaxWidth(),

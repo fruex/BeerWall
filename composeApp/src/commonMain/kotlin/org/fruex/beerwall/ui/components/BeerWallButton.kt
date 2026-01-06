@@ -31,6 +31,7 @@ fun BeerWallButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    icon: ImageVector? = null
 ) {
     Button(
         onClick = onClick,
@@ -46,6 +47,14 @@ fun BeerWallButton(
         ),
         shape = RoundedCornerShape(16.dp)
     ) {
+        if (icon != null) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+        }
         Text(
             text = text,
             fontSize = 16.sp,

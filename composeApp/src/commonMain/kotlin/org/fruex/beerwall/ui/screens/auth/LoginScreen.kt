@@ -207,22 +207,16 @@ fun SocialLoginButton(
         ),
         contentPadding = PaddingValues(16.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(iconRes),
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = Color.Unspecified
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                text = text,
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
+        Icon(
+            painter = painterResource(iconRes),
+            contentDescription = null,
+            modifier = Modifier.size(20.dp),
+            tint = Color.Unspecified
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyLarge
+        )
     }
 }
