@@ -50,12 +50,12 @@ api.MapGet("/balance", (ClaimsPrincipal user) =>
 
 api.MapGet("/cards", (ClaimsPrincipal user) =>
 {
-    var sampleCards = new List<Card>
+    var sampleCards = new List<CardResponse>
     {
         new("550e8400-e29b-41d4-a716-446655440000", "Karta Wirtualna", true, false),
         new("750e8460-e29b-41d4-a716-446655440001", "Karta fizyczna", true, true)
     };
-    return Results.Ok(new ApiEnvelope<List<Card>>(sampleCards));
+    return Results.Ok(new ApiEnvelope<List<CardResponse>>(sampleCards));
 });
 
 api.MapGet("/history", () =>
@@ -103,6 +103,7 @@ record TopUpRequest(int VenueId, int PaymentMethodId, double Amount);
 
 // --- RESPONSE MODELS ---
 record VenueBalanceResponse(int VenueId, string VenueName, double Balance, int LoyaltyPoints);
+record CardResponse(string Id, string Name, bool IsActive, bool IsPhysical);
 record TransactionResponse(string Id, string BeverageName, string Timestamp, double Amount, int VolumeMilliliters);
 record PaymentMethodResponse(int Id, string Name, string Description, string Image, string Status);
 record PaymentOperatorResponse(string Type, List<PaymentMethodResponse> PaymentMethods);
