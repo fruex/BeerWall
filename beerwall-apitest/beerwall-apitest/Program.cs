@@ -48,30 +48,27 @@ api.MapGet("/balance", (ClaimsPrincipal user) =>
     return Results.Ok(new ApiEnvelope<List<VenueBalanceResponse>>(sampleVenueBalances));
 });
 
-api.MapPost("/balance", (ClaimsPrincipal user, TopUpRequest req) =>
-    Results.Ok(new ApiEnvelope<TopUpResponse>(new TopUpResponse($"Doładowano kwotą {req.Amount} metodą {req.PaymentMethodId}", 150.50 + req.Amount))));
-
 api.MapGet("/history", () =>
 {
     var sampleHistory = new List<TransactionResponse>
     {
-        new("1", "Pilsner Urquell", new DateTime(2024, 11, 24, 19, 30, 0), -12.50, 500),
-        new("2", "Wino Chianti Classico", new DateTime(2024, 11, 24, 20, 15, 0), -28.00, 150),
-        new("3", "Guinness Draught", new DateTime(2024, 11, 24, 21, 0, 0), -15.00, 500),
-        new("4", "Corona Extra", new DateTime(2024, 11, 23, 18, 45, 0), -11.00, 330),
-        new("5", "Prosecco", new DateTime(2024, 11, 23, 19, 30, 0), -22.00, 200),
-        new("6", "Heineken", new DateTime(2024, 11, 23, 20, 15, 0), -10.50, 500),
-        new("7", "Stella Artois", new DateTime(2024, 11, 23, 21, 30, 0), -13.50, 500),
-        new("8", "Tyskie Gronie", new DateTime(2024, 11, 22, 17, 0, 0), -9.50, 500),
-        new("9", "Wino Malbec", new DateTime(2024, 11, 22, 18, 30, 0), -32.00, 150),
-        new("10", "IPA Craft Beer", new DateTime(2024, 11, 22, 19, 45, 0), -16.00, 500),
-        new("11", "Żywiec Porter", new DateTime(2024, 11, 21, 20, 0, 0), -14.00, 500),
-        new("12", "Wino Sauvignon Blanc", new DateTime(2024, 11, 21, 20, 45, 0), -25.00, 150),
-        new("13", "Peroni Nastro Azzurro", new DateTime(2024, 11, 21, 21, 30, 0), -12.00, 330),
-        new("14", "Desperados", new DateTime(2024, 11, 21, 22, 15, 0), -11.50, 400),
-        new("15", "Wino Cabernet Sauvignon", new DateTime(2024, 11, 20, 19, 0, 0), -30.00, 150),
-        new("16", "Carlsberg", new DateTime(2024, 11, 20, 20, 30, 0), -10.00, 500),
-        new("17", "Hoegaarden", new DateTime(2024, 11, 20, 21, 15, 0), -13.00, 330)
+        new("1", "Pilsner Urquell", "2024-11-24T19:30:00", -12.50, 500),
+        new("2", "Wino Chianti Classico", "2024-11-24T20:15:00", -28.00, 150),
+        new("3", "Guinness Draught", "2024-11-24T21:00:00", -15.00, 500),
+        new("4", "Corona Extra", "2024-11-23T18:45:00", -11.00, 330),
+        new("5", "Prosecco", "2024-11-23T19:30:00", -22.00, 200),
+        new("6", "Heineken", "2024-11-23T20:15:00", -10.50, 500),
+        new("7", "Stella Artois", "2024-11-23T21:30:00", -13.50, 500),
+        new("8", "Tyskie Gronie", "2024-11-22T17:00:00", -9.50, 500),
+        new("9", "Wino Malbec", "2024-11-22T18:30:00", -32.00, 150),
+        new("10", "IPA Craft Beer", "2024-11-22T19:45:00", -16.00, 500),
+        new("11", "Żywiec Porter", "2024-11-21T20:00:00", -14.00, 500),
+        new("12", "Wino Sauvignon Blanc", "2024-11-21T20:45:00", -25.00, 150),
+        new("13", "Peroni Nastro Azzurro", "2024-11-21T21:30:00", -12.00, 330),
+        new("14", "Desperados", "2024-11-21T22:15:00", -11.50, 400),
+        new("15", "Wino Cabernet Sauvignon", "2024-11-20T19:00:00", -30.00, 150),
+        new("16", "Carlsberg", "2024-11-20T20:30:00", -10.00, 500),
+        new("17", "Hoegaarden", "2024-11-20T21:15:00", -13.00, 330)
     };
     return Results.Ok(new ApiEnvelope<List<TransactionResponse>>(sampleHistory));
 });
@@ -89,10 +86,6 @@ api.MapGet("/payment-operators", () =>
     return Results.Ok(new ApiEnvelope<List<PaymentOperatorResponse>>(paymentOperators));
 });
 
-api.MapGet("/profile", (ClaimsPrincipal user) => {
-    return Results.Ok(new ApiEnvelope<ProfileResponse>(new ProfileResponse(250)));
-});
-
 app.Run();
 
 // --- REQUEST MODELS ---
@@ -100,10 +93,8 @@ record TopUpRequest(int VenueId, int PaymentMethodId, double Amount);
 
 // --- RESPONSE MODELS ---
 record VenueBalanceResponse(int VenueId, string VenueName, double Balance, int LoyaltyPoints);
-record TransactionResponse(string Id, string BeverageName, DateTime Timestamp, double Amount, int VolumeMilliliters);
-record ProfileResponse(int LoyaltyPoints);
+record TransactionResponse(string Id, string BeverageName, string Timestamp, double Amount, int VolumeMilliliters);
 record PaymentMethodResponse(int Id, string Name, string Description, string Image, string Status);
 record PaymentOperatorResponse(string Type, List<PaymentMethodResponse> PaymentMethods);
-record TopUpResponse(string Message, double NewBalance);
 
 record ApiEnvelope<T>(T Data);

@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -134,33 +133,22 @@ fun TransactionItem(transaction: Transaction) {
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = transaction.beerName,
+                    text = transaction.beverageName,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "${transaction.date}, ${transaction.time}",
+                    text = transaction.timestamp,
                     style = MaterialTheme.typography.bodySmall,
                     color = TextSecondary
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CreditCard,
-                        contentDescription = null,
-                        tint = TextSecondary,
-                        modifier = Modifier.size(14.dp)
-                    )
-                    Text(
-                        text = "Karta •••• ${transaction.cardNumber}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = TextSecondary
-                    )
-                }
+                Text(
+                    text = "${transaction.volumeMilliliters}ml",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondary
+                )
             }
 
             Text(
