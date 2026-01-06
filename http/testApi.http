@@ -26,3 +26,8 @@ GET {{beerwall_apitest_HostAddress}}/history
 Accept: application/json
 
 ###
+
+GET {{beerwall_apitest_HostAddress}}/payment-operators
+Accept: application/json
+
+###

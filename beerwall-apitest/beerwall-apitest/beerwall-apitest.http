@@ -5,15 +5,3 @@ GET {{beerwall_apitest_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
-
-
-GET {{beerwall_apitest_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
-
-
-GET {{beerwall_apitest_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

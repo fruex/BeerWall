@@ -65,6 +65,7 @@ fun App(
                 cards = uiState.cards,
                 transactionGroups = uiState.transactionGroups,
                 userProfile = uiState.userProfile,
+                paymentMethods = uiState.paymentMethods,
                 isRefreshing = uiState.isRefreshing,
                 scannedCardId = scannedCardId,
                 onStartNfcScanning = onStartNfcScanning,
