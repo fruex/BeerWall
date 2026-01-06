@@ -134,7 +134,7 @@ fun BeerWallNavHost(
 
         // Add Funds with pre-selected venue
         composable("${NavigationDestination.AddFunds.route}/{venueId}") { backStackEntry ->
-            val venueId = backStackEntry.arguments?.getString("venueId")?.toIntOrNull() ?: 0
+            val venueId = backStackEntry.savedStateHandle.get<String>("venueId")?.toIntOrNull() ?: 0
             val venue = balances.find { it.venueId == venueId }
             AddFundsScreen(
                 availablePaymentMethods = paymentMethods,
