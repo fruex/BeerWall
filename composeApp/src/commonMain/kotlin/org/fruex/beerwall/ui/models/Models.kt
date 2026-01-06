@@ -24,11 +24,10 @@ data class UserCard(
 @Immutable
 data class Transaction(
     val id: String,
-    val beerName: String,
-    val date: String,
-    val time: String,
+    val beverageName: String,
+    val timestamp: String,
     val amount: Double,
-    val cardNumber: String
+    val volumeMilliliters: Int
 )
 
 @Immutable

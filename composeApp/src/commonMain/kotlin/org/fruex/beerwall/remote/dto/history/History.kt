@@ -7,11 +7,10 @@ import org.fruex.beerwall.remote.common.ApiResponse
 @Serializable
 data class TransactionDto(
     val id: String,
-    val beerName: String,
-    val date: String,
-    val time: String,
+    val beverageName: String,
+    val timestamp: String,
     val amount: Double,
-    val cardNumber: String
+    val volumeMilliliters: Int
 )
 
 @Serializable
