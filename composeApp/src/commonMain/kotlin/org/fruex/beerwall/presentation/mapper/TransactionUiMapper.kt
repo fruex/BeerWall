@@ -6,11 +6,10 @@ import org.fruex.beerwall.ui.models.DailyTransactions
 fun Transaction.toUi(): org.fruex.beerwall.ui.models.Transaction {
     return org.fruex.beerwall.ui.models.Transaction(
         id = id,
-        beerName = beerName,
-        date = date,
-        time = time,
+        beverageName = beverageName,
+        timestamp = timestamp,
         amount = amount,
-        cardNumber = cardNumber
+        volumeMilliliters = volumeMilliliters
     )
 }
 
@@ -19,7 +18,7 @@ fun List<Transaction>.toUi(): List<org.fruex.beerwall.ui.models.Transaction> {
 }
 
 fun List<Transaction>.groupByDate(): List<DailyTransactions> {
-    return groupBy { it.date }
+    return groupBy { it.timestamp.substringBefore("T") }
         .map { (date, transactions) ->
             DailyTransactions(
                 date = date.uppercase(),
