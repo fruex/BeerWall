@@ -6,11 +6,10 @@ import org.fruex.beerwall.remote.dto.history.TransactionDto
 fun TransactionDto.toDomain(): Transaction {
     return Transaction(
         id = id,
-        beerName = beerName,
-        date = date,
-        time = time,
+        beverageName = beverageName,
+        timestamp = timestamp,
         amount = amount,
-        cardNumber = cardNumber
+        volumeMilliliters = volumeMilliliters
     )
 }
 
