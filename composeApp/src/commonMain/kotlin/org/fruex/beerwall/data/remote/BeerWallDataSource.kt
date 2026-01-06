@@ -16,6 +16,7 @@ import org.fruex.beerwall.remote.dto.balance.*
 import org.fruex.beerwall.remote.dto.cards.*
 import org.fruex.beerwall.remote.dto.history.*
 import org.fruex.beerwall.remote.dto.profile.*
+import org.fruex.beerwall.remote.dto.operators.*
 
 /**
  * Data Source do komunikacji z API BeerWall
@@ -59,12 +60,17 @@ class BeerWallDataSource {
             get("$baseUrl/balance").body()
         }
 
-    suspend fun topUp(amount: Double, venueName: String): Result<TopUpResponseData> = 
+    suspend fun topUp(paymentMethodId: Int, balance: Double): Result<TopUpResponseData> =
         safeCall<TopUpResponse, TopUpResponseData> {
             post("$baseUrl/balance") {
                 contentType(ContentType.Application.Json)
-                setBody(TopUpRequest(amount, "Blik"))
+                setBody(TopUpRequest(balance, paymentMethodId))
             }.body()
+        }
+
+    suspend fun getPaymentOperators(): Result<List<PaymentOperator>> =
+        safeCall<GetPaymentOperatorsResponse, List<PaymentOperator>> {
+            get("$baseUrl/payment-operators").body()
         }
 
     suspend fun getCards(): Result<List<CardItemDto>> = 

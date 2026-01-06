@@ -25,13 +25,14 @@ fun BeerWallNavHost(
     cards: List<UserCard> = emptyList(),
     transactionGroups: List<DailyTransactions> = emptyList(),
     userProfile: UserProfile = UserProfile("", "", "", 0, 0),
+    paymentMethods: List<org.fruex.beerwall.remote.dto.operators.PaymentMethod> = emptyList(),
     isRefreshing: Boolean = false,
     // Callbacks
     onRegister: (email: String, password: String) -> Unit = { _, _ -> },
     onLogin: (email: String, password: String) -> Unit = { _, _ -> },
     onGoogleSignIn: (onSuccess: () -> Unit) -> Unit = { _ -> },
     onLogout: () -> Unit = {},
-    onAddFunds: (venueName: String, amount: Double, blikCode: String) -> Unit = { _, _, _ -> },
+    onAddFunds: (paymentMethodId: Int, balance: Double) -> Unit = { _, _ -> },
     onToggleCardStatus: (String) -> Unit = {},
     onDeleteCard: (String) -> Unit = {},
     onSaveCard: (name: String, cardId: String) -> Unit = { _, _ -> },
@@ -120,16 +121,11 @@ fun BeerWallNavHost(
 
         // Add Funds screen
         composable(NavigationDestination.AddFunds.route) {
-            val availableVenues = balances.map { it.venueName }
-            var selectedVenue by remember { mutableStateOf(availableVenues.firstOrNull()) }
-            
             AddFundsScreen(
-                availableVenues = availableVenues,
-                selectedVenue = selectedVenue,
-                onVenueSelected = { selectedVenue = it },
+                availablePaymentMethods = paymentMethods,
                 onBackClick = { navController.popBackStack() },
-                onAddFunds = { venueName, amount, blikCode ->
-                    onAddFunds(venueName, amount, blikCode)
+                onAddFunds = { paymentMethodId, balance ->
+                    onAddFunds(paymentMethodId, balance)
                     navController.popBackStack()
                 }
             )
@@ -137,17 +133,11 @@ fun BeerWallNavHost(
 
         // Add Funds with pre-selected venue
         composable("${NavigationDestination.AddFunds.route}/{venueName}") { backStackEntry ->
-            val venueNameArg: String? = backStackEntry.savedStateHandle.get<String>("venueName")
-            val availableVenues = balances.map { it.venueName }
-            var selectedVenue by remember { mutableStateOf(venueNameArg ?: availableVenues.firstOrNull()) }
-            
             AddFundsScreen(
-                availableVenues = availableVenues,
-                selectedVenue = selectedVenue,
-                onVenueSelected = { selectedVenue = it },
+                availablePaymentMethods = paymentMethods,
                 onBackClick = { navController.popBackStack() },
-                onAddFunds = { ven, amount, blikCode ->
-                    onAddFunds(ven, amount, blikCode)
+                onAddFunds = { paymentMethodId, balance ->
+                    onAddFunds(paymentMethodId, balance)
                     navController.popBackStack()
                 }
             )

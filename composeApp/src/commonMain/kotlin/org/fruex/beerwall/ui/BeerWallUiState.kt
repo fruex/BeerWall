@@ -1,5 +1,6 @@
 package org.fruex.beerwall.ui
 
+import org.fruex.beerwall.remote.dto.operators.PaymentMethod
 import org.fruex.beerwall.ui.models.DailyTransactions
 import org.fruex.beerwall.ui.models.UserCard
 import org.fruex.beerwall.ui.models.UserProfile
@@ -13,5 +14,6 @@ data class BeerWallUiState(
     val cards: List<UserCard> = emptyList(),
     val userProfile: UserProfile = UserProfile(name = "", email = "", initials = "", activeCards = 0, loyaltyPoints = 0),
     val transactionGroups: List<DailyTransactions> = emptyList(),
+    val paymentMethods: List<PaymentMethod> = emptyList(),
     val errorMessage: String? = null
 )

@@ -68,8 +68,8 @@ api.MapGet("/balance", (ClaimsPrincipal user) =>
     return Results.Ok(new ApiEnvelope<List<VenueBalance>>(sampleVenueBalances));
 });
 
-api.MapPost("/balance", (ClaimsPrincipal user, TopUpRequest req) => 
-    Results.Ok(new ApiEnvelope<object>(new { Message = $"Doładowano kwotą {req.Amount}", NewBalance = 150.50 + req.Amount })));
+api.MapPost("/balance", (ClaimsPrincipal user, TopUpRequest req) =>
+    Results.Ok(new ApiEnvelope<object>(new { Message = $"Doładowano kwotą {req.Amount} metodą {req.PaymentMethodId}", NewBalance = 150.50 + req.Amount })));
 
 // 2. KARTY (Cards)
 api.MapGet("/cards", (ClaimsPrincipal user) => 
@@ -117,9 +117,18 @@ api.MapGet("/places", () =>
         new(2, "Pub pod Kuflem", 12.50) 
     })));
 
-// 4. OPERATORZY I AKTYWACJA
-api.MapGet("/payment-operators", () => 
-    Results.Ok(new ApiEnvelope<string[]>(new[] { "Blik", "Przelewy24", "Stripe" })));
+api.MapGet("/payment-operators", () =>
+{
+    var paymentOperators = new List<PaymentOperatorDto>
+    {
+        new("BLIK",
+        [
+            new(2007, "BLIK", "Płatność BLIKIEM", "https://static.sandbox.paynow.pl/payment-method-icons/2007.png",
+                "ENABLED")
+        ])
+    };
+    return Results.Ok(new ApiEnvelope<List<PaymentOperatorDto>>(paymentOperators));
+});
 
 api.MapPost("/card-activation", (CardActivationRequest req) => 
     Results.Ok(new ApiEnvelope<object>(new { CardId = req.CardId, IsActive = req.Activate, Status = "Success" })));
@@ -137,7 +146,7 @@ record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 }
 
 // --- MODELE DTO ---
-record TopUpRequest(double Amount, string Method);
+record TopUpRequest(int PaymentMethodId, double Amount);
 record Card(string Id, string Name, bool IsActive, bool IsPhysical);
 record CardDetails(string Id, string Number, string Status, string Type, int LoyaltyPoints);
 record Transaction(string Id, string BeerName, string Date, string Time, double Amount, string CardNumber);
@@ -145,5 +154,7 @@ record Place(int Id, string VenueName, double FundsAvailable);
 record VenueBalance(string VenueName, double Balance);
 record CardActivationRequest(string CardId, bool Activate);
 record ProfileData(int LoyaltyPoints);
+record PaymentMethodDto(int Id, string Name, string Description, string Image, string Status);
+record PaymentOperatorDto(string Type, List<PaymentMethodDto> PaymentMethods);
 
 record ApiEnvelope<T>(T Data);

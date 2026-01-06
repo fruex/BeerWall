@@ -41,7 +41,7 @@ data class BalanceItem(
 @Serializable
 data class TopUpRequest(
     val amount: Double,
-    val method: String
+    val paymentMethodId: Int
 )
 
 @Serializable

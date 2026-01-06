@@ -33,7 +33,8 @@ class BeerWallViewModel(
     private val getBalancesUseCase: GetBalancesUseCase,
     private val topUpBalanceUseCase: TopUpBalanceUseCase,
     private val getTransactionsUseCase: GetTransactionsUseCase,
-    private val toggleCardStatusUseCase: ToggleCardStatusUseCase
+    private val toggleCardStatusUseCase: ToggleCardStatusUseCase,
+    private val getPaymentOperatorsUseCase: GetPaymentOperatorsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BeerWallUiState())
@@ -116,14 +117,30 @@ class BeerWallViewModel(
 
                 newState
             }
+
+            // Pobierz metody płatności
+            loadPaymentMethods()
+
             setLoading(false)
         }
     }
 
-    fun onAddFunds(venueName: String, amount: Double, blikCode: String) {
+    private fun loadPaymentMethods() {
         viewModelScope.launch {
-            topUpBalanceUseCase(amount, venueName)
-                .onSuccess { newBalance -> updateVenueBalance(venueName, newBalance) }
+            getPaymentOperatorsUseCase().onSuccess { operators ->
+                val methods = operators.flatMap { it.paymentMethods }
+                _uiState.update { it.copy(paymentMethods = methods) }
+            }
+        }
+    }
+
+    fun onAddFunds(paymentMethodId: Int, balance: Double) {
+        viewModelScope.launch {
+            topUpBalanceUseCase(paymentMethodId, balance)
+                .onSuccess {
+                    // Odświeżamy wszystkie salda po doładowaniu
+                    refreshBalance()
+                }
                 .onFailure { setError("Nie udało się doładować konta: ${it.message}") }
         }
     }
