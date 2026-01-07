@@ -272,8 +272,7 @@ fun ProfileScreenPreview() {
                 name = "Jan Kowalski",
                 email = "jan.kowalski@example.com",
                 photoUrl = null,
-                initials = "JK",
-                activeCards = 2
+                initials = "JK"
             ),
             onLogoutClick = {}
         )
