@@ -9,7 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.TextSecondary
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SocialDivider(
@@ -34,5 +36,13 @@ fun SocialDivider(
             modifier = Modifier.weight(1f),
             color = TextSecondary.copy(alpha = 0.3f)
         )
+    }
+}
+
+@Preview
+@Composable
+fun SocialDividerPreview() {
+    BeerWallTheme {
+        SocialDivider()
     }
 }

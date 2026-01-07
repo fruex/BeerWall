@@ -1,15 +1,15 @@
 package org.fruex.beerwall.ui.navigation
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import org.fruex.beerwall.ui.models.UserCard
-import org.fruex.beerwall.ui.models.VenueBalance
 import org.fruex.beerwall.ui.models.DailyTransactions
+import org.fruex.beerwall.ui.models.UserCard
 import org.fruex.beerwall.ui.models.UserProfile
+import org.fruex.beerwall.ui.models.VenueBalance
 import org.fruex.beerwall.ui.screens.auth.LoginScreen
 import org.fruex.beerwall.ui.screens.auth.RegistrationScreen
 import org.fruex.beerwall.ui.screens.balance.AddFundsScreen
@@ -24,7 +24,7 @@ fun BeerWallNavHost(
     balances: List<VenueBalance> = emptyList(),
     cards: List<UserCard> = emptyList(),
     transactionGroups: List<DailyTransactions> = emptyList(),
-    userProfile: UserProfile = UserProfile("", "", "", 0, 0),
+    userProfile: UserProfile = UserProfile("", "", "", 0),
     paymentMethods: List<org.fruex.beerwall.remote.dto.operators.PaymentMethod> = emptyList(),
     isRefreshing: Boolean = false,
     // Callbacks

@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.fruex.beerwall.ui.components.*
 import org.fruex.beerwall.ui.theme.*
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -205,6 +206,20 @@ fun NFCIcon(isScanning: Boolean) {
             contentDescription = null,
             tint = DarkBackground,
             modifier = Modifier.size(60.dp)
+        )
+    }
+}
+
+@Preview
+@Composable
+fun AddCardScreenPreview() {
+    BeerWallTheme {
+        AddCardScreen(
+            scannedCardId = null,
+            onBackClick = {},
+            onStartScanning = {},
+            onCardNameChanged = {},
+            onSaveCard = { _, _ -> }
         )
     }
 }

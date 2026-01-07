@@ -19,6 +19,7 @@ import org.fruex.beerwall.ui.components.AppHeader
 import org.fruex.beerwall.ui.models.DailyTransactions
 import org.fruex.beerwall.ui.models.Transaction
 import org.fruex.beerwall.ui.theme.*
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -185,6 +186,48 @@ fun EmptyHistoryView() {
             text = "Twoje transakcje pojawią się tutaj",
             style = MaterialTheme.typography.bodyMedium,
             color = TextSecondary
+        )
+    }
+}
+
+@Preview
+@Composable
+fun HistoryScreenPreview() {
+    BeerWallTheme {
+        HistoryScreen(
+            transactionGroups = listOf(
+                DailyTransactions(
+                    date = "Dzisiaj",
+                    transactions = listOf(
+                        Transaction(
+                            id = "1",
+                            beverageName = "Piwo Jasne",
+                            amount = -12.50,
+                            volumeMilliliters = 500,
+                            timestamp = "18:30"
+                        ),
+                        Transaction(
+                            id = "2",
+                            beverageName = "Doładowanie",
+                            amount = 50.00,
+                            volumeMilliliters = 0,
+                            timestamp = "18:00"
+                        )
+                    )
+                ),
+                DailyTransactions(
+                    date = "Wczoraj",
+                    transactions = listOf(
+                        Transaction(
+                            id = "3",
+                            beverageName = "Piwo Ciemne",
+                            amount = -15.00,
+                            volumeMilliliters = 500,
+                            timestamp = "20:15"
+                        )
+                    )
+                )
+            )
         )
     }
 }

@@ -11,7 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.TextSecondary
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AppHeader(modifier: Modifier = Modifier) {
@@ -27,5 +29,13 @@ fun AppHeader(modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.bodyMedium,
             color = TextSecondary
         )
+    }
+}
+
+@Preview
+@Composable
+fun AppHeaderPreview() {
+    BeerWallTheme {
+        AppHeader()
     }
 }

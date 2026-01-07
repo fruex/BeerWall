@@ -11,7 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.GoldPrimary
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AppLogo(modifier: Modifier = Modifier) {
@@ -39,5 +41,13 @@ fun AppLogo(modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Bold,
             letterSpacing = 4.sp
         )
+    }
+}
+
+@Preview
+@Composable
+fun AppLogoPreview() {
+    BeerWallTheme {
+        AppLogo()
     }
 }

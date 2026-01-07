@@ -9,7 +9,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,6 +24,7 @@ import coil3.compose.SubcomposeAsyncImage
 import org.fruex.beerwall.ui.components.AppHeader
 import org.fruex.beerwall.ui.models.UserProfile
 import org.fruex.beerwall.ui.theme.*
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ProfileScreen(
@@ -256,6 +259,23 @@ private fun DefaultAvatar(
             style = MaterialTheme.typography.displayMedium,
             fontWeight = FontWeight.Bold,
             color = DarkBackground
+        )
+    }
+}
+
+@Preview
+@Composable
+fun ProfileScreenPreview() {
+    BeerWallTheme {
+        ProfileScreen(
+            userProfile = UserProfile(
+                name = "Jan Kowalski",
+                email = "jan.kowalski@example.com",
+                photoUrl = null,
+                initials = "JK",
+                activeCards = 2
+            ),
+            onLogoutClick = {}
         )
     }
 }
