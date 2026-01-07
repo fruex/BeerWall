@@ -33,19 +33,16 @@ class RefreshAllDataUseCase(
     private val getBalancesUseCase: GetBalancesUseCase,
     private val getCardsUseCase: GetCardsUseCase,
     private val getTransactionsUseCase: GetTransactionsUseCase,
-    private val getLoyaltyPointsUseCase: GetLoyaltyPointsUseCase
 ) {
     suspend operator fun invoke(): AllData = coroutineScope {
         val balancesDeferred = async { getBalancesUseCase() }
         val cardsDeferred = async { getCardsUseCase() }
         val transactionsDeferred = async { getTransactionsUseCase() }
-        val loyaltyPointsDeferred = async { getLoyaltyPointsUseCase() }
 
         AllData(
             balances = balancesDeferred.await().getOrNull(),
             cards = cardsDeferred.await().getOrNull(),
             transactions = transactionsDeferred.await().getOrNull(),
-            loyaltyPoints = loyaltyPointsDeferred.await().getOrNull()
         )
     }
 }
