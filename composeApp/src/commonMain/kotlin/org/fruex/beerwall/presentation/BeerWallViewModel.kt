@@ -103,8 +103,7 @@ class BeerWallViewModel(
                 }
                 allData.cards?.let { cards ->
                     newState = newState.copy(
-                        cards = cards.toUi(),
-                        userProfile = newState.userProfile.copy(activeCards = cards.count { it.isActive })
+                        cards = cards.toUi()
                     )
                 }
                 allData.transactions?.let { transactions ->
@@ -164,8 +163,7 @@ class BeerWallViewModel(
                 if (it.id == cardId) it.copy(isActive = isActive) else it
             }
             currentState.copy(
-                cards = updatedCards,
-                userProfile = currentState.userProfile.copy(activeCards = updatedCards.count { it.isActive })
+                cards = updatedCards
             )
         }
     }
@@ -204,8 +202,7 @@ class BeerWallViewModel(
         _uiState.update { currentState ->
             val updatedCards = transform(currentState.cards)
             currentState.copy(
-                cards = updatedCards,
-                userProfile = currentState.userProfile.copy(activeCards = updatedCards.count { it.isActive })
+                cards = updatedCards
             )
         }
     }

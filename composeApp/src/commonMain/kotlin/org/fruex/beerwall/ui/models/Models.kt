@@ -42,6 +42,5 @@ data class UserProfile(
     val name: String,
     val email: String,
     val initials: String,
-    val activeCards: Int,
     val photoUrl: String? = null
 )

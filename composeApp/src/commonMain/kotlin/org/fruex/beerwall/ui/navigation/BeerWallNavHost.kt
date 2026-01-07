@@ -24,7 +24,7 @@ fun BeerWallNavHost(
     balances: List<VenueBalance> = emptyList(),
     cards: List<UserCard> = emptyList(),
     transactionGroups: List<DailyTransactions> = emptyList(),
-    userProfile: UserProfile = UserProfile("", "", "", 0),
+    userProfile: UserProfile = UserProfile("", "", ""),
     paymentMethods: List<org.fruex.beerwall.remote.dto.operators.PaymentMethod> = emptyList(),
     isRefreshing: Boolean = false,
     // Callbacks

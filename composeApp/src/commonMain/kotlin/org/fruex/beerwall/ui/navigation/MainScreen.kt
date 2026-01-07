@@ -84,7 +84,7 @@ fun MainScreen(
     isRefreshing: Boolean = false,
 
     // Profile data & callbacks
-    userProfile: UserProfile = UserProfile("", "", "", 0),
+    userProfile: UserProfile = UserProfile("", "", ""),
     onLogoutClick: () -> Unit = {},
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(BottomNavItem.Balance.route) }
