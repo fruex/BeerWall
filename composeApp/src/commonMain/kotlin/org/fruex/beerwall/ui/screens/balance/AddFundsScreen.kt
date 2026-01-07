@@ -377,7 +377,7 @@ fun AmountChip(
 
 @org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
-private fun AddFundsScreenPreview() {
+internal fun AddFundsScreenPreview() {
     BeerWallTheme {
         AddFundsScreen(
             availablePaymentMethods = listOf(

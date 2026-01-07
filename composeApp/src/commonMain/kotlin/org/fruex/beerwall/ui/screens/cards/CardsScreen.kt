@@ -241,7 +241,7 @@ fun NFCInfoCard() {
 
 @org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
-private fun CardsScreenPreview() {
+internal fun CardsScreenPreview() {
     BeerWallTheme {
         CardsScreen(
             cards = listOf(

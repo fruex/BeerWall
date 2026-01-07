@@ -97,7 +97,7 @@ fun SupportScreen(
 
 @org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
-private fun SupportScreenPreview() {
+internal fun SupportScreenPreview() {
     BeerWallTheme {
         SupportScreen(
             onBackClick = {},

@@ -28,6 +28,7 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
+            implementation(compose.uiTooling)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.credentials)
             implementation(libs.androidx.credentials.play)
@@ -92,6 +93,6 @@ android {
 }
 
 dependencies {
-    debugImplementation(compose.uiTooling)
+    // debugImplementation(compose.uiTooling) // Moved to androidMain source set
 }
 

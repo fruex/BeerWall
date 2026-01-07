@@ -192,7 +192,7 @@ fun InfoCard() {
 
 @org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
-private fun BalanceScreenPreview() {
+internal fun BalanceScreenPreview() {
     BeerWallTheme {
         BalanceScreen(
             balances = listOf(

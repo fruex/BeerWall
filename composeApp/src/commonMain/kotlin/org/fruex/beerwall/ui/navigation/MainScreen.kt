@@ -171,7 +171,7 @@ fun MainScreen(
 
 @org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
-private fun MainScreenPreview() {
+internal fun MainScreenPreview() {
     BeerWallTheme {
         MainScreen(
             balances = listOf(

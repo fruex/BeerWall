@@ -224,7 +224,7 @@ fun SocialLoginButton(
 
 @org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
-private fun LoginScreenPreview() {
+internal fun LoginScreenPreview() {
     BeerWallTheme {
         LoginScreen(
             onLoginClick = { _, _ -> },

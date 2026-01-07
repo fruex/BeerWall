@@ -130,7 +130,7 @@ fun AboutScreen(
 
 @org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
-private fun AboutScreenPreview() {
+internal fun AboutScreenPreview() {
     BeerWallTheme {
         AboutScreen(
             onBackClick = {}

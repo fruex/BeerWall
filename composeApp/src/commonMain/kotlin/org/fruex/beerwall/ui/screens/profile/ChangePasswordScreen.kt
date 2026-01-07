@@ -118,7 +118,7 @@ fun ChangePasswordScreen(
 
 @org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
-private fun ChangePasswordScreenPreview() {
+internal fun ChangePasswordScreenPreview() {
     BeerWallTheme {
         ChangePasswordScreen(
             onBackClick = {},

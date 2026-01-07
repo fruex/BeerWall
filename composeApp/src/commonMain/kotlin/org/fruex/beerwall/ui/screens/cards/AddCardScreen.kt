@@ -212,7 +212,7 @@ fun NFCIcon(isScanning: Boolean) {
 
 @org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
-private fun AddCardScreenPreview() {
+internal fun AddCardScreenPreview() {
     BeerWallTheme {
         AddCardScreen(
             scannedCardId = "1234567890",

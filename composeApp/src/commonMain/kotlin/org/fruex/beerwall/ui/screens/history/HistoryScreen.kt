@@ -192,7 +192,7 @@ fun EmptyHistoryView() {
 
 @org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
-private fun HistoryScreenPreview() {
+internal fun HistoryScreenPreview() {
     BeerWallTheme {
         HistoryScreen(
             transactionGroups = listOf(

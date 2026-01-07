@@ -126,7 +126,7 @@ fun RegistrationScreen(
 
 @org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
-private fun RegistrationScreenPreview() {
+internal fun RegistrationScreenPreview() {
     BeerWallTheme {
         RegistrationScreen(
             onRegisterClick = { _, _ -> },

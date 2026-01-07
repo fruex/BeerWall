@@ -263,7 +263,7 @@ private fun DefaultAvatar(
 
 @org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
-private fun ProfileScreenPreview() {
+internal fun ProfileScreenPreview() {
     BeerWallTheme {
         ProfileScreen(
             userProfile = org.fruex.beerwall.ui.models.UserProfile(
