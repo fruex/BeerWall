@@ -30,10 +30,6 @@ class AppContainer {
         TransactionRepositoryImpl(dataSource) 
     }
     
-    private val profileRepository: ProfileRepository by lazy { 
-        ProfileRepositoryImpl(dataSource) 
-    }
-
     // Use Cases
     private val getBalancesUseCase: GetBalancesUseCase by lazy { 
         GetBalancesUseCase(balanceRepository) 
@@ -55,10 +51,6 @@ class AppContainer {
         GetTransactionsUseCase(transactionRepository) 
     }
     
-    private val getLoyaltyPointsUseCase: GetLoyaltyPointsUseCase by lazy {
-        GetLoyaltyPointsUseCase(profileRepository)
-    }
-
     private val getPaymentOperatorsUseCase: GetPaymentOperatorsUseCase by lazy {
         GetPaymentOperatorsUseCase(balanceRepository)
     }
@@ -67,8 +59,7 @@ class AppContainer {
         RefreshAllDataUseCase(
             getBalancesUseCase,
             getCardsUseCase,
-            getTransactionsUseCase,
-            getLoyaltyPointsUseCase
+            getTransactionsUseCase
         )
     }
 
