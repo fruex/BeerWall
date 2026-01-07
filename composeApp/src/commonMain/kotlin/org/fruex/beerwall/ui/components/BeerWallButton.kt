@@ -18,12 +18,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.DarkBackground
 import org.fruex.beerwall.ui.theme.GoldDark
 import org.fruex.beerwall.ui.theme.GoldPrimary
 import org.fruex.beerwall.ui.theme.InputBackground
 import org.fruex.beerwall.ui.theme.TextPrimary
 import org.fruex.beerwall.ui.theme.TextSecondary
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun BeerWallButton(
@@ -97,6 +99,17 @@ fun BeerWallOutlinedButton(
             text = text,
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+@Preview
+@Composable
+fun BeerWallButtonPreview() {
+    BeerWallTheme {
+        BeerWallButton(
+            text = "Zaloguj",
+            onClick = {}
         )
     }
 }

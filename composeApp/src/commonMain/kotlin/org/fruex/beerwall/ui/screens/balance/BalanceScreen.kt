@@ -9,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Stars
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -18,12 +17,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import org.fruex.beerwall.ui.components.*
+import org.fruex.beerwall.ui.components.AppHeader
+import org.fruex.beerwall.ui.components.BeerWallInfoCard
 import org.fruex.beerwall.ui.models.VenueBalance
-import org.fruex.beerwall.ui.theme.CardBackground
+import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.DarkBackground
 import org.fruex.beerwall.ui.theme.GoldPrimary
-import org.fruex.beerwall.ui.theme.TextSecondary
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -187,4 +187,29 @@ fun InfoCard() {
         title = "Jak to działa",
         description = "Dodaj środki do salda i używaj podłączonych kart NFC przy każdym kranie Beer Wall. Saldo zostanie automatycznie odliczone podczas nalewania."
     )
+}
+
+@Preview
+@Composable
+fun BalanceScreenPreview() {
+    BeerWallTheme {
+        BalanceScreen(
+            balances = listOf(
+                VenueBalance(
+                    venueId = 1,
+                    venueName = "Pub Centrum",
+                    balance = 45.50,
+                    loyaltyPoints = 120
+                ),
+                VenueBalance(
+                    venueId = 2,
+                    venueName = "Bar przy Rynku",
+                    balance = 12.00,
+                    loyaltyPoints = 50
+                )
+            ),
+            onAddFundsClick = {},
+            onAddLocationClick = {}
+        )
+    }
 }

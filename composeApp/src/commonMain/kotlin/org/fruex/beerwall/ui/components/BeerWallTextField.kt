@@ -10,9 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.InputBackground
 import org.fruex.beerwall.ui.theme.TextPrimary
 import org.fruex.beerwall.ui.theme.TextSecondary
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun BeerWallTextField(
@@ -69,5 +71,17 @@ fun BeerWallTextField(
                 style = MaterialTheme.typography.bodySmall
             )
         }
+    }
+}
+
+@Preview
+@Composable
+fun BeerWallTextFieldPreview() {
+    BeerWallTheme {
+        BeerWallTextField(
+            value = "",
+            onValueChange = {},
+            placeholder = "Wpisz tekst..."
+        )
     }
 }

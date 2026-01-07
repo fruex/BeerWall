@@ -1,18 +1,25 @@
 package org.fruex.beerwall.ui.navigation
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Wallet
+import androidx.compose.material.icons.outlined.AccountBalanceWallet
+import androidx.compose.material.icons.outlined.CreditCard
+import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import org.fruex.beerwall.ui.models.UserCard
-import org.fruex.beerwall.ui.models.VenueBalance
 import org.fruex.beerwall.ui.models.DailyTransactions
+import org.fruex.beerwall.ui.models.UserCard
 import org.fruex.beerwall.ui.models.UserProfile
+import org.fruex.beerwall.ui.models.VenueBalance
 import org.fruex.beerwall.ui.screens.balance.BalanceScreen
 import org.fruex.beerwall.ui.screens.cards.CardsScreen
 import org.fruex.beerwall.ui.screens.history.HistoryScreen
@@ -77,7 +84,7 @@ fun MainScreen(
     isRefreshing: Boolean = false,
 
     // Profile data & callbacks
-    userProfile: UserProfile = UserProfile("", "", "", 0, 0),
+    userProfile: UserProfile = UserProfile("", "", "", 0),
     onLogoutClick: () -> Unit = {},
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(BottomNavItem.Balance.route) }

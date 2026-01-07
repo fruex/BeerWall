@@ -3,6 +3,8 @@ package org.fruex.beerwall.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -11,6 +13,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.fruex.beerwall.ui.theme.*
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun BeerWallInfoCard(
@@ -78,5 +81,17 @@ fun BeerWallInfoCard(
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun BeerWallInfoCardPreview() {
+    BeerWallTheme {
+        BeerWallInfoCard(
+            icon = Icons.Default.Info,
+            title = "Informacja",
+            description = "To jest przykładowa karta informacyjna."
+        )
     }
 }

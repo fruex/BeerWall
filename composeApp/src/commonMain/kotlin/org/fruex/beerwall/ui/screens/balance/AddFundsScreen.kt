@@ -1,13 +1,9 @@
 package org.fruex.beerwall.ui.screens.balance
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -26,6 +22,7 @@ import org.fruex.beerwall.remote.dto.operators.PaymentMethod
 import org.fruex.beerwall.ui.components.BeerWallButton
 import org.fruex.beerwall.ui.components.BeerWallTextField
 import org.fruex.beerwall.ui.theme.*
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -370,6 +367,33 @@ fun AmountChip(
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.SemiBold,
             color = if (isSelected) DarkBackground else TextPrimary
+        )
+    }
+}
+
+@Preview
+@Composable
+fun AddFundsScreenPreview() {
+    BeerWallTheme {
+        AddFundsScreen(
+            availablePaymentMethods = listOf(
+                PaymentMethod(
+                    id = 1,
+                    name = "BLIK",
+                    description = "Szybka płatność kodem",
+                    image = "https://example.com/blik.png",
+                    status = "ACTIVE"
+                ),
+                PaymentMethod(
+                    id = 2,
+                    name = "Karta płatnicza",
+                    description = "Visa / Mastercard",
+                    image = "https://example.com/card.png",
+                    status = "ACTIVE"
+                )
+            ),
+            onBackClick = {},
+            onAddFunds = { _, _ -> }
         )
     }
 }

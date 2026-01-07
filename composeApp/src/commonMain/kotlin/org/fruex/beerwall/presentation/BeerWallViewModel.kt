@@ -9,7 +9,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.fruex.beerwall.auth.GoogleUser
 import org.fruex.beerwall.domain.usecase.*
-import org.fruex.beerwall.presentation.mapper.*
+import org.fruex.beerwall.presentation.mapper.groupByDate
+import org.fruex.beerwall.presentation.mapper.toUi
 import org.fruex.beerwall.ui.BeerWallUiState
 import org.fruex.beerwall.ui.models.UserCard
 
@@ -108,11 +109,6 @@ class BeerWallViewModel(
                 }
                 allData.transactions?.let { transactions ->
                     newState = newState.copy(transactionGroups = transactions.groupByDate())
-                }
-                allData.loyaltyPoints?.let { points ->
-                    newState = newState.copy(
-                        userProfile = newState.userProfile.copy(loyaltyPoints = points)
-                    )
                 }
 
                 newState

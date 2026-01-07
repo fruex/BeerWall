@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import org.fruex.beerwall.ui.components.*
 import org.fruex.beerwall.ui.models.UserCard
 import org.fruex.beerwall.ui.theme.*
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun CardsScreen(
@@ -236,4 +237,30 @@ fun NFCInfoCard() {
         description = "Twoje fizyczne karty są połączone z Twoim kontem. Po prostu dotknij dowolnej karty przy kranie Beer Wall, aby nalać i zapłacić.",
         iconBackground = GoldPrimary.copy(alpha = 0.2f)
     )
+}
+
+@Preview
+@Composable
+fun CardsScreenPreview() {
+    BeerWallTheme {
+        CardsScreen(
+            cards = listOf(
+                UserCard(
+                    id = "1234567890",
+                    name = "Moja karta",
+                    isActive = true,
+                    isPhysical = true
+                ),
+                UserCard(
+                    id = "0987654321",
+                    name = "Karta wirtualna",
+                    isActive = false,
+                    isPhysical = false
+                )
+            ),
+            onAddCardClick = {},
+            onToggleCardStatus = {},
+            onDeleteCard = {}
+        )
+    }
 }

@@ -10,8 +10,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.GoldPrimary
 import org.fruex.beerwall.ui.theme.TextSecondary
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AuthHeader(
@@ -35,6 +37,17 @@ fun AuthHeader(
             text = subtitle,
             style = MaterialTheme.typography.bodyLarge,
             color = TextSecondary
+        )
+    }
+}
+
+@Preview
+@Composable
+fun AuthHeaderPreview() {
+    BeerWallTheme {
+        AuthHeader(
+            title = "Igi Beer System",
+            subtitle = "Zaloguj do konta"
         )
     }
 }
