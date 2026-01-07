@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.fruex.beerwall.ui.components.*
 import org.fruex.beerwall.ui.models.VenueBalance
+import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.CardBackground
 import org.fruex.beerwall.ui.theme.DarkBackground
 import org.fruex.beerwall.ui.theme.GoldPrimary
@@ -187,4 +188,31 @@ fun InfoCard() {
         title = "Jak to działa",
         description = "Dodaj środki do salda i używaj podłączonych kart NFC przy każdym kranie Beer Wall. Saldo zostanie automatycznie odliczone podczas nalewania."
     )
+}
+
+@org.jetbrains.compose.ui.tooling.preview.Preview
+@Composable
+private fun BalanceScreenPreview() {
+    BeerWallTheme {
+        BalanceScreen(
+            balances = listOf(
+                org.fruex.beerwall.ui.models.VenueBalance(
+                    venueId = 1,
+                    venueName = "Bar Centrum",
+                    balance = 45.50,
+                    loyaltyPoints = 120
+                ),
+                org.fruex.beerwall.ui.models.VenueBalance(
+                    venueId = 2,
+                    venueName = "Pub Piwnica",
+                    balance = 12.00,
+                    loyaltyPoints = 45
+                )
+            ),
+            isRefreshing = false,
+            onRefresh = {},
+            onAddFundsClick = {},
+            onAddLocationClick = {}
+        )
+    }
 }

@@ -21,6 +21,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.fruex.beerwall.ui.components.*
+import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.DarkBackground
 import org.fruex.beerwall.ui.theme.GoldPrimary
 import org.fruex.beerwall.ui.theme.TextSecondary
@@ -120,5 +121,17 @@ fun RegistrationScreen(
                 )
             }
         }
+    }
+}
+
+@org.jetbrains.compose.ui.tooling.preview.Preview
+@Composable
+private fun RegistrationScreenPreview() {
+    BeerWallTheme {
+        RegistrationScreen(
+            onRegisterClick = { _, _ -> },
+            onGoogleSignInClick = {},
+            onLoginClick = {}
+        )
     }
 }

@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import org.fruex.beerwall.ui.components.AppHeader
 import org.fruex.beerwall.ui.models.DailyTransactions
 import org.fruex.beerwall.ui.models.Transaction
+import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -185,6 +186,50 @@ fun EmptyHistoryView() {
             text = "Twoje transakcje pojawią się tutaj",
             style = MaterialTheme.typography.bodyMedium,
             color = TextSecondary
+        )
+    }
+}
+
+@org.jetbrains.compose.ui.tooling.preview.Preview
+@Composable
+private fun HistoryScreenPreview() {
+    BeerWallTheme {
+        HistoryScreen(
+            transactionGroups = listOf(
+                org.fruex.beerwall.ui.models.DailyTransactions(
+                    date = "Dzisiaj, 15 Maj",
+                    transactions = listOf(
+                        org.fruex.beerwall.ui.models.Transaction(
+                            id = "1",
+                            beverageName = "Pilsner Urquell",
+                            timestamp = "20:30",
+                            amount = -14.50,
+                            volumeMilliliters = 500
+                        ),
+                        org.fruex.beerwall.ui.models.Transaction(
+                            id = "2",
+                            beverageName = "Doładowanie",
+                            timestamp = "19:15",
+                            amount = 50.00,
+                            volumeMilliliters = 0
+                        )
+                    )
+                ),
+                org.fruex.beerwall.ui.models.DailyTransactions(
+                    date = "Wczoraj, 14 Maj",
+                    transactions = listOf(
+                        org.fruex.beerwall.ui.models.Transaction(
+                            id = "3",
+                            beverageName = "APA",
+                            timestamp = "21:45",
+                            amount = -16.00,
+                            volumeMilliliters = 400
+                        )
+                    )
+                )
+            ),
+            isRefreshing = false,
+            onRefresh = {}
         )
     }
 }

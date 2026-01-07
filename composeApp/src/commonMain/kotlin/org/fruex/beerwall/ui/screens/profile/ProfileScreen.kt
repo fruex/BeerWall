@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import org.fruex.beerwall.ui.components.AppHeader
 import org.fruex.beerwall.ui.models.UserProfile
+import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.*
 
 @Composable
@@ -256,6 +257,23 @@ private fun DefaultAvatar(
             style = MaterialTheme.typography.displayMedium,
             fontWeight = FontWeight.Bold,
             color = DarkBackground
+        )
+    }
+}
+
+@org.jetbrains.compose.ui.tooling.preview.Preview
+@Composable
+private fun ProfileScreenPreview() {
+    BeerWallTheme {
+        ProfileScreen(
+            userProfile = org.fruex.beerwall.ui.models.UserProfile(
+                name = "Jan Kowalski",
+                email = "jan.kowalski@example.com",
+                initials = "JK",
+                activeCards = 2,
+                loyaltyPoints = 150
+            ),
+            onLogoutClick = {}
         )
     }
 }

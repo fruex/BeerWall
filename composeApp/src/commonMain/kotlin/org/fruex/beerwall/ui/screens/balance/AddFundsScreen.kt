@@ -25,6 +25,7 @@ import coil3.compose.AsyncImage
 import org.fruex.beerwall.remote.dto.operators.PaymentMethod
 import org.fruex.beerwall.ui.components.BeerWallButton
 import org.fruex.beerwall.ui.components.BeerWallTextField
+import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -370,6 +371,34 @@ fun AmountChip(
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.SemiBold,
             color = if (isSelected) DarkBackground else TextPrimary
+        )
+    }
+}
+
+@org.jetbrains.compose.ui.tooling.preview.Preview
+@Composable
+private fun AddFundsScreenPreview() {
+    BeerWallTheme {
+        AddFundsScreen(
+            availablePaymentMethods = listOf(
+                org.fruex.beerwall.remote.dto.operators.PaymentMethod(
+                    id = 1,
+                    name = "BLIK",
+                    description = "Szybka płatność kodem",
+                    image = "",
+                    status = "ACTIVE"
+                ),
+                org.fruex.beerwall.remote.dto.operators.PaymentMethod(
+                    id = 2,
+                    name = "Karta płatnicza",
+                    description = "Visa / Mastercard",
+                    image = "",
+                    status = "ACTIVE"
+                )
+            ),
+            onBackClick = {},
+            onAddFunds = { _, _ -> },
+            venueName = "Bar Centrum"
         )
     }
 }

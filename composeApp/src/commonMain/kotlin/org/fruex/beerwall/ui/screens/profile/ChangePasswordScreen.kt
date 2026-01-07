@@ -15,6 +15,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import org.fruex.beerwall.ui.components.BeerWallButton
 import org.fruex.beerwall.ui.components.BeerWallTextField
+import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.DarkBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -112,5 +113,16 @@ fun ChangePasswordScreen(
                 enabled = isValid
             )
         }
+    }
+}
+
+@org.jetbrains.compose.ui.tooling.preview.Preview
+@Composable
+private fun ChangePasswordScreenPreview() {
+    BeerWallTheme {
+        ChangePasswordScreen(
+            onBackClick = {},
+            onChangePassword = { _, _ -> }
+        )
     }
 }

@@ -29,6 +29,7 @@ import beerwall.composeapp.generated.resources.ic_facebook
 import beerwall.composeapp.generated.resources.ic_google
 import org.jetbrains.compose.resources.painterResource
 import org.fruex.beerwall.ui.components.*
+import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.*
 
 @Composable
@@ -217,6 +218,18 @@ fun SocialLoginButton(
         Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge
+        )
+    }
+}
+
+@org.jetbrains.compose.ui.tooling.preview.Preview
+@Composable
+private fun LoginScreenPreview() {
+    BeerWallTheme {
+        LoginScreen(
+            onLoginClick = { _, _ -> },
+            onGoogleSignInClick = {},
+            onRegisterClick = {}
         )
     }
 }

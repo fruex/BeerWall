@@ -17,6 +17,7 @@ import org.fruex.beerwall.ui.screens.balance.BalanceScreen
 import org.fruex.beerwall.ui.screens.cards.CardsScreen
 import org.fruex.beerwall.ui.screens.history.HistoryScreen
 import org.fruex.beerwall.ui.screens.profile.ProfileScreen
+import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.CardBackground
 import org.fruex.beerwall.ui.theme.GoldPrimary
 
@@ -165,5 +166,37 @@ fun MainScreen(
                 }
             }
         }
+    }
+}
+
+@org.jetbrains.compose.ui.tooling.preview.Preview
+@Composable
+private fun MainScreenPreview() {
+    BeerWallTheme {
+        MainScreen(
+            balances = listOf(
+                org.fruex.beerwall.ui.models.VenueBalance(1, "Bar Centrum", 45.50, 120),
+                org.fruex.beerwall.ui.models.VenueBalance(2, "Pub Piwnica", 12.00, 45)
+            ),
+            cards = listOf(
+                org.fruex.beerwall.ui.models.UserCard("1234 5678 9012", "Moja karta NFC", true, true)
+            ),
+            transactionGroups = listOf(
+                org.fruex.beerwall.ui.models.DailyTransactions(
+                    date = "Dzisiaj",
+                    transactions = listOf(
+                        org.fruex.beerwall.ui.models.Transaction("1", "Pilsner", "20:30", -14.50, 500)
+                    )
+                )
+            ),
+            userProfile = org.fruex.beerwall.ui.models.UserProfile(
+                name = "Jan Kowalski",
+                email = "jan@example.com",
+                initials = "JK",
+                activeCards = 1,
+                loyaltyPoints = 120
+            ),
+            isRefreshing = false
+        )
     }
 }

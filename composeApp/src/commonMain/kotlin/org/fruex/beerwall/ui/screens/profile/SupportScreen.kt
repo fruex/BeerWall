@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.fruex.beerwall.ui.components.BeerWallButton
+import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.DarkBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -91,5 +92,16 @@ fun SupportScreen(
                 icon = Icons.AutoMirrored.Filled.Send
             )
         }
+    }
+}
+
+@org.jetbrains.compose.ui.tooling.preview.Preview
+@Composable
+private fun SupportScreenPreview() {
+    BeerWallTheme {
+        SupportScreen(
+            onBackClick = {},
+            onSendMessage = {}
+        )
     }
 }
