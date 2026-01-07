@@ -1,6 +1,7 @@
 package org.fruex.beerwall.presentation.mapper
 
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 import org.fruex.beerwall.domain.model.Transaction
 import org.fruex.beerwall.ui.models.DailyTransactions
 
@@ -28,7 +29,7 @@ fun List<Transaction>.groupByDate(): List<DailyTransactions> {
         .map { (dateString, transactions) ->
             val formattedDate = try {
                 val date = LocalDate.parse(dateString)
-                "${date.dayOfMonth} ${monthNames[date.monthNumber - 1]}"
+                "${date.day} ${monthNames[date.month.number - 1]}"
             } catch (e: Exception) {
                 dateString.uppercase()
             }
