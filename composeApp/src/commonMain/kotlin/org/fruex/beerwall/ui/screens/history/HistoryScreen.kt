@@ -144,6 +144,12 @@ fun TransactionItem(transaction: Transaction) {
                     style = MaterialTheme.typography.bodySmall,
                     color = TextSecondary
                 )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = transaction.venueName,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondary
+                )
             }
 
             Column(horizontalAlignment = Alignment.End) {
@@ -204,14 +210,16 @@ fun HistoryScreenPreview() {
                             beverageName = "Piwo Jasne",
                             amount = -12.50,
                             volumeMilliliters = 500,
-                            timestamp = "18:30"
+                            timestamp = "18:30",
+                            venueName = "Pub u Zdzicha"
                         ),
                         Transaction(
                             id = "2",
                             beverageName = "Doładowanie",
                             amount = 50.00,
                             volumeMilliliters = 0,
-                            timestamp = "18:00"
+                            timestamp = "18:00",
+                            venueName = "Pub u Zdzicha"
                         )
                     )
                 ),
@@ -223,7 +231,8 @@ fun HistoryScreenPreview() {
                             beverageName = "Piwo Ciemne",
                             amount = -15.00,
                             volumeMilliliters = 500,
-                            timestamp = "20:15"
+                            timestamp = "20:15",
+                            venueName = "Bar Mleczny"
                         )
                     )
                 )

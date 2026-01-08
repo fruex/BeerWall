@@ -9,6 +9,7 @@ data class TransactionDto(
     val id: String,
     val beverageName: String,
     val timestamp: String,
+    val venueName: String,
     val amount: Double,
     val volumeMilliliters: Int
 )
