@@ -14,6 +14,9 @@ import org.fruex.beerwall.ui.screens.auth.LoginScreen
 import org.fruex.beerwall.ui.screens.auth.RegistrationScreen
 import org.fruex.beerwall.ui.screens.balance.AddFundsScreen
 import org.fruex.beerwall.ui.screens.cards.AddCardScreen
+import org.fruex.beerwall.ui.screens.profile.AboutScreen
+import org.fruex.beerwall.ui.screens.profile.ChangePasswordScreen
+import org.fruex.beerwall.ui.screens.profile.SupportScreen
 
 @Composable
 fun BeerWallNavHost(
@@ -115,6 +118,15 @@ fun BeerWallNavHost(
                     navController.navigate(NavigationDestination.Login.route) {
                         popUpTo(NavigationDestination.Main.route) { inclusive = true }
                     }
+                },
+                onChangePasswordClick = {
+                    navController.navigate(NavigationDestination.ChangePassword.route)
+                },
+                onSupportClick = {
+                    navController.navigate(NavigationDestination.Support.route)
+                },
+                onAboutClick = {
+                    navController.navigate(NavigationDestination.About.route)
                 }
             )
         }
@@ -158,6 +170,33 @@ fun BeerWallNavHost(
                     onSaveCard(name, cardId)
                     navController.popBackStack()
                 }
+            )
+        }
+
+        // Profile sub-screens
+        composable(NavigationDestination.ChangePassword.route) {
+            ChangePasswordScreen(
+                onBackClick = { navController.popBackStack() },
+                onChangePassword = { _, _ ->
+                    // TODO: Implement change password logic
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(NavigationDestination.Support.route) {
+            SupportScreen(
+                onBackClick = { navController.popBackStack() },
+                onSendMessage = { _ ->
+                    // TODO: Implement send message logic
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(NavigationDestination.About.route) {
+            AboutScreen(
+                onBackClick = { navController.popBackStack() }
             )
         }
     }

@@ -86,6 +86,9 @@ fun MainScreen(
     // Profile data & callbacks
     userProfile: UserProfile = UserProfile("", "", ""),
     onLogoutClick: () -> Unit = {},
+    onChangePasswordClick: () -> Unit = {},
+    onSupportClick: () -> Unit = {},
+    onAboutClick: () -> Unit = {},
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(BottomNavItem.Balance.route) }
 
@@ -167,7 +170,10 @@ fun MainScreen(
                 BottomNavItem.Profile.route -> {
                     ProfileScreen(
                         userProfile = userProfile,
-                        onLogoutClick = onLogoutClick
+                        onLogoutClick = onLogoutClick,
+                        onChangePasswordClick = onChangePasswordClick,
+                        onSupportClick = onSupportClick,
+                        onAboutClick = onAboutClick
                     )
                 }
             }
