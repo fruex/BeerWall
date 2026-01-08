@@ -30,6 +30,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun ProfileScreen(
     userProfile: UserProfile,
     onLogoutClick: () -> Unit,
+    onChangePasswordClick: () -> Unit,
+    onSupportClick: () -> Unit,
+    onAboutClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -111,7 +114,7 @@ fun ProfileScreen(
                 SettingsItem(
                     icon = Icons.Default.Settings,
                     label = "Ustawienia konta",
-                    onClick = { /* TODO */ }
+                    onClick = onChangePasswordClick
                 )
 
                 HorizontalDivider(
@@ -122,7 +125,7 @@ fun ProfileScreen(
                 SettingsItem(
                     icon = Icons.AutoMirrored.Filled.Help,
                     label = "Pomoc i wsparcie",
-                    onClick = { /* TODO */ }
+                    onClick = onSupportClick
                 )
 
                 HorizontalDivider(
@@ -133,7 +136,7 @@ fun ProfileScreen(
                 SettingsItem(
                     icon = Icons.Default.Info,
                     label = "O aplikacji",
-                    onClick = { /* TODO */ }
+                    onClick = onAboutClick
                 )
             }
         }
@@ -274,7 +277,10 @@ fun ProfileScreenPreview() {
                 photoUrl = null,
                 initials = "JK"
             ),
-            onLogoutClick = {}
+            onLogoutClick = {},
+            onChangePasswordClick = {},
+            onSupportClick = {},
+            onAboutClick = {}
         )
     }
 }

@@ -17,4 +17,9 @@ sealed class NavigationDestination(val route: String) {
     // Other screens
     data object AddFunds : NavigationDestination("add_funds")
     data object AddCard : NavigationDestination("add_card")
+    
+    // Profile sub-screens
+    data object ChangePassword : NavigationDestination("change_password")
+    data object Support : NavigationDestination("support")
+    data object About : NavigationDestination("about")
 }
