@@ -15,6 +15,7 @@ fun Transaction.toUi(): org.fruex.beerwall.ui.models.Transaction {
         id = id,
         beverageName = beverageName,
         timestamp = timestamp,
+        venueName = venueName,
         amount = amount,
         volumeMilliliters = volumeMilliliters
     )

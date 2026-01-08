@@ -8,6 +8,7 @@ fun TransactionDto.toDomain(): Transaction {
         id = id,
         beverageName = beverageName,
         timestamp = timestamp,
+        venueName = venueName,
         amount = amount,
         volumeMilliliters = volumeMilliliters
     )
