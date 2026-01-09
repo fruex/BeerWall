@@ -49,8 +49,8 @@ data class TopUpRequest(
 
 @Serializable
 data class TopUpResponseData(
-    val message: String,
-    val newBalance: Double
+    val paymentId: String,
+    val status: String
 )
 
 @Serializable

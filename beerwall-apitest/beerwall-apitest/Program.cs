@@ -66,6 +66,15 @@ api.MapPost("/mobile/Auth/GoogleSignIn", async (GoogleSignInRequest request) =>
     }
 });
 
+api.MapPost("/balance", (TopUpRequest request) =>
+{
+    // Mock top-up logic
+    return Results.Ok(new ApiEnvelope<TopUpResponse>(new TopUpResponse(
+        PaymentId: Guid.NewGuid().ToString(),
+        Status: "PENDING"
+    )));
+});
+
 api.MapGet("/balance", (ClaimsPrincipal user) =>
 {
     var sampleVenueBalances = new List<VenueBalanceResponse>
@@ -139,5 +148,6 @@ record TransactionResponse(string Id, string BeverageName, string Timestamp, str
 record PaymentMethodResponse(int Id, string Name, string Description, string Image, string Status);
 record PaymentOperatorResponse(string Type, List<PaymentMethodResponse> PaymentMethods);
 record GoogleSignInResponse(string Token, string Email, string Name, string PictureUrl);
+record TopUpResponse(string PaymentId, string Status);
 
 record ApiEnvelope<T>(T Data);

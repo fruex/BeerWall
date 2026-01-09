@@ -12,9 +12,7 @@ import org.fruex.beerwall.remote.common.ApiResponse
 import org.fruex.beerwall.remote.dto.auth.GoogleSignInRequest
 import org.fruex.beerwall.remote.dto.auth.GoogleSignInResponse
 import org.fruex.beerwall.remote.dto.auth.GoogleSignInResponseData
-import org.fruex.beerwall.remote.dto.balance.BalanceItem
-import org.fruex.beerwall.remote.dto.balance.GetBalanceResponse
-import org.fruex.beerwall.remote.dto.balance.TopUpRequest
+import org.fruex.beerwall.remote.dto.balance.*
 import org.fruex.beerwall.remote.dto.cards.*
 import org.fruex.beerwall.remote.dto.history.GetHistoryResponse
 import org.fruex.beerwall.remote.dto.history.TransactionDto
@@ -73,15 +71,13 @@ class BeerWallDataSource {
             get("$baseUrl/balance").body()
         }
 
-    suspend fun topUp(venueId: Int, paymentMethodId: Int, balance: Double): Result<Unit> = try {
-        client.post("$baseUrl/balance") {
-            contentType(ContentType.Application.Json)
-            setBody(TopUpRequest(venueId, paymentMethodId, balance))
+    suspend fun topUp(venueId: Int, paymentMethodId: Int, balance: Double): Result<TopUpResponseData> = 
+        safeCall<TopUpResponse, TopUpResponseData> {
+            post("$baseUrl/balance") {
+                contentType(ContentType.Application.Json)
+                setBody(TopUpRequest(venueId, paymentMethodId, balance))
+            }.body()
         }
-        Result.success(Unit)
-    } catch (e: Exception) {
-        Result.failure(e)
-    }
 
     suspend fun getPaymentOperators(): Result<List<PaymentOperator>> =
         safeCall<GetPaymentOperatorsResponse, List<PaymentOperator>> {
