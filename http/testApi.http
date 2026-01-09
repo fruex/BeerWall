@@ -32,8 +32,8 @@ Accept: application/json
 
 ###
 
-POST {{beerwall_apitest_HostAddress}}/mobile/Auth/GoogleSignIn
-Accept: application/json
+POST {{beerwall_apitest_HostAddress}}/mobile/Auth/SignIn
+Content-Type: application/json
 
 {
   "email": "mobile",
