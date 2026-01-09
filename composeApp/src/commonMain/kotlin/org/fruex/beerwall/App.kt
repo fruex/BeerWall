@@ -1,10 +1,14 @@
 package org.fruex.beerwall
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
@@ -14,6 +18,7 @@ import org.fruex.beerwall.presentation.BeerWallViewModel
 import org.fruex.beerwall.ui.navigation.BeerWallNavHost
 import org.fruex.beerwall.ui.navigation.NavigationDestination
 import org.fruex.beerwall.ui.theme.BeerWallTheme
+import org.fruex.beerwall.ui.theme.GoldPrimary
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -50,48 +55,55 @@ fun App(
         }
     }
 
-    if (uiState.isCheckingSession) {
-        return
-    }
-
     BeerWallTheme {
-        Scaffold(
-            snackbarHost = { SnackbarHost(snackbarHostState) }
-        ) { paddingValues ->
-            BeerWallNavHost(
-                modifier = Modifier.padding(paddingValues),
-                startDestination = if (uiState.isLoggedIn) NavigationDestination.Main.route else NavigationDestination.Login.route,
-                balances = uiState.balances,
-                cards = uiState.cards,
-                transactionGroups = uiState.transactionGroups,
-                userProfile = uiState.userProfile,
-                paymentMethods = uiState.paymentMethods,
-                isRefreshing = uiState.isRefreshing,
-                scannedCardId = scannedCardId,
-                onStartNfcScanning = onStartNfcScanning,
-                onRefreshHistory = viewModel::refreshHistory,
-                onRefreshBalance = viewModel::refreshBalance,
-                onLogin = { _, _ -> viewModel.setGuestSession() },
-                onRegister = { _, _ -> viewModel.setGuestSession() },
-                onGoogleSignIn = { onSuccess ->
-                    scope.launch {
-                        googleAuthProvider.signIn()?.let { user ->
-                            viewModel.onLoginSuccess(user)
-                            onSuccess()
+        if (uiState.isCheckingSession) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = GoldPrimary)
+            }
+        } else {
+            Scaffold(
+                snackbarHost = { SnackbarHost(snackbarHostState) }
+            ) { paddingValues ->
+                BeerWallNavHost(
+                    modifier = Modifier.padding(paddingValues),
+                    startDestination = if (uiState.isLoggedIn) NavigationDestination.Main.route else NavigationDestination.Login.route,
+                    balances = uiState.balances,
+                    cards = uiState.cards,
+                    transactionGroups = uiState.transactionGroups,
+                    userProfile = uiState.userProfile,
+                    paymentMethods = uiState.paymentMethods,
+                    isRefreshing = uiState.isRefreshing,
+                    scannedCardId = scannedCardId,
+                    onStartNfcScanning = onStartNfcScanning,
+                    onRefreshHistory = viewModel::refreshHistory,
+                    onRefreshBalance = viewModel::refreshBalance,
+                    onLogin = { _, _ -> viewModel.setGuestSession() },
+                    onRegister = { _, _ -> viewModel.setGuestSession() },
+                    onGoogleSignIn = { onSuccess ->
+                        scope.launch {
+                            googleAuthProvider.signIn()?.let { user ->
+                                // Przekazujemy cały obiekt user (z lokalnym zdjęciem) do ViewModelu
+                                viewModel.handleGoogleSignIn(user) {
+                                    onSuccess()
+                                }
+                            }
+                        }
+                    },
+                    onAddFunds = viewModel::onAddFunds,
+                    onToggleCardStatus = viewModel::onToggleCardStatus,
+                    onDeleteCard = viewModel::onDeleteCard,
+                    onSaveCard = viewModel::onSaveCard,
+                    onLogout = {
+                        scope.launch {
+                            googleAuthProvider.signOut()
+                            viewModel.onLogout()
                         }
                     }
-                },
-                onAddFunds = viewModel::onAddFunds,
-                onToggleCardStatus = viewModel::onToggleCardStatus,
-                onDeleteCard = viewModel::onDeleteCard,
-                onSaveCard = viewModel::onSaveCard,
-                onLogout = {
-                    scope.launch {
-                        googleAuthProvider.signOut()
-                        viewModel.onLogout()
-                    }
-                }
-        )
+                )
+            }
+        }
     }
-}
 }

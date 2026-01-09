@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using Google.Apis.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,35 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 var api = app.MapGroup("/api")/*.RequireAuthorization()*/;
+
+api.MapPost("/mobile/Auth/GoogleSignIn", async (GoogleSignInRequest request) =>
+{
+    try
+    {
+        var payload = await GoogleJsonWebSignature.ValidateAsync(request.IdToken, new GoogleJsonWebSignature.ValidationSettings
+        {
+            Audience = new[] { "220522932694-ghamgoqpqtmb0vk9ajnouiqe2h52ateb.apps.googleusercontent.com" }
+        });
+
+        // Tutaj normalnie generowalibyśmy własny token JWT lub sesję dla użytkownika
+        // Na potrzeby testów zwracamy sukces i dane z tokenu Google
+
+        return Results.Ok(new ApiEnvelope<GoogleSignInResponse>(new GoogleSignInResponse(
+            Token: "mock_jwt_token_for_" + payload.Email,
+            Email: payload.Email,
+            Name: payload.Name,
+            PictureUrl: payload.Picture
+        )));
+    }
+    catch (InvalidJwtException)
+    {
+        return Results.BadRequest(new { error = "Invalid ID Token" });
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(new { error = ex.Message });
+    }
+});
 
 api.MapGet("/balance", (ClaimsPrincipal user) =>
 {
@@ -100,6 +130,7 @@ app.Run();
 
 // --- REQUEST MODELS ---
 record TopUpRequest(int VenueId, int PaymentMethodId, double Amount);
+record GoogleSignInRequest(string IdToken);
 
 // --- RESPONSE MODELS ---
 record VenueBalanceResponse(int VenueId, string VenueName, double Balance, int LoyaltyPoints);
@@ -107,5 +138,6 @@ record CardResponse(string Id, string Name, bool IsActive, bool IsPhysical);
 record TransactionResponse(string Id, string BeverageName, string Timestamp, string VenueName, double Amount, int VolumeMilliliters);
 record PaymentMethodResponse(int Id, string Name, string Description, string Image, string Status);
 record PaymentOperatorResponse(string Type, List<PaymentMethodResponse> PaymentMethods);
+record GoogleSignInResponse(string Token, string Email, string Name, string PictureUrl);
 
 record ApiEnvelope<T>(T Data);

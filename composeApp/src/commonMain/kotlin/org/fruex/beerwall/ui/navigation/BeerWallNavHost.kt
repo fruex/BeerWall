@@ -88,7 +88,8 @@ fun BeerWallNavHost(
                 },
                 onRegisterClick = {
                     navController.navigate(NavigationDestination.Registration.route)
-                }
+                },
+                isLoading = isRefreshing
             )
         }
 

@@ -29,6 +29,7 @@ fun BeerWallTextField(
     trailingIcon: @Composable (() -> Unit)? = null,
     isError: Boolean = false,
     errorMessage: String? = null,
+    enabled: Boolean = true
 ) {
     Column(modifier = modifier) {
         TextField(
@@ -47,10 +48,11 @@ fun BeerWallTextField(
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,
             isError = isError,
+            enabled = enabled,
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = InputBackground,
                 unfocusedContainerColor = InputBackground,
-                disabledContainerColor = InputBackground,
+                disabledContainerColor = InputBackground.copy(alpha = 0.5f),
                 errorContainerColor = InputBackground,
                 focusedTextColor = TextPrimary,
                 unfocusedTextColor = TextPrimary,
