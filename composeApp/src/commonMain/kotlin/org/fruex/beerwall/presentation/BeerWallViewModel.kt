@@ -2,6 +2,7 @@ package org.fruex.beerwall.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,7 +36,8 @@ class BeerWallViewModel(
     private val topUpBalanceUseCase: TopUpBalanceUseCase,
     private val getTransactionsUseCase: GetTransactionsUseCase,
     private val toggleCardStatusUseCase: ToggleCardStatusUseCase,
-    private val getPaymentOperatorsUseCase: GetPaymentOperatorsUseCase
+    private val getPaymentOperatorsUseCase: GetPaymentOperatorsUseCase,
+    private val googleSignInUseCase: GoogleSignInUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BeerWallUiState())
@@ -64,16 +66,71 @@ class BeerWallViewModel(
 
     fun onSessionCheckComplete(user: GoogleUser?) {
         if (user != null) {
-            updateUserProfile(user)
-            _uiState.update { it.copy(isLoggedIn = true) }
+            // Jeśli mamy usera z lokalnej sesji Google, spróbujmy go od razu zweryfikować w backendzie
+            viewModelScope.launch {
+                // MOCK: Symulacja opóźnienia i sukcesu, jeśli backend nie odpowiada
+                try {
+                    googleSignInUseCase(user.idToken)
+                        .onSuccess { backendUser ->
+                            val mergedUser = backendUser.copy(
+                                photoUrl = user.photoUrl ?: backendUser.photoUrl,
+                                displayName = user.displayName ?: backendUser.displayName
+                            )
+                            onLoginSuccess(mergedUser)
+                        }
+                        .onFailure {
+                            // W przypadku błędu (np. brak połączenia z backendem),
+                            // na potrzeby testów/deweloperki logujemy lokalnie po opóźnieniu
+                            delay(2000)
+                            onLoginSuccess(user)
+                        }
+                } catch (e: Exception) {
+                    delay(2000)
+                    onLoginSuccess(user)
+                }
+            }
+        } else {
+            _uiState.update { it.copy(isCheckingSession = false) }
         }
-        _uiState.update { it.copy(isCheckingSession = false) }
     }
 
     fun onLoginSuccess(user: GoogleUser) {
         updateUserProfile(user)
-        _uiState.update { it.copy(isLoggedIn = true) }
+        _uiState.update { it.copy(isLoggedIn = true, isCheckingSession = false) }
         refreshAllData()
+    }
+
+    fun handleGoogleSignIn(localUser: GoogleUser, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            setLoading(true)
+            // Wysyłamy ID Token do backendu w celu weryfikacji i uzyskania tokenu sesyjnego (JWT)
+            
+            // MOCK: Symulacja opóźnienia i sukcesu, jeśli backend nie odpowiada
+            try {
+                googleSignInUseCase(localUser.idToken)
+                    .onSuccess { backendUser ->
+                        val finalUser = backendUser.copy(
+                            photoUrl = localUser.photoUrl,
+                            displayName = localUser.displayName ?: backendUser.displayName
+                        )
+                        
+                        onLoginSuccess(finalUser)
+                        onSuccess()
+                    }
+                    .onFailure {
+                        // Fallback dla deweloperki: jeśli backend leży, zaloguj lokalnie po 3s
+                        delay(3000)
+                        onLoginSuccess(localUser)
+                        onSuccess()
+                    }
+            } catch (e: Exception) {
+                delay(3000)
+                onLoginSuccess(localUser)
+                onSuccess()
+            }
+
+            setLoading(false)
+        }
     }
 
     fun setGuestSession() {

@@ -1,22 +1,27 @@
 package org.fruex.beerwall.data.remote
 
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.get
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
-import io.ktor.serialization.kotlinx.json.json
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import org.fruex.beerwall.getPlatform
 import org.fruex.beerwall.remote.common.ApiResponse
-import org.fruex.beerwall.remote.dto.balance.*
+import org.fruex.beerwall.remote.dto.auth.GoogleSignInRequest
+import org.fruex.beerwall.remote.dto.auth.GoogleSignInResponse
+import org.fruex.beerwall.remote.dto.auth.GoogleSignInResponseData
+import org.fruex.beerwall.remote.dto.balance.BalanceItem
+import org.fruex.beerwall.remote.dto.balance.GetBalanceResponse
+import org.fruex.beerwall.remote.dto.balance.TopUpRequest
 import org.fruex.beerwall.remote.dto.cards.*
-import org.fruex.beerwall.remote.dto.history.*
-import org.fruex.beerwall.remote.dto.profile.*
-import org.fruex.beerwall.remote.dto.operators.*
+import org.fruex.beerwall.remote.dto.history.GetHistoryResponse
+import org.fruex.beerwall.remote.dto.history.TransactionDto
+import org.fruex.beerwall.remote.dto.operators.GetPaymentOperatorsResponse
+import org.fruex.beerwall.remote.dto.operators.PaymentOperator
+import org.fruex.beerwall.remote.dto.profile.GetProfileResponse
+import org.fruex.beerwall.remote.dto.profile.ProfileDto
 
 /**
  * Data Source do komunikacji z API BeerWall
@@ -54,6 +59,14 @@ class BeerWallDataSource {
     } catch (e: Exception) {
         Result.failure(e)
     }
+
+    suspend fun googleSignIn(idToken: String): Result<GoogleSignInResponseData> =
+        safeCall<GoogleSignInResponse, GoogleSignInResponseData> {
+            post("$baseUrl/mobile/Auth/GoogleSignIn") {
+                contentType(ContentType.Application.Json)
+                setBody(GoogleSignInRequest(idToken))
+            }.body()
+        }
 
     suspend fun getBalance(): Result<List<BalanceItem>> = 
         safeCall<GetBalanceResponse, List<BalanceItem>> {

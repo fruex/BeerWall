@@ -25,10 +25,7 @@ import beerwall.composeapp.generated.resources.Res
 import beerwall.composeapp.generated.resources.ic_apple
 import beerwall.composeapp.generated.resources.ic_facebook
 import beerwall.composeapp.generated.resources.ic_google
-import org.fruex.beerwall.ui.components.AppLogo
-import org.fruex.beerwall.ui.components.AuthHeader
-import org.fruex.beerwall.ui.components.BeerWallButton
-import org.fruex.beerwall.ui.components.BeerWallTextField
+import org.fruex.beerwall.ui.components.*
 import org.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -38,10 +35,17 @@ fun LoginScreen(
     onLoginClick: (email: String, password: String) -> Unit,
     onGoogleSignInClick: () -> Unit,
     onRegisterClick: () -> Unit,
+    isLoading: Boolean = false
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var showEmailLogin by rememberSaveable { mutableStateOf(false) }
+
+    LoadingDialog(
+        isVisible = isLoading,
+        title = "Logowanie...",
+        message = "Trwa weryfikacja danych"
+    )
 
     Column(
         modifier = Modifier
@@ -67,7 +71,7 @@ fun LoginScreen(
             text = "Kontynuuj z Google",
             onClick = onGoogleSignInClick,
             iconRes = Res.drawable.ic_google,
-            enabled = true
+            enabled = !isLoading
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -110,7 +114,8 @@ fun LoginScreen(
                     contentColor = TextPrimary
                 ),
                 border = BorderStroke(1.dp, TextSecondary.copy(alpha = 0.3f)),
-                contentPadding = PaddingValues(16.dp)
+                contentPadding = PaddingValues(16.dp),
+                enabled = !isLoading
             ) {
                 Icon(
                     imageVector = Icons.Default.Email,
@@ -132,7 +137,8 @@ fun LoginScreen(
                 keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
                     keyboardType = KeyboardType.Email
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -145,7 +151,8 @@ fun LoginScreen(
                 keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
                     keyboardType = KeyboardType.Password
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -153,7 +160,7 @@ fun LoginScreen(
             BeerWallButton(
                 text = "Zaloguj",
                 onClick = { onLoginClick(email, password) },
-                enabled = email.isNotBlank() && password.isNotBlank()
+                enabled = email.isNotBlank() && password.isNotBlank() && !isLoading
             )
         }
 
@@ -171,7 +178,8 @@ fun LoginScreen(
             )
             TextButton(
                 onClick = onRegisterClick,
-                contentPadding = PaddingValues(0.dp)
+                contentPadding = PaddingValues(0.dp),
+                enabled = !isLoading
             ) {
                 Text(
                     text = "Utwórz konto",

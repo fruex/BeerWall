@@ -29,6 +29,10 @@ class AppContainer {
     private val transactionRepository: TransactionRepository by lazy { 
         TransactionRepositoryImpl(dataSource) 
     }
+
+    private val authRepository: AuthRepository by lazy {
+        AuthRepositoryImpl(dataSource)
+    }
     
     // Use Cases
     private val getBalancesUseCase: GetBalancesUseCase by lazy { 
@@ -55,6 +59,10 @@ class AppContainer {
         GetPaymentOperatorsUseCase(balanceRepository)
     }
 
+    private val googleSignInUseCase: GoogleSignInUseCase by lazy {
+        GoogleSignInUseCase(authRepository)
+    }
+
     private val refreshAllDataUseCase: RefreshAllDataUseCase by lazy {
         RefreshAllDataUseCase(
             getBalancesUseCase,
@@ -71,7 +79,8 @@ class AppContainer {
             topUpBalanceUseCase = topUpBalanceUseCase,
             getTransactionsUseCase = getTransactionsUseCase,
             toggleCardStatusUseCase = toggleCardStatusUseCase,
-            getPaymentOperatorsUseCase = getPaymentOperatorsUseCase
+            getPaymentOperatorsUseCase = getPaymentOperatorsUseCase,
+            googleSignInUseCase = googleSignInUseCase
         )
     }
 }
