@@ -7,7 +7,6 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
-import org.fruex.beerwall.getPlatform
 import org.fruex.beerwall.remote.common.ApiResponse
 import org.fruex.beerwall.remote.dto.auth.GoogleSignInRequest
 import org.fruex.beerwall.remote.dto.auth.GoogleSignInResponse
@@ -43,8 +42,6 @@ class BeerWallDataSource {
         }
     }
 
-    private val baseUrl = getPlatform().apiBaseUrl
-
     private suspend inline fun <reified T : ApiResponse<D>, D> safeCall(
         crossinline block: suspend HttpClient.() -> T
     ): Result<D> = try {
@@ -60,7 +57,7 @@ class BeerWallDataSource {
 
     suspend fun googleSignIn(idToken: String): Result<GoogleSignInResponseData> =
         safeCall<GoogleSignInResponse, GoogleSignInResponseData> {
-            post("$baseUrl/mobile/Auth/GoogleSignIn") {
+            post("${ApiConfig.BASE_URL}/mobile/Auth/GoogleSignIn") {
                 contentType(ContentType.Application.Json)
                 setBody(GoogleSignInRequest(idToken))
             }.body()
@@ -68,12 +65,12 @@ class BeerWallDataSource {
 
     suspend fun getBalance(): Result<List<BalanceItem>> = 
         safeCall<GetBalanceResponse, List<BalanceItem>> {
-            get("$baseUrl/balance").body()
+            get("${ApiConfig.BASE_URL}/balance").body()
         }
 
     suspend fun topUp(venueId: Int, paymentMethodId: Int, balance: Double): Result<TopUpResponseData> = 
         safeCall<TopUpResponse, TopUpResponseData> {
-            post("$baseUrl/balance") {
+            post("${ApiConfig.BASE_URL}/balance") {
                 contentType(ContentType.Application.Json)
                 setBody(TopUpRequest(venueId, paymentMethodId, balance))
             }.body()
@@ -81,17 +78,17 @@ class BeerWallDataSource {
 
     suspend fun getPaymentOperators(): Result<List<PaymentOperator>> =
         safeCall<GetPaymentOperatorsResponse, List<PaymentOperator>> {
-            get("$baseUrl/payment-operators").body()
+            get("${ApiConfig.BASE_URL}/payment-operators").body()
         }
 
     suspend fun getCards(): Result<List<CardItemDto>> = 
         safeCall<GetCardsResponse, List<CardItemDto>> {
-            get("$baseUrl/cards").body()
+            get("${ApiConfig.BASE_URL}/cards").body()
         }
 
     suspend fun toggleCardStatus(cardId: String, activate: Boolean): Result<CardActivationData> = 
         safeCall<CardActivationResponse, CardActivationData> {
-            post("$baseUrl/card-activation") {
+            post("${ApiConfig.BASE_URL}/card-activation") {
                 contentType(ContentType.Application.Json)
                 setBody(CardActivationRequest(cardId, activate))
             }.body()
@@ -99,11 +96,11 @@ class BeerWallDataSource {
 
     suspend fun getHistory(): Result<List<TransactionDto>> = 
         safeCall<GetHistoryResponse, List<TransactionDto>> {
-            get("$baseUrl/history").body()
+            get("${ApiConfig.BASE_URL}/history").body()
         }
 
     suspend fun getProfile(): Result<ProfileDto> = 
         safeCall<GetProfileResponse, ProfileDto> {
-            get("$baseUrl/profile").body()
+            get("${ApiConfig.BASE_URL}/profile").body()
         }
 }
