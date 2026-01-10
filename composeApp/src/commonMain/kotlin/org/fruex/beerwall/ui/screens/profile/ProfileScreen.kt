@@ -60,27 +60,10 @@ fun ProfileScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Avatar
-                if (userProfile.photoUrl != null) {
-                    SubcomposeAsyncImage(
-                        model = userProfile.photoUrl,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(100.dp)
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop,
-                        loading = {
-                            DefaultAvatar(userProfile.initials)
-                        },
-                        error = {
-                            DefaultAvatar(userProfile.initials)
-                        }
-                    )
-                } else {
-                    DefaultAvatar(
-                        initials = userProfile.initials,
-                        modifier = Modifier.size(100.dp)
-                    )
-                }
+                DefaultAvatar(
+                    initials = userProfile.initials,
+                    modifier = Modifier.size(100.dp)
+                )
 
                 Spacer(modifier = Modifier.height(20.dp))
 
@@ -274,7 +257,6 @@ fun ProfileScreenPreview() {
             userProfile = UserProfile(
                 name = "Jan Kowalski",
                 email = "jan.kowalski@example.com",
-                photoUrl = null,
                 initials = "JK"
             ),
             onLogoutClick = {},

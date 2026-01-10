@@ -6,9 +6,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GoogleUser(
     val idToken: String,
-    val displayName: String?,
-    val email: String?,
-    val photoUrl: String?
+    val tokenExpires: Long? = null,
+    val refreshToken: String? = null,
+    val refreshTokenExpires: Long? = null,
+    val displayName: String? = null,
+    val email: String? = null
 )
 
 interface GoogleAuthProvider {
