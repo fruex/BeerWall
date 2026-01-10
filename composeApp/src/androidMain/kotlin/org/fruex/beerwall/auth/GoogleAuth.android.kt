@@ -113,8 +113,7 @@ class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvid
     private fun GoogleIdTokenCredential.toGoogleUser(): GoogleUser = GoogleUser(
         idToken = idToken,
         displayName = displayName,
-        email = id,
-        photoUrl = profilePictureUri?.toString()
+        email = id
     )
 
     private suspend fun saveUser(user: GoogleUser) {

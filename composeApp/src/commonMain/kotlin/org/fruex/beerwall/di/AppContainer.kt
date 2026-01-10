@@ -1,37 +1,46 @@
 package org.fruex.beerwall.di
 
 import org.fruex.beerwall.presentation.BeerWallViewModel
+import org.fruex.beerwall.auth.TokenManager
 import org.fruex.beerwall.data.remote.BeerWallDataSource
 import org.fruex.beerwall.data.repository.*
 import org.fruex.beerwall.domain.repository.*
 import org.fruex.beerwall.domain.usecase.*
 
 /**
+ * Factory function for creating AppContainer
+ */
+expect fun createAppContainer(): AppContainer
+
+/**
  * Application dependency container - Simple Service Locator pattern
  * Zarządza tworzeniem i dostarczaniem zależności dla całej aplikacji
  */
-class AppContainer {
-    
+abstract class AppContainer {
+
+    // Auth Layer
+    abstract val tokenManager: TokenManager
+
     // Data Layer
-    private val dataSource: BeerWallDataSource by lazy { 
-        BeerWallDataSource() 
+    private val dataSource: BeerWallDataSource by lazy {
+        BeerWallDataSource(tokenManager)
     }
 
     // Repository Layer
-    private val balanceRepository: BalanceRepository by lazy { 
-        BalanceRepositoryImpl(dataSource) 
+    private val balanceRepository: BalanceRepository by lazy {
+        BalanceRepositoryImpl(dataSource)
     }
-    
-    private val cardRepository: CardRepository by lazy { 
-        CardRepositoryImpl(dataSource) 
+
+    private val cardRepository: CardRepository by lazy {
+        CardRepositoryImpl(dataSource)
     }
-    
-    private val transactionRepository: TransactionRepository by lazy { 
-        TransactionRepositoryImpl(dataSource) 
+
+    private val transactionRepository: TransactionRepository by lazy {
+        TransactionRepositoryImpl(dataSource)
     }
 
     private val authRepository: AuthRepository by lazy {
-        AuthRepositoryImpl(dataSource)
+        AuthRepositoryImpl(dataSource, tokenManager)
     }
     
     // Use Cases

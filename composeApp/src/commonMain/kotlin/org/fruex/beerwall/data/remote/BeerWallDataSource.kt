@@ -7,6 +7,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
+import org.fruex.beerwall.auth.TokenManager
 import org.fruex.beerwall.remote.common.ApiResponse
 import org.fruex.beerwall.remote.dto.auth.GoogleSignInRequest
 import org.fruex.beerwall.remote.dto.auth.GoogleSignInResponse
@@ -27,11 +28,14 @@ import org.fruex.beerwall.remote.dto.profile.ProfileDto
  * - Wykonywanie requestów HTTP do API
  * - Obsługę serializacji/deserializacji JSON
  * - Obsługę błędów sieciowych
+ * - Dodawanie tokenu autoryzacji do requestów
  * - Zwracanie wyników w postaci Result<T>
  *
  * Używa Ktor Client z Content Negotiation dla JSON
  */
-class BeerWallDataSource {
+class BeerWallDataSource(
+    private val tokenManager: TokenManager
+) {
     private val client = HttpClient {
         install(ContentNegotiation) {
             json(Json {
@@ -39,6 +43,12 @@ class BeerWallDataSource {
                 isLenient = true
                 ignoreUnknownKeys = true
             })
+        }
+    }
+
+    private suspend fun HttpRequestBuilder.addAuthToken() {
+        tokenManager.getToken()?.let { token ->
+            header(HttpHeaders.Authorization, "Bearer $token")
         }
     }
 
@@ -63,14 +73,17 @@ class BeerWallDataSource {
             }.body()
         }
 
-    suspend fun getBalance(): Result<List<BalanceItem>> = 
+    suspend fun getBalance(): Result<List<BalanceItem>> =
         safeCall<GetBalanceResponse, List<BalanceItem>> {
-            get("${ApiConfig.BASE_URL}/balance").body()
+            get("${ApiConfig.BASE_URL}/balance") {
+                addAuthToken()
+            }.body()
         }
 
-    suspend fun topUp(venueId: Int, paymentMethodId: Int, balance: Double): Result<TopUpResponseData> = 
+    suspend fun topUp(venueId: Int, paymentMethodId: Int, balance: Double): Result<TopUpResponseData> =
         safeCall<TopUpResponse, TopUpResponseData> {
             post("${ApiConfig.BASE_URL}/balance") {
+                addAuthToken()
                 contentType(ContentType.Application.Json)
                 setBody(TopUpRequest(venueId, paymentMethodId, balance))
             }.body()
@@ -78,29 +91,38 @@ class BeerWallDataSource {
 
     suspend fun getPaymentOperators(): Result<List<PaymentOperator>> =
         safeCall<GetPaymentOperatorsResponse, List<PaymentOperator>> {
-            get("${ApiConfig.BASE_URL}/payment-operators").body()
+            get("${ApiConfig.BASE_URL}/payment-operators") {
+                addAuthToken()
+            }.body()
         }
 
-    suspend fun getCards(): Result<List<CardItemDto>> = 
+    suspend fun getCards(): Result<List<CardItemDto>> =
         safeCall<GetCardsResponse, List<CardItemDto>> {
-            get("${ApiConfig.BASE_URL}/cards").body()
+            get("${ApiConfig.BASE_URL}/cards") {
+                addAuthToken()
+            }.body()
         }
 
-    suspend fun toggleCardStatus(cardId: String, activate: Boolean): Result<CardActivationData> = 
+    suspend fun toggleCardStatus(cardId: String, activate: Boolean): Result<CardActivationData> =
         safeCall<CardActivationResponse, CardActivationData> {
             post("${ApiConfig.BASE_URL}/card-activation") {
+                addAuthToken()
                 contentType(ContentType.Application.Json)
                 setBody(CardActivationRequest(cardId, activate))
             }.body()
         }
 
-    suspend fun getHistory(): Result<List<TransactionDto>> = 
+    suspend fun getHistory(): Result<List<TransactionDto>> =
         safeCall<GetHistoryResponse, List<TransactionDto>> {
-            get("${ApiConfig.BASE_URL}/history").body()
+            get("${ApiConfig.BASE_URL}/history") {
+                addAuthToken()
+            }.body()
         }
 
-    suspend fun getProfile(): Result<ProfileDto> = 
+    suspend fun getProfile(): Result<ProfileDto> =
         safeCall<GetProfileResponse, ProfileDto> {
-            get("${ApiConfig.BASE_URL}/profile").body()
+            get("${ApiConfig.BASE_URL}/profile") {
+                addAuthToken()
+            }.body()
         }
 }

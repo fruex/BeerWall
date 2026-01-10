@@ -12,9 +12,9 @@ data class GoogleSignInRequest(
 @Serializable
 data class GoogleSignInResponseData(
     val token: String,
-    val email: String,
-    val name: String,
-    val pictureUrl: String?
+    val tokenExpires: Long,
+    val refreshToken: String,
+    val refreshTokenExpires: Long
 )
 
 @Serializable

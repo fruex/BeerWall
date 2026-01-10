@@ -73,8 +73,8 @@ class BeerWallViewModel(
                     googleSignInUseCase(user.idToken)
                         .onSuccess { backendUser ->
                             val mergedUser = backendUser.copy(
-                                photoUrl = user.photoUrl ?: backendUser.photoUrl,
-                                displayName = user.displayName ?: backendUser.displayName
+                                displayName = user.displayName ?: backendUser.displayName,
+                                email = user.email ?: backendUser.email
                             )
                             onLoginSuccess(mergedUser)
                         }
@@ -110,10 +110,10 @@ class BeerWallViewModel(
                 googleSignInUseCase(localUser.idToken)
                     .onSuccess { backendUser ->
                         val finalUser = backendUser.copy(
-                            photoUrl = localUser.photoUrl,
-                            displayName = localUser.displayName ?: backendUser.displayName
+                            displayName = localUser.displayName ?: backendUser.displayName,
+                            email = localUser.email ?: backendUser.email
                         )
-                        
+
                         onLoginSuccess(finalUser)
                         onSuccess()
                     }
@@ -270,8 +270,7 @@ class BeerWallViewModel(
                 userProfile = currentState.userProfile.copy(
                     name = user.displayName ?: currentState.userProfile.name,
                     email = user.email ?: currentState.userProfile.email,
-                    initials = getUserInitials(user.displayName, currentState.userProfile.initials),
-                    photoUrl = user.photoUrl
+                    initials = getUserInitials(user.displayName, currentState.userProfile.initials)
                 )
             )
         }

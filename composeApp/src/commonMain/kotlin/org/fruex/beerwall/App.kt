@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import org.fruex.beerwall.auth.rememberGoogleAuthProvider
-import org.fruex.beerwall.di.AppContainer
+import org.fruex.beerwall.di.createAppContainer
 import org.fruex.beerwall.presentation.BeerWallViewModel
 import org.fruex.beerwall.ui.navigation.BeerWallNavHost
 import org.fruex.beerwall.ui.navigation.NavigationDestination
@@ -27,7 +27,7 @@ fun App(
     scannedCardId: String? = null,
     onStartNfcScanning: () -> Unit = {}
 ) {
-    val appContainer = remember { AppContainer() }
+    val appContainer = createAppContainer()
     val viewModel: BeerWallViewModel = viewModel {
         appContainer.createBeerWallViewModel()
     }
