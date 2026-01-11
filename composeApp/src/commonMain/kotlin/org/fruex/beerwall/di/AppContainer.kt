@@ -1,5 +1,6 @@
 package org.fruex.beerwall.di
 
+import androidx.compose.runtime.Composable
 import org.fruex.beerwall.presentation.BeerWallViewModel
 import org.fruex.beerwall.auth.TokenManager
 import org.fruex.beerwall.data.remote.BeerWallDataSource
@@ -10,6 +11,7 @@ import org.fruex.beerwall.domain.usecase.*
 /**
  * Factory function for creating AppContainer
  */
+@Composable
 expect fun createAppContainer(): AppContainer
 
 /**

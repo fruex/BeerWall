@@ -18,4 +18,11 @@ interface TokenManager {
     suspend fun clearTokens()
 }
 
-expect class TokenManagerImpl() : TokenManager
+
+expect class TokenManagerImpl : TokenManager {
+    override suspend fun saveTokens(tokens: AuthTokens)
+    override suspend fun getToken(): String?
+    override suspend fun getRefreshToken(): String?
+    override suspend fun isTokenExpired(): Boolean
+    override suspend fun clearTokens()
+}

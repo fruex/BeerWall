@@ -40,12 +40,12 @@ private val Context.tokenDataStore: DataStore<TokenSession> by dataStore(
 
 actual class TokenManagerImpl(private val context: Context) : TokenManager {
     
-    override suspend fun saveTokens(tokens: AuthTokens) {
+    actual override suspend fun saveTokens(tokens: AuthTokens) {
         context.tokenDataStore.updateData { it.copy(tokens = tokens) }
         Log.d("TokenManager", "Tokens saved")
     }
 
-    override suspend fun getToken(): String? = withContext(Dispatchers.IO) {
+    actual override suspend fun getToken(): String? = withContext(Dispatchers.IO) {
         try {
             val session = context.tokenDataStore.data.first()
             session.tokens?.token
@@ -55,7 +55,7 @@ actual class TokenManagerImpl(private val context: Context) : TokenManager {
         }
     }
 
-    override suspend fun getRefreshToken(): String? = withContext(Dispatchers.IO) {
+    actual override suspend fun getRefreshToken(): String? = withContext(Dispatchers.IO) {
         try {
             val session = context.tokenDataStore.data.first()
             session.tokens?.refreshToken
@@ -65,7 +65,7 @@ actual class TokenManagerImpl(private val context: Context) : TokenManager {
         }
     }
 
-    override suspend fun isTokenExpired(): Boolean = withContext(Dispatchers.IO) {
+    actual override suspend fun isTokenExpired(): Boolean = withContext(Dispatchers.IO) {
         try {
             val session = context.tokenDataStore.data.first()
             val tokens = session.tokens ?: return@withContext true
@@ -77,7 +77,7 @@ actual class TokenManagerImpl(private val context: Context) : TokenManager {
         }
     }
 
-    override suspend fun clearTokens() {
+    actual override suspend fun clearTokens() {
         context.tokenDataStore.updateData { it.copy(tokens = null) }
         Log.d("TokenManager", "Tokens cleared")
     }
