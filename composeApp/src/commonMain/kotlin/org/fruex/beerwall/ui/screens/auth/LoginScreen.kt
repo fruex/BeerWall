@@ -47,8 +47,7 @@ fun LoginScreen(
 
     LoadingDialog(
         isVisible = isLoading,
-        title = "Logowanie...",
-        message = "Trwa weryfikacja danych"
+        title = "Logowanie..."
     )
 
     Column(
