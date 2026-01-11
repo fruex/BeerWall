@@ -5,12 +5,12 @@ import org.fruex.beerwall.remote.common.ApiError
 import org.fruex.beerwall.remote.common.ApiResponse
 
 @Serializable
-data class GoogleSignInRequest(
-    val idToken: String
+data class RefreshTokenRequest(
+    val refreshToken: String
 )
 
 @Serializable
-data class GoogleSignInResponseData(
+data class RefreshTokenResponseData(
     val token: String,
     val tokenExpires: Long,
     val refreshToken: String,
@@ -18,7 +18,7 @@ data class GoogleSignInResponseData(
 )
 
 @Serializable
-data class GoogleSignInResponse(
-    override val data: GoogleSignInResponseData? = null,
+data class RefreshTokenResponse(
+    override val data: RefreshTokenResponseData? = null,
     override val error: ApiError? = null
-) : ApiResponse<GoogleSignInResponseData>
+) : ApiResponse<RefreshTokenResponseData>

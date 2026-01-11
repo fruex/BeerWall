@@ -14,6 +14,8 @@ Content-Type: application/json
 }
 
 > {%
+    client.log("Raw body: " + JSON.stringify(response.body));
+
     client.global.set("net_token", response.body.data.tokenDto.token);
     client.global.set("refresh_token", response.body.data.tokenDto.refreshToken);
     client.log("✓ Token zapisany, wygasa za: " + response.body.data.tokenDto.tokenExpires + "s");
@@ -27,7 +29,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "refreshToken": "{{refresh_token}}"
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjExMTExMTExLTExMTEtMTExMS0xMTExLTExMTExMTExMTExMSIsImp0aSI6IjNmOTMxNThlLTc2NzYtNGU4Ni1iYWRjLWVkMGFkODk2M2JkYiIsImV4cCI6MTc2ODQyMDE3OSwiaXNzIjoiSWdpQmVlciIsImF1ZCI6IlJlZnJlc2gifQ.kLy10GH2m1ZXgM2-eXbFHgF17BJ8HG3xxh-kjiRlNsk"
 }
 
 > {%

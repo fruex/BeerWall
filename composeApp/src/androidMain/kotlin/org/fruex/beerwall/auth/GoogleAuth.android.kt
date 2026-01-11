@@ -1,7 +1,6 @@
 package org.fruex.beerwall.auth
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -16,10 +15,12 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import org.fruex.beerwall.LogSeverity
 import org.fruex.beerwall.R
+import org.fruex.beerwall.getPlatform
+import org.fruex.beerwall.log
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -28,12 +29,13 @@ private data class GoogleUserSession(val user: GoogleUser? = null)
 
 private object GoogleUserSerializer : Serializer<GoogleUserSession> {
     override val defaultValue: GoogleUserSession = GoogleUserSession()
+    private val platform = getPlatform()
 
     override suspend fun readFrom(input: InputStream): GoogleUserSession = try {
         val text = input.readBytes().decodeToString()
         if (text.isEmpty()) defaultValue else Json.decodeFromString<GoogleUserSession>(text)
     } catch (e: Exception) {
-        Log.e("GoogleUserSerializer", "Error reading GoogleUserSession", e)
+        platform.log("Error reading GoogleUserSession: ${e.message}", this, LogSeverity.ERROR)
         defaultValue
     }
 
@@ -52,39 +54,40 @@ private val Context.googleUserDataStore: DataStore<GoogleUserSession> by dataSto
 class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvider {
     private val credentialManager = CredentialManager.create(context)
     private val serverClientId = context.getString(R.string.google_server_client_id)
+    private val platform = getPlatform()
 
     override suspend fun signIn(): GoogleUser? = withContext(Dispatchers.Main) {
         runCatching {
-            Log.d(TAG, "Starting sign in process")
+            platform.log("Starting sign in process", this@AndroidGoogleAuthProvider, LogSeverity.DEBUG)
 
             // Zawsze pobieraj nowy token - nie używaj zapisanego
             val credential = credentialManager.getCredential(context, buildCredentialRequest()).credential
-            Log.d(TAG, "Credential received: ${credential.type}")
+            platform.log("Credential received: ${credential.type}", this@AndroidGoogleAuthProvider, LogSeverity.DEBUG)
 
             credential.toGoogleIdTokenCredential()?.let { googleCredential ->
                 val user = googleCredential.toGoogleUser()
-                Log.d(TAG, "Google user created: ${user.email}")
-                Log.d(TAG, "ID Token length: ${user.idToken.length}")
+                platform.log("Google user created: ${user.email}", this@AndroidGoogleAuthProvider, LogSeverity.INFO)
+                platform.log("ID Token length: ${user.idToken.length}", this@AndroidGoogleAuthProvider, LogSeverity.DEBUG)
                 saveUser(user)
                 user
             } ?: run {
-                Log.d(TAG, "Unknown credential type: ${credential.type}")
+                platform.log("Unknown credential type: ${credential.type}", this@AndroidGoogleAuthProvider, LogSeverity.WARN)
                 null
             }
         }.getOrElse { e ->
-            Log.e(TAG, "Error getting credential", e)
+            platform.log("Error getting credential: ${e.message}", this@AndroidGoogleAuthProvider, LogSeverity.ERROR)
             null
         }
     }
 
     override suspend fun getSignedInUser(): GoogleUser? = withContext(Dispatchers.IO) {
         try {
-            Log.d(TAG, "Getting signed in user from DataStore")
+            platform.log("Getting signed in user from DataStore", this@AndroidGoogleAuthProvider, LogSeverity.DEBUG)
             val session = context.googleUserDataStore.data.first()
-            Log.d(TAG, "Session retrieved: ${session.user?.email ?: "no user"}")
+            platform.log("Session retrieved: ${session.user?.email ?: "no user"}", this@AndroidGoogleAuthProvider, LogSeverity.DEBUG)
             session.user
         } catch (e: Exception) {
-            Log.e(TAG, "Error reading session", e)
+            platform.log("Error reading session: ${e.message}", this@AndroidGoogleAuthProvider, LogSeverity.ERROR)
             null
         }
     }
@@ -94,7 +97,7 @@ class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvid
             clearUser()
             credentialManager.clearCredentialState(ClearCredentialStateRequest())
         }.onFailure { e ->
-            Log.e(TAG, "Error clearing credential state", e)
+            platform.log("Error clearing credential state: ${e.message}", this@AndroidGoogleAuthProvider, LogSeverity.ERROR)
         }
     }
 
@@ -136,12 +139,12 @@ class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvid
                     val currentTime = System.currentTimeMillis() / 1000
                     val validForSeconds = expiration - currentTime
                     val validForMinutes = validForSeconds / 60
-                    Log.d(TAG, "Token valid for: $validForMinutes minutes ($validForSeconds seconds)")
-                    Log.d(TAG, "Token expires at: ${java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date(expiration * 1000))}")
+                    platform.log("Token valid for: $validForMinutes minutes ($validForSeconds seconds)", this@AndroidGoogleAuthProvider, LogSeverity.DEBUG)
+                    platform.log("Token expires at: ${java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date(expiration * 1000))}", this@AndroidGoogleAuthProvider, LogSeverity.DEBUG)
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error parsing token expiration", e)
+            platform.log("Error parsing token expiration: ${e.message}", this@AndroidGoogleAuthProvider, LogSeverity.WARN)
         }
 
         return user
@@ -153,10 +156,6 @@ class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvid
 
     private suspend fun clearUser() {
         context.googleUserDataStore.updateData { it.copy(user = null) }
-    }
-
-    companion object {
-        private const val TAG = "GoogleAuth"
     }
 }
 

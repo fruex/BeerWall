@@ -11,7 +11,10 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
+import org.fruex.beerwall.LogSeverity
 import org.fruex.beerwall.auth.TokenManager
+import org.fruex.beerwall.getPlatform
+import org.fruex.beerwall.log
 import org.fruex.beerwall.remote.common.ApiResponse
 import org.fruex.beerwall.remote.dto.auth.*
 import org.fruex.beerwall.remote.dto.balance.*
@@ -38,6 +41,7 @@ class BeerWallDataSource(
 ) {
     private val refreshMutex = Mutex()
     private var isRefreshing = false
+    private val platform = getPlatform()
 
     var onUnauthorized: (suspend () -> Unit)? = null
 
@@ -51,7 +55,11 @@ class BeerWallDataSource(
         }
 
         install(Logging) {
-            logger = Logger.DEFAULT
+            logger = object : Logger {
+                override fun log(message: String) {
+                    platform.log(message, "KtorClient", LogSeverity.DEBUG)
+                }
+            }
             level = LogLevel.ALL
             filter { request ->
                 request.url.host.contains("igibeer")
@@ -101,19 +109,19 @@ class BeerWallDataSource(
     private suspend inline fun <reified T : ApiResponse<D>, D> safeCall(
         crossinline block: suspend HttpClient.() -> T
     ): Result<D> = try {
-        println("📤 API Request: ${T::class.simpleName}")
+        platform.log("📤 API Request: ${T::class.simpleName}", this, LogSeverity.INFO)
         val response = client.block()
-        println("📥 API Response: ${response.data != null} - Error: ${response.error?.message}")
+        platform.log("📥 API Response: ${response.data != null} - Error: ${response.error?.message}", this, LogSeverity.INFO)
 
         if (response.data != null) {
             Result.success(response.data!!)
         } else {
             val errorMsg = response.error?.message ?: "Unknown error"
-            println("❌ API Error: $errorMsg")
+            platform.log("❌ API Error: $errorMsg", this, LogSeverity.ERROR)
             Result.failure(Exception(errorMsg))
         }
     } catch (e: Exception) {
-        println("❌ API Exception: ${e.message}")
+        platform.log("❌ API Exception: ${e.message}", this, LogSeverity.ERROR)
         e.printStackTrace()
         Result.failure(e)
     }
@@ -141,75 +149,90 @@ class BeerWallDataSource(
     }
 
     suspend fun googleSignIn(idToken: String): Result<GoogleSignInResponseData> = try {
-        println("📤 Google SignIn Request to .NET Backend")
-        println("  🔑 ID Token (first 50 chars): ${idToken.take(50)}...")
-        println("  📏 ID Token length: ${idToken.length}")
-        println("  🌐 Endpoint: ${ApiConfig.BASE_URL}/mobile/Auth/GoogleSignIn")
+        platform.log("📤 Google SignIn Request to .NET Backend", this, LogSeverity.INFO)
+        platform.log("  🔑 ID Token (first 50 chars): ${idToken.take(50)}...", this, LogSeverity.DEBUG)
+        platform.log("  📏 ID Token length: ${idToken.length}", this, LogSeverity.DEBUG)
+        platform.log("  🌐 Endpoint: ${ApiConfig.BASE_URL}/mobile/Auth/GoogleSignIn", this, LogSeverity.DEBUG)
 
         val httpResponse: HttpResponse = client.post("${ApiConfig.BASE_URL}/mobile/Auth/GoogleSignIn") {
             contentType(ContentType.Application.Json)
             setBody(GoogleSignInRequest(idToken))
         }
 
-        println("📥 Google SignIn Response from .NET Backend")
-        println("  📊 HTTP Status: ${httpResponse.status.value} ${httpResponse.status.description}")
-        println("  📋 Content-Type: ${httpResponse.contentType()}")
+        platform.log("📥 Google SignIn Response from .NET Backend", this, LogSeverity.INFO)
+        platform.log("  📊 HTTP Status: ${httpResponse.status.value} ${httpResponse.status.description}", this, LogSeverity.DEBUG)
+        platform.log("  📋 Content-Type: ${httpResponse.contentType()}", this, LogSeverity.DEBUG)
 
         when (httpResponse.status) {
             HttpStatusCode.OK -> {
                 val response: GoogleSignInResponse = httpResponse.body()
                 if (response.data != null) {
-                    println("✅ Google SignIn Success")
-                    println("  👤 Backend returned .NET token")
+                    platform.log("✅ Google SignIn Success", this, LogSeverity.INFO)
+                    platform.log("  👤 Backend returned .NET token", this, LogSeverity.DEBUG)
                     Result.success(response.data!!)
                 } else {
                     val errorMsg = response.error?.message ?: "Unknown error"
-                    println("❌ Google SignIn Error from API response: $errorMsg")
+                    platform.log("❌ Google SignIn Error from API response: $errorMsg", this, LogSeverity.ERROR)
                     Result.failure(Exception(errorMsg))
                 }
             }
             HttpStatusCode.Unauthorized -> {
                 val bodyText = httpResponse.bodyAsText()
-                println("❌ 401 Unauthorized from .NET Backend")
-                println("  📄 Full Response Body:")
-                println("  $bodyText")
-                println("")
-                println("  💡 Możliwe przyczyny:")
-                println("     1. Backend nie może zweryfikować tokenu Google")
-                println("     2. Nieprawidłowy Google Client ID w konfiguracji backendu")
-                println("     3. Token Google wygasł podczas transmisji")
-                println("     4. Backend wymaga innych claims w tokenie")
+                platform.log("❌ 401 Unauthorized from .NET Backend", this, LogSeverity.ERROR)
+                platform.log("  📄 Full Response Body:", this, LogSeverity.DEBUG)
+                platform.log("  $bodyText", this, LogSeverity.DEBUG)
+                platform.log("", this, LogSeverity.DEBUG)
+                platform.log("  💡 Możliwe przyczyny:", this, LogSeverity.WARN)
+                platform.log("     1. Backend nie może zweryfikować tokenu Google", this, LogSeverity.WARN)
+                platform.log("     2. Nieprawidłowy Google Client ID w konfiguracji backendu", this, LogSeverity.WARN)
+                platform.log("     3. Token Google wygasł podczas transmisji", this, LogSeverity.WARN)
+                platform.log("     4. Backend wymaga innych claims w tokenie", this, LogSeverity.WARN)
 
                 // Spróbuj sparsować jako JSON
                 try {
                     val jsonBody = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
                         .decodeFromString<GoogleSignInResponse>(bodyText)
-                    println("  🔍 Parsed error message: ${jsonBody.error?.message}")
+                    platform.log("  🔍 Parsed error message: ${jsonBody.error?.message}", this, LogSeverity.ERROR)
                 } catch (e: Exception) {
-                    println("  ⚠️ Response is not JSON format")
+                    platform.log("  ⚠️ Response is not JSON format", this, LogSeverity.WARN)
                 }
 
                 Result.failure(Exception("Backend .NET zwrócił 401: Token odrzucony. Sprawdź logi backendu."))
             }
             else -> {
                 val bodyText = httpResponse.bodyAsText()
-                println("❌ HTTP ${httpResponse.status.value}: $bodyText")
+                platform.log("❌ HTTP ${httpResponse.status.value}: $bodyText", this, LogSeverity.ERROR)
                 Result.failure(Exception("HTTP ${httpResponse.status.value}: ${httpResponse.status.description}"))
             }
         }
     } catch (e: Exception) {
-        println("❌ Google SignIn Exception: ${e.message}")
+        platform.log("❌ Google SignIn Exception: ${e.message}", this, LogSeverity.ERROR)
         e.printStackTrace()
         Result.failure(e)
     }
 
-    suspend fun emailPasswordSignIn(email: String, password: String): Result<EmailPasswordSignInResponseData> =
-        safeCall<EmailPasswordSignInResponse, EmailPasswordSignInResponseData> {
-            post("${ApiConfig.BASE_URL}/mobile/Auth/SignIn") {
-                contentType(ContentType.Application.Json)
-                setBody(EmailPasswordSignInRequest(email, password))
-            }.body()
+    suspend fun emailPasswordSignIn(email: String, password: String): Result<EmailPasswordSignInResponseData> = try {
+        platform.log("📤 Email SignIn Request", this, LogSeverity.INFO)
+        val response = client.post("${ApiConfig.BASE_URL}/mobile/Auth/SignIn") {
+            contentType(ContentType.Application.Json)
+            setBody(EmailPasswordSignInRequest(email, password))
         }
+
+        if (response.status == HttpStatusCode.OK) {
+            // API zwraca bezpośrednio obiekt danych, a nie wrapper ApiResponse
+            val responseData: EmailPasswordSignInResponseData = response.body()
+            platform.log("✅ Email SignIn Success", this, LogSeverity.INFO)
+            Result.success(responseData)
+        } else {
+            val bodyText = response.bodyAsText()
+            platform.log("❌ Email SignIn Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
+            Result.failure(Exception("Błąd logowania: ${response.status}"))
+        }
+    } catch (e: Exception) {
+        platform.log("❌ Email SignIn Exception: ${e.message}", this, LogSeverity.ERROR)
+        e.printStackTrace()
+        Result.failure(e)
+    }
 
     suspend fun refreshToken(refreshToken: String): Result<RefreshTokenResponseData> =
         safeCall<RefreshTokenResponse, RefreshTokenResponseData> {

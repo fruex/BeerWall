@@ -1,17 +1,23 @@
 package org.fruex.beerwall.data.repository
 
+import org.fruex.beerwall.LogSeverity
 import org.fruex.beerwall.auth.AuthTokens
 import org.fruex.beerwall.auth.GoogleUser
 import org.fruex.beerwall.auth.TokenManager
 import org.fruex.beerwall.data.remote.BeerWallDataSource
 import org.fruex.beerwall.domain.repository.AuthRepository
+import org.fruex.beerwall.getPlatform
+import org.fruex.beerwall.log
 
 class AuthRepositoryImpl(
     private val dataSource: BeerWallDataSource,
     private val tokenManager: TokenManager
 ) : AuthRepository {
+    private val platform = getPlatform()
+
     override suspend fun googleSignIn(idToken: String): Result<GoogleUser> {
-        return dataSource.googleSignIn(idToken).map { response ->
+        return dataSource.googleSignIn(idToken).mapCatching { response ->
+            platform.log("🔐 Google Login success, saving tokens...", this, LogSeverity.INFO)
             // Zapisz tokeny do lokalnego storage
             val tokens = AuthTokens(
                 token = response.token,
@@ -20,6 +26,7 @@ class AuthRepositoryImpl(
                 refreshTokenExpires = response.refreshTokenExpires
             )
             tokenManager.saveTokens(tokens)
+            platform.log("✅ Tokens saved", this, LogSeverity.DEBUG)
 
             GoogleUser(
                 idToken = response.token,
@@ -31,7 +38,8 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun emailPasswordSignIn(email: String, password: String): Result<AuthTokens> {
-        return dataSource.emailPasswordSignIn(email, password).map { response ->
+        return dataSource.emailPasswordSignIn(email, password).mapCatching { response ->
+            platform.log("🔐 Email Login success, saving tokens...", this, LogSeverity.INFO)
             // Zapisz tokeny do lokalnego storage
             val tokens = AuthTokens(
                 token = response.tokenDto.token,
@@ -40,6 +48,7 @@ class AuthRepositoryImpl(
                 refreshTokenExpires = response.tokenDto.refreshTokenExpires
             )
             tokenManager.saveTokens(tokens)
+            platform.log("✅ Tokens saved", this, LogSeverity.DEBUG)
             tokens
         }
     }
@@ -54,7 +63,7 @@ class AuthRepositoryImpl(
             return Result.failure(Exception("Refresh token expired"))
         }
 
-        return dataSource.refreshToken(currentRefreshToken).map { response ->
+        return dataSource.refreshToken(currentRefreshToken).mapCatching { response ->
             val tokens = AuthTokens(
                 token = response.token,
                 tokenExpires = response.tokenExpires,
