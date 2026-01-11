@@ -169,7 +169,7 @@ class BeerWallDataSource(
                 if (response.data != null) {
                     platform.log("✅ Google SignIn Success", this, LogSeverity.INFO)
                     platform.log("  👤 Backend returned .NET token", this, LogSeverity.DEBUG)
-                    Result.success(response.data!!)
+                    Result.success(response.data)
                 } else {
                     val errorMsg = response.error?.message ?: "Unknown error"
                     platform.log("❌ Google SignIn Error from API response: $errorMsg", this, LogSeverity.ERROR)
