@@ -80,9 +80,9 @@ fun App(
                     onStartNfcScanning = onStartNfcScanning,
                     onRefreshHistory = viewModel::refreshHistory,
                     onRefreshBalance = viewModel::refreshBalance,
-                    onLogin = viewModel::handleEmailPasswordSignIn,
-                    onRegister = { _, _ -> viewModel.setGuestSession() },
-                    onGoogleSignIn = {
+                    onRegisterWithEmail = { _, _ -> viewModel.setGuestSession() },
+                    onLoginWithEmail = viewModel::handleEmailPasswordSignIn,
+                    onLoginWithGoogle = {
                         viewModel.handleGoogleSignIn(googleAuthProvider)
                     },
                     onAddFunds = viewModel::onAddFunds,

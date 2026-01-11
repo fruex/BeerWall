@@ -31,9 +31,9 @@ fun BeerWallNavHost(
     paymentMethods: List<org.fruex.beerwall.remote.dto.operators.PaymentMethod> = emptyList(),
     isRefreshing: Boolean = false,
     // Callbacks
-    onRegister: (email: String, password: String) -> Unit = { _, _ -> },
-    onLogin: (email: String, password: String) -> Unit = { _, _ -> },
-    onGoogleSignIn: () -> Unit = {},
+    onRegisterWithEmail: (email: String, password: String) -> Unit = { _, _ -> },
+    onLoginWithEmail: (email: String, password: String) -> Unit = { _, _ -> },
+    onLoginWithGoogle: () -> Unit = {},
     onLogout: () -> Unit = {},
     onAddFunds: (venueId: Int, paymentMethodId: Int, balance: Double) -> Unit = { _, _, _ -> },
     onToggleCardStatus: (String) -> Unit = {},
@@ -53,9 +53,9 @@ fun BeerWallNavHost(
         composable(NavigationDestination.Registration.route) {
             RegistrationScreen(
                 onRegisterClick = { email, password ->
-                    onRegister(email, password)
+                    onRegisterWithEmail(email, password)
                 },
-                onGoogleSignInClick = onGoogleSignIn,
+                onGoogleSignInClick = onLoginWithGoogle,
                 onLoginClick = {
                     navController.navigate(NavigationDestination.Login.route)
                 }
@@ -65,9 +65,9 @@ fun BeerWallNavHost(
         composable(NavigationDestination.Login.route) {
             LoginScreen(
                 onLoginClick = { email, password ->
-                    onLogin(email, password)
+                    onLoginWithEmail(email, password)
                 },
-                onGoogleSignInClick = onGoogleSignIn,
+                onGoogleSignInClick = onLoginWithGoogle,
                 onRegisterClick = {
                     navController.navigate(NavigationDestination.Registration.route)
                 },

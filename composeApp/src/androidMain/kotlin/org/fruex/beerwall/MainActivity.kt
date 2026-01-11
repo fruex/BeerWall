@@ -5,7 +5,6 @@ import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,6 +19,7 @@ class MainActivity : ComponentActivity() {
 
     private var nfcAdapter: NfcAdapter? = null
     private var cardId by mutableStateOf<String?>(null)
+    private val platform = getPlatform()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity() {
                 val scannedId = NfcCardReader.readCardId(it)
                 if (scannedId != null) {
                     cardId = scannedId
-                    Log.d("MainActivity", "Card scanned: $cardId")
+                    platform.log("Card scanned: $cardId", this, LogSeverity.INFO)
                 }
             }
         }
