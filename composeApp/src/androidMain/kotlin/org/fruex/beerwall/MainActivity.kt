@@ -19,6 +19,7 @@ class MainActivity : ComponentActivity() {
 
     private var nfcAdapter: NfcAdapter? = null
     private var cardId by mutableStateOf<String?>(null)
+    private var isNfcEnabled by mutableStateOf(true)
     private val platform = getPlatform()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,12 +30,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
+        checkNfcStatus()
 
         setContent {
             App(
                 scannedCardId = cardId,
+                isNfcEnabled = isNfcEnabled,
                 onStartNfcScanning = { 
                     cardId = null
+                    checkNfcStatus()
                 }
             )
         }
@@ -42,6 +46,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        checkNfcStatus()
         enableForegroundDispatch()
     }
 
@@ -55,16 +60,22 @@ class MainActivity : ComponentActivity() {
         handleIntent(intent)
     }
 
+    private fun checkNfcStatus() {
+        isNfcEnabled = nfcAdapter?.isEnabled == true
+    }
+
     private fun enableForegroundDispatch() {
         nfcAdapter?.let { adapter ->
-            val intent = Intent(this, javaClass).apply {
-                addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            if (adapter.isEnabled) {
+                val intent = Intent(this, javaClass).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                }
+                val pendingIntent = PendingIntent.getActivity(
+                    this, 0, intent,
+                    PendingIntent.FLAG_MUTABLE
+                )
+                adapter.enableForegroundDispatch(this, pendingIntent, null, null)
             }
-            val pendingIntent = PendingIntent.getActivity(
-                this, 0, intent,
-                PendingIntent.FLAG_MUTABLE
-            )
-            adapter.enableForegroundDispatch(this, pendingIntent, null, null)
         }
     }
 
