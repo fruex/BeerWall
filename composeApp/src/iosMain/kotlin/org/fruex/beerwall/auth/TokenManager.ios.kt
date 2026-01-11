@@ -1,30 +1,33 @@
 package org.fruex.beerwall.auth
 
-actual class TokenManagerImpl actual constructor() : TokenManager {
+import platform.Foundation.NSDate
+import platform.Foundation.timeIntervalSince1970
+
+actual class TokenManagerImpl : TokenManager {
     private var tokens: AuthTokens? = null
     
-    override suspend fun saveTokens(tokens: AuthTokens) {
+    actual override suspend fun saveTokens(tokens: AuthTokens) {
         this.tokens = tokens
         // TODO: Implement secure storage for iOS (Keychain)
     }
 
-    override suspend fun getToken(): String? {
+    actual override suspend fun getToken(): String? {
         // TODO: Implement secure storage for iOS (Keychain)
         return tokens?.token
     }
 
-    override suspend fun getRefreshToken(): String? {
+    actual override suspend fun getRefreshToken(): String? {
         // TODO: Implement secure storage for iOS (Keychain)
         return tokens?.refreshToken
     }
 
-    override suspend fun isTokenExpired(): Boolean {
+    actual override suspend fun isTokenExpired(): Boolean {
         val currentTokens = tokens ?: return true
-        val currentTime = System.currentTimeMillis() / 1000
+        val currentTime = NSDate().timeIntervalSince1970.toLong()
         return currentTime >= currentTokens.tokenExpires
     }
 
-    override suspend fun clearTokens() {
+    actual override suspend fun clearTokens() {
         tokens = null
         // TODO: Implement secure storage for iOS (Keychain)
     }
