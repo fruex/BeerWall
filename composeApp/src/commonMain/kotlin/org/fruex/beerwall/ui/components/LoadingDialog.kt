@@ -16,13 +16,11 @@ import androidx.compose.ui.unit.dp
 import org.fruex.beerwall.ui.theme.CardBackground
 import org.fruex.beerwall.ui.theme.GoldPrimary
 import org.fruex.beerwall.ui.theme.TextPrimary
-import org.fruex.beerwall.ui.theme.TextSecondary
 
 @Composable
 fun LoadingDialog(
     isVisible: Boolean,
     title: String = "Przetwarzanie...",
-    message: String = "Proszę czekać",
     onDismissRequest: () -> Unit = {}
 ) {
     if (isVisible) {
@@ -42,15 +40,6 @@ fun LoadingDialog(
                         color = TextPrimary
                     )
                 }
-            },
-            text = {
-                Text(
-                    text = message,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                )
             },
             containerColor = CardBackground,
             shape = RoundedCornerShape(16.dp)
