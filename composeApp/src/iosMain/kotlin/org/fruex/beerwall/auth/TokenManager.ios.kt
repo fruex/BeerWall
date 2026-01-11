@@ -27,6 +27,20 @@ actual class TokenManagerImpl : TokenManager {
         return currentTime >= currentTokens.tokenExpires
     }
 
+    actual override suspend fun isRefreshTokenExpired(): Boolean {
+        val currentTokens = tokens ?: return true
+        val currentTime = NSDate().timeIntervalSince1970.toLong()
+        return currentTime >= currentTokens.refreshTokenExpires
+    }
+
+    actual override suspend fun getTokenExpires(): Long? {
+        return tokens?.tokenExpires
+    }
+
+    actual override suspend fun getRefreshTokenExpires(): Long? {
+        return tokens?.refreshTokenExpires
+    }
+
     actual override suspend fun clearTokens() {
         tokens = null
         // TODO: Implement secure storage for iOS (Keychain)

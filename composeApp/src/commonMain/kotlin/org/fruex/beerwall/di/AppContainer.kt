@@ -24,6 +24,7 @@ abstract class AppContainer {
     abstract val tokenManager: TokenManager
 
     // Data Layer
+    // DataSource jest inicjalizowany bez callbacku, callback zostanie ustawiony w ViewModelu
     private val dataSource: BeerWallDataSource by lazy {
         BeerWallDataSource(tokenManager)
     }
@@ -74,6 +75,14 @@ abstract class AppContainer {
         GoogleSignInUseCase(authRepository)
     }
 
+    private val emailPasswordSignInUseCase: EmailPasswordSignInUseCase by lazy {
+        EmailPasswordSignInUseCase(authRepository)
+    }
+
+    private val checkSessionUseCase: CheckSessionUseCase by lazy {
+        CheckSessionUseCase(authRepository)
+    }
+
     private val refreshAllDataUseCase: RefreshAllDataUseCase by lazy {
         RefreshAllDataUseCase(
             getBalancesUseCase,
@@ -84,14 +93,24 @@ abstract class AppContainer {
 
     // ViewModel Factory
     fun createBeerWallViewModel(): BeerWallViewModel {
-        return BeerWallViewModel(
+        val viewModel = BeerWallViewModel(
             refreshAllDataUseCase = refreshAllDataUseCase,
             getBalancesUseCase = getBalancesUseCase,
             topUpBalanceUseCase = topUpBalanceUseCase,
             getTransactionsUseCase = getTransactionsUseCase,
             toggleCardStatusUseCase = toggleCardStatusUseCase,
             getPaymentOperatorsUseCase = getPaymentOperatorsUseCase,
-            googleSignInUseCase = googleSignInUseCase
+            googleSignInUseCase = googleSignInUseCase,
+            emailPasswordSignInUseCase = emailPasswordSignInUseCase,
+            checkSessionUseCase = checkSessionUseCase,
+            authRepository = authRepository
         )
+
+        // Skonfiguruj callback dla automatycznego wylogowania
+        dataSource.onUnauthorized = {
+            viewModel.handleSessionExpired()
+        }
+
+        return viewModel
     }
 }

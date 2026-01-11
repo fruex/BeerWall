@@ -33,7 +33,7 @@ fun BeerWallNavHost(
     // Callbacks
     onRegister: (email: String, password: String) -> Unit = { _, _ -> },
     onLogin: (email: String, password: String) -> Unit = { _, _ -> },
-    onGoogleSignIn: (onSuccess: () -> Unit) -> Unit = { _ -> },
+    onGoogleSignIn: () -> Unit = {},
     onLogout: () -> Unit = {},
     onAddFunds: (venueId: Int, paymentMethodId: Int, balance: Double) -> Unit = { _, _, _ -> },
     onToggleCardStatus: (String) -> Unit = {},
@@ -54,17 +54,8 @@ fun BeerWallNavHost(
             RegistrationScreen(
                 onRegisterClick = { email, password ->
                     onRegister(email, password)
-                    navController.navigate(NavigationDestination.Main.route) {
-                        popUpTo(NavigationDestination.Registration.route) { inclusive = true }
-                    }
                 },
-                onGoogleSignInClick = {
-                    onGoogleSignIn {
-                        navController.navigate(NavigationDestination.Main.route) {
-                            popUpTo(NavigationDestination.Registration.route) { inclusive = true }
-                        }
-                    }
-                },
+                onGoogleSignInClick = onGoogleSignIn,
                 onLoginClick = {
                     navController.navigate(NavigationDestination.Login.route)
                 }
@@ -75,17 +66,8 @@ fun BeerWallNavHost(
             LoginScreen(
                 onLoginClick = { email, password ->
                     onLogin(email, password)
-                    navController.navigate(NavigationDestination.Main.route) {
-                        popUpTo(NavigationDestination.Login.route) { inclusive = true }
-                    }
                 },
-                onGoogleSignInClick = {
-                    onGoogleSignIn {
-                        navController.navigate(NavigationDestination.Main.route) {
-                            popUpTo(NavigationDestination.Login.route) { inclusive = true }
-                        }
-                    }
-                },
+                onGoogleSignInClick = onGoogleSignIn,
                 onRegisterClick = {
                     navController.navigate(NavigationDestination.Registration.route)
                 },

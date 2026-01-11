@@ -56,11 +56,17 @@ class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvid
     override suspend fun signIn(): GoogleUser? = withContext(Dispatchers.Main) {
         runCatching {
             Log.d(TAG, "Starting sign in process")
+
+            // Zawsze pobieraj nowy token - nie używaj zapisanego
             val credential = credentialManager.getCredential(context, buildCredentialRequest()).credential
-            Log.d(TAG, "Credential received")
+            Log.d(TAG, "Credential received: ${credential.type}")
 
             credential.toGoogleIdTokenCredential()?.let { googleCredential ->
-                googleCredential.toGoogleUser().also { saveUser(it) }
+                val user = googleCredential.toGoogleUser()
+                Log.d(TAG, "Google user created: ${user.email}")
+                Log.d(TAG, "ID Token length: ${user.idToken.length}")
+                saveUser(user)
+                user
             } ?: run {
                 Log.d(TAG, "Unknown credential type: ${credential.type}")
                 null
@@ -96,6 +102,7 @@ class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvid
         val googleIdOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)
             .setServerClientId(serverClientId)
+            .setAutoSelectEnabled(false) // Zawsze pokazuj wybór konta aby uzyskać świeży token
             .build()
 
         return GetCredentialRequest.Builder()
@@ -110,11 +117,35 @@ class AndroidGoogleAuthProvider(private val context: Context) : GoogleAuthProvid
         else -> null
     }
 
-    private fun GoogleIdTokenCredential.toGoogleUser(): GoogleUser = GoogleUser(
-        idToken = idToken,
-        displayName = displayName,
-        email = id
-    )
+    private fun GoogleIdTokenCredential.toGoogleUser(): GoogleUser {
+        val user = GoogleUser(
+            idToken = idToken,
+            displayName = displayName,
+            email = id
+        )
+
+        // Loguj informacje o tokenie
+        try {
+            val parts = idToken.split(".")
+            if (parts.size == 3) {
+                val payload = String(android.util.Base64.decode(parts[1], android.util.Base64.URL_SAFE or android.util.Base64.NO_WRAP))
+                val expMatch = """"exp"\s*:\s*(\d+)""".toRegex().find(payload)
+                val expiration = expMatch?.groupValues?.get(1)?.toLongOrNull()
+
+                if (expiration != null) {
+                    val currentTime = System.currentTimeMillis() / 1000
+                    val validForSeconds = expiration - currentTime
+                    val validForMinutes = validForSeconds / 60
+                    Log.d(TAG, "Token valid for: $validForMinutes minutes ($validForSeconds seconds)")
+                    Log.d(TAG, "Token expires at: ${java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date(expiration * 1000))}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error parsing token expiration", e)
+        }
+
+        return user
+    }
 
     private suspend fun saveUser(user: GoogleUser) {
         context.googleUserDataStore.updateData { it.copy(user = user) }
