@@ -58,7 +58,7 @@ Accept: application/json
 Authorization: Bearer {{net_token}}
 
 ### 5. ToggleCardStatus - Aktywuj/Dezaktywuj kartę
-POST {{beerwall_apitest_HostAddress}}/mobile/Card-activation
+POST {{beerwall_apitest_HostAddress}}/mobile/Card/Activation
 Accept: application/json
 Content-Type: application/json
 Authorization: Bearer {{net_token}}
@@ -74,17 +74,17 @@ Accept: application/json
 Authorization: Bearer {{net_token}}
 
 ### 7. GetPaymentOperators - Pobierz operatorów płatności
-GET {{beerwall_apitest_HostAddress}}/mobile/Payment-operators
+GET {{beerwall_apitest_HostAddress}}/mobile/Payment/operators
 Accept: application/json
 Authorization: Bearer {{net_token}}
 
 ### 8. GetBalance - Pobierz saldo
-GET {{beerwall_apitest_HostAddress}}/mobile/User/Balance
+GET {{beerwall_apitest_HostAddress}}/mobile/User/balance
 Accept: application/json
 Authorization: Bearer {{net_token}}
 
 ### 9. TopUp - Doładuj konto
-POST {{beerwall_apitest_HostAddress}}/mobile/User/Balance
+POST {{beerwall_apitest_HostAddress}}/mobile/Payment/top-up
 Accept: application/json
 Content-Type: application/json
 Authorization: Bearer {{net_token}}
@@ -92,15 +92,9 @@ Authorization: Bearer {{net_token}}
 {
   "venueId": 1,
   "paymentMethodId": 1,
-  "balance": 50.00
+  "amount": 50.00
 }
-
-### 10. GetProfile - Pobierz profil użytkownika
-GET {{beerwall_apitest_HostAddress}}/mobile/User/Profile
-Accept: application/json
-Authorization: Bearer {{net_token}}
 
 ### GoogleSignIn
 POST {{beerwall_apitest_HostAddress}}/mobile/Auth/GoogleSignIn
 Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjRiYTZlZmVmNWUxNzIxNDk5NzFhMmQzYWJiNWYzMzJlMGY3ODcxNjUiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIyMjA1MjI5MzI2OTQtcWdjdTNtaGtnbmE5anNwMzdxMWcxNnM4MTNraTVvN2wuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIyMjA1MjI5MzI2OTQtZ2hhbWdvcXBxdG1iMHZrOWFqbm91aXFlMmg1MmF0ZWIuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDc0Nzk3NTQ4MDY2MDQzOTMzNDQiLCJlbWFpbCI6ImFkcmlhbi5ib3RvckBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IkFkcmlhbiBCb3RvciIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NKbkhDR0JIanpvVndBaVlJMnBaaU1zNlFQV2JUTmpNVFF4RXRHYVBnOGd0bkZRVUE9czk2LWMiLCJnaXZlbl9uYW1lIjoiQWRyaWFuIiwiZmFtaWx5X25hbWUiOiJCb3RvciIsImlhdCI6MTc2ODEzMTM1MCwiZXhwIjoxNzY4MTM0OTUwfQ.HrU0i3f2TZ40yWJAsNOB1fzvwaNIi5KLoRTgzhcKc7zTFixriktgkKx02pQPMUGHHVtPn-ncVcupGwQuK72NuFCWcNNNrGqkncREWVgML0nr28I-H3y6sJcV_Az4vEnlPe-p9qwxXcM_aDuRrtPq3Cut4nvrRBqEl02SJDYU_6rPy1W3pKJdyiDAoRcdDhjyAtQ9vM76AnCWPJdt_zTzk4jdqezz5fO8goCdNGEnSEnlmPMM5kOBiMpw2UfVubEv9ulrzN-fTWPvAhZEYAg7QHI3UUyaA5NL_pPJ0g3nqqobsjfk8QsPeCL_1J5zTNVeRZj7oh08cba69AkT90iWIA
-
