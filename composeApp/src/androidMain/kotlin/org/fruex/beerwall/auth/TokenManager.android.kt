@@ -77,6 +77,38 @@ actual class TokenManagerImpl(private val context: Context) : TokenManager {
         }
     }
 
+    actual override suspend fun isRefreshTokenExpired(): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val session = context.tokenDataStore.data.first()
+            val tokens = session.tokens ?: return@withContext true
+            val currentTime = System.currentTimeMillis() / 1000
+            currentTime >= tokens.refreshTokenExpires
+        } catch (e: Exception) {
+            Log.e("TokenManager", "Error checking refresh token expiration", e)
+            true
+        }
+    }
+
+    actual override suspend fun getTokenExpires(): Long? = withContext(Dispatchers.IO) {
+        try {
+            val session = context.tokenDataStore.data.first()
+            session.tokens?.tokenExpires
+        } catch (e: Exception) {
+            Log.e("TokenManager", "Error reading token expires", e)
+            null
+        }
+    }
+
+    actual override suspend fun getRefreshTokenExpires(): Long? = withContext(Dispatchers.IO) {
+        try {
+            val session = context.tokenDataStore.data.first()
+            session.tokens?.refreshTokenExpires
+        } catch (e: Exception) {
+            Log.e("TokenManager", "Error reading refresh token expires", e)
+            null
+        }
+    }
+
     actual override suspend fun clearTokens() {
         context.tokenDataStore.updateData { it.copy(tokens = null) }
         Log.d("TokenManager", "Tokens cleared")

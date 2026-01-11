@@ -45,8 +45,8 @@ fun App(
     }
 
     LaunchedEffect(Unit) {
-        val user = googleAuthProvider.getSignedInUser()
-        viewModel.onSessionCheckComplete(user)
+        // Sprawdź czy użytkownik ma zapisany token .NET
+        viewModel.checkSession()
     }
 
     LaunchedEffect(uiState.isLoggedIn) {
@@ -80,17 +80,10 @@ fun App(
                     onStartNfcScanning = onStartNfcScanning,
                     onRefreshHistory = viewModel::refreshHistory,
                     onRefreshBalance = viewModel::refreshBalance,
-                    onLogin = { _, _ -> viewModel.setGuestSession() },
+                    onLogin = viewModel::handleEmailPasswordSignIn,
                     onRegister = { _, _ -> viewModel.setGuestSession() },
-                    onGoogleSignIn = { onSuccess ->
-                        scope.launch {
-                            googleAuthProvider.signIn()?.let { user ->
-                                // Przekazujemy cały obiekt user (z lokalnym zdjęciem) do ViewModelu
-                                viewModel.handleGoogleSignIn(user) {
-                                    onSuccess()
-                                }
-                            }
-                        }
+                    onGoogleSignIn = {
+                        viewModel.handleGoogleSignIn(googleAuthProvider)
                     },
                     onAddFunds = viewModel::onAddFunds,
                     onToggleCardStatus = viewModel::onToggleCardStatus,

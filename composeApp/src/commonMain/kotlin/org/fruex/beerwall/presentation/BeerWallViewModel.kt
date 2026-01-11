@@ -37,11 +37,38 @@ class BeerWallViewModel(
     private val getTransactionsUseCase: GetTransactionsUseCase,
     private val toggleCardStatusUseCase: ToggleCardStatusUseCase,
     private val getPaymentOperatorsUseCase: GetPaymentOperatorsUseCase,
-    private val googleSignInUseCase: GoogleSignInUseCase
+    private val googleSignInUseCase: GoogleSignInUseCase,
+    private val emailPasswordSignInUseCase: EmailPasswordSignInUseCase,
+    private val checkSessionUseCase: CheckSessionUseCase,
+    private val authRepository: org.fruex.beerwall.domain.repository.AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BeerWallUiState())
     val uiState: StateFlow<BeerWallUiState> = _uiState.asStateFlow()
+
+    /**
+     * Wywołane automatycznie gdy refresh token wygasł
+     * Czyści stan użytkownika i przekierowuje do ekranu logowania
+     */
+    fun handleSessionExpired() {
+        viewModelScope.launch {
+            authRepository.logout()
+            _uiState.update {
+                it.copy(
+                    isLoggedIn = false,
+                    errorMessage = "Sesja wygasła. Zaloguj się ponownie.",
+                    userProfile = it.userProfile.copy(
+                        name = "",
+                        email = "",
+                        initials = "?"
+                    ),
+                    balances = emptyList(),
+                    cards = emptyList(),
+                    transactionGroups = emptyList()
+                )
+            }
+        }
+    }
 
     private fun setLoading(isLoading: Boolean) {
         _uiState.update { it.copy(isRefreshing = isLoading) }
@@ -64,33 +91,29 @@ class BeerWallViewModel(
         }
     }
 
-    fun onSessionCheckComplete(user: GoogleUser?) {
-        if (user != null) {
-            // Jeśli mamy usera z lokalnej sesji Google, spróbujmy go od razu zweryfikować w backendzie
-            viewModelScope.launch {
-                // MOCK: Symulacja opóźnienia i sukcesu, jeśli backend nie odpowiada
-                try {
-                    googleSignInUseCase(user.idToken)
-                        .onSuccess { backendUser ->
-                            val mergedUser = backendUser.copy(
-                                displayName = user.displayName ?: backendUser.displayName,
-                                email = user.email ?: backendUser.email
+    /**
+     * Sprawdza sesję przy starcie aplikacji
+     * Używa zapisanego tokenu .NET zamiast logowania Google
+     */
+    fun checkSession() {
+        viewModelScope.launch {
+            try {
+                // Sprawdź czy użytkownik ma zapisany token w TokenManager
+                checkSessionUseCase()
+                    .onSuccess { isLoggedIn ->
+                        _uiState.update {
+                            it.copy(
+                                isLoggedIn = isLoggedIn,
+                                isCheckingSession = false
                             )
-                            onLoginSuccess(mergedUser)
                         }
-                        .onFailure {
-                            // W przypadku błędu (np. brak połączenia z backendem),
-                            // na potrzeby testów/deweloperki logujemy lokalnie po opóźnieniu
-                            delay(2000)
-                            onLoginSuccess(user)
-                        }
-                } catch (e: Exception) {
-                    delay(2000)
-                    onLoginSuccess(user)
-                }
+                    }
+                    .onFailure {
+                        _uiState.update { it.copy(isCheckingSession = false) }
+                    }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isCheckingSession = false) }
             }
-        } else {
-            _uiState.update { it.copy(isCheckingSession = false) }
         }
     }
 
@@ -100,36 +123,43 @@ class BeerWallViewModel(
         refreshAllData()
     }
 
-    fun handleGoogleSignIn(localUser: GoogleUser, onSuccess: () -> Unit) {
+    fun handleGoogleSignIn(googleAuthProvider: org.fruex.beerwall.auth.GoogleAuthProvider) {
         viewModelScope.launch {
             setLoading(true)
-            // Wysyłamy ID Token do backendu w celu weryfikacji i uzyskania tokenu sesyjnego (JWT)
-            
-            // MOCK: Symulacja opóźnienia i sukcesu, jeśli backend nie odpowiada
             try {
-                googleSignInUseCase(localUser.idToken)
-                    .onSuccess { backendUser ->
-                        val finalUser = backendUser.copy(
-                            displayName = localUser.displayName ?: backendUser.displayName,
-                            email = localUser.email ?: backendUser.email
-                        )
-
-                        onLoginSuccess(finalUser)
-                        onSuccess()
+                googleSignInUseCase(googleAuthProvider)
+                    .onSuccess { user ->
+                        onLoginSuccess(user)
                     }
-                    .onFailure {
-                        // Fallback dla deweloperki: jeśli backend leży, zaloguj lokalnie po 3s
-                        delay(3000)
-                        onLoginSuccess(localUser)
-                        onSuccess()
+                    .onFailure { error ->
+                        setError(error.message ?: "Błąd logowania Google")
                     }
             } catch (e: Exception) {
-                delay(3000)
-                onLoginSuccess(localUser)
-                onSuccess()
+                setError(e.message ?: "Błąd logowania Google")
+            } finally {
+                setLoading(false)
             }
+        }
+    }
 
-            setLoading(false)
+    fun handleEmailPasswordSignIn(email: String, password: String) {
+        viewModelScope.launch {
+            setLoading(true)
+            try {
+                emailPasswordSignInUseCase(email, password)
+                    .onSuccess {
+                        // Tokeny zostały zapisane w TokenManager przez repository
+                        _uiState.update { it.copy(isLoggedIn = true, isCheckingSession = false) }
+                        refreshAllData()
+                    }
+                    .onFailure { error ->
+                        setError(error.message ?: "Błąd logowania")
+                    }
+            } catch (e: Exception) {
+                setError(e.message ?: "Błąd logowania")
+            } finally {
+                setLoading(false)
+            }
         }
     }
 
@@ -143,7 +173,10 @@ class BeerWallViewModel(
     }
 
     fun onLogout() {
-        _uiState.update { it.copy(isLoggedIn = false) }
+        viewModelScope.launch {
+            authRepository.logout()
+            _uiState.update { it.copy(isLoggedIn = false) }
+        }
     }
 
     fun refreshAllData() {

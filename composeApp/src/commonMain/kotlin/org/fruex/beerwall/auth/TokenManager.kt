@@ -15,6 +15,9 @@ interface TokenManager {
     suspend fun getToken(): String?
     suspend fun getRefreshToken(): String?
     suspend fun isTokenExpired(): Boolean
+    suspend fun isRefreshTokenExpired(): Boolean
+    suspend fun getTokenExpires(): Long?
+    suspend fun getRefreshTokenExpires(): Long?
     suspend fun clearTokens()
 }
 
@@ -24,5 +27,8 @@ expect class TokenManagerImpl : TokenManager {
     override suspend fun getToken(): String?
     override suspend fun getRefreshToken(): String?
     override suspend fun isTokenExpired(): Boolean
+    override suspend fun isRefreshTokenExpired(): Boolean
+    override suspend fun getTokenExpires(): Long?
+    override suspend fun getRefreshTokenExpires(): Long?
     override suspend fun clearTokens()
 }

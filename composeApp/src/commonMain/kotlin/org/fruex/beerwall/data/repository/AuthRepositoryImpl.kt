@@ -29,4 +29,57 @@ class AuthRepositoryImpl(
             )
         }
     }
+
+    override suspend fun emailPasswordSignIn(email: String, password: String): Result<AuthTokens> {
+        return dataSource.emailPasswordSignIn(email, password).map { response ->
+            // Zapisz tokeny do lokalnego storage
+            val tokens = AuthTokens(
+                token = response.tokenDto.token,
+                tokenExpires = response.tokenDto.tokenExpires,
+                refreshToken = response.tokenDto.refreshToken,
+                refreshTokenExpires = response.tokenDto.refreshTokenExpires
+            )
+            tokenManager.saveTokens(tokens)
+            tokens
+        }
+    }
+
+    override suspend fun refreshToken(): Result<AuthTokens> {
+        val currentRefreshToken = tokenManager.getRefreshToken()
+            ?: return Result.failure(Exception("No refresh token available"))
+
+        // Sprawdź czy refresh token nie wygasł
+        if (tokenManager.isRefreshTokenExpired()) {
+            tokenManager.clearTokens()
+            return Result.failure(Exception("Refresh token expired"))
+        }
+
+        return dataSource.refreshToken(currentRefreshToken).map { response ->
+            val tokens = AuthTokens(
+                token = response.token,
+                tokenExpires = response.tokenExpires,
+                refreshToken = response.refreshToken,
+                refreshTokenExpires = response.refreshTokenExpires
+            )
+            tokenManager.saveTokens(tokens)
+            tokens
+        }
+    }
+
+    override suspend fun isUserLoggedIn(): Boolean {
+        val token = tokenManager.getToken() ?: return false
+        val refreshToken = tokenManager.getRefreshToken() ?: return false
+
+        // Jeśli oba tokeny wygasły, użytkownik nie jest zalogowany
+        if (tokenManager.isTokenExpired() && tokenManager.isRefreshTokenExpired()) {
+            tokenManager.clearTokens()
+            return false
+        }
+
+        return true
+    }
+
+    override suspend fun logout() {
+        tokenManager.clearTokens()
+    }
 }
