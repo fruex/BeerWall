@@ -5,6 +5,11 @@ import org.fruex.beerwall.data.remote.BeerWallDataSource
 import org.fruex.beerwall.domain.model.Transaction
 import org.fruex.beerwall.domain.repository.TransactionRepository
 
+/**
+ * Implementacja repozytorium transakcji.
+ *
+ * @property dataSource Źródło danych (API BeerWall).
+ */
 class TransactionRepositoryImpl(
     private val dataSource: BeerWallDataSource
 ) : TransactionRepository {

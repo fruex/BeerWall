@@ -9,27 +9,31 @@ import org.fruex.beerwall.domain.repository.*
 import org.fruex.beerwall.domain.usecase.*
 
 /**
- * Factory function for creating AppContainer
+ * Funkcja fabrykująca dla kontenera aplikacji (implementacja platformowa).
  */
 @Composable
 expect fun createAppContainer(): AppContainer
 
 /**
- * Application dependency container - Simple Service Locator pattern
- * Zarządza tworzeniem i dostarczaniem zależności dla całej aplikacji
+ * Kontener zależności aplikacji - Implementacja wzorca Service Locator.
+ * Zarządza cyklem życia, tworzeniem i dostarczaniem zależności dla całej aplikacji.
+ *
+ * TODO: Rozważyć użycie biblioteki do wstrzykiwania zależności (np. Koin) dla lepszej skalowalności i testowalności.
  */
 abstract class AppContainer {
 
-    // Auth Layer
+    // Warstwa Auth - dostarczana przez implementację platformową
     abstract val tokenManager: TokenManager
 
-    // Data Layer
-    // DataSource jest inicjalizowany bez callbacku, callback zostanie ustawiony w ViewModelu
+    // Warstwa Danych
+    // DataSource jest inicjalizowany leniwie.
+    // Callback onUnauthorized zostanie ustawiony w ViewModelu, co tworzy cykliczną zależność logiczną.
+    // TODO: Rozważyć lepszy sposób obsługi 401 Unauthorized, np. przez globalny event bus lub obserwację stanu w repozytorium.
     private val dataSource: BeerWallDataSource by lazy {
         BeerWallDataSource(tokenManager)
     }
 
-    // Repository Layer
+    // Warstwa Repozytoriów
     private val balanceRepository: BalanceRepository by lazy {
         BalanceRepositoryImpl(dataSource)
     }
@@ -46,7 +50,7 @@ abstract class AppContainer {
         AuthRepositoryImpl(dataSource, tokenManager)
     }
     
-    // Use Cases
+    // Przypadki Użycia (Use Cases)
     private val getBalancesUseCase: GetBalancesUseCase by lazy { 
         GetBalancesUseCase(balanceRepository) 
     }
@@ -91,7 +95,7 @@ abstract class AppContainer {
         )
     }
 
-    // ViewModel Factory
+    // Fabryka ViewModeli
     fun createBeerWallViewModel(): BeerWallViewModel {
         val viewModel = BeerWallViewModel(
             refreshAllDataUseCase = refreshAllDataUseCase,
@@ -106,7 +110,8 @@ abstract class AppContainer {
             authRepository = authRepository
         )
 
-        // Skonfiguruj callback dla automatycznego wylogowania
+        // Konfiguracja callbacku dla automatycznego wylogowania przy błędzie 401.
+        // To jest workaround dla braku pełnego DI - ViewModel "nasłuchuje" na DataSource.
         dataSource.onUnauthorized = {
             viewModel.handleSessionExpired()
         }

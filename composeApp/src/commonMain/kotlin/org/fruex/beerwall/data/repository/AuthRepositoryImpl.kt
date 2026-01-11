@@ -6,10 +6,18 @@ import org.fruex.beerwall.auth.TokenManager
 import org.fruex.beerwall.data.remote.BeerWallDataSource
 import org.fruex.beerwall.domain.repository.AuthRepository
 
+/**
+ * Implementacja repozytorium autoryzacji.
+ * Odpowiada za komunikację ze źródłem danych (API) oraz zarządzanie lokalnym przechowywaniem tokenów.
+ *
+ * @property dataSource Źródło danych (API BeerWall).
+ * @property tokenManager Menedżer tokenów do bezpiecznego przechowywania sesji lokalnie.
+ */
 class AuthRepositoryImpl(
     private val dataSource: BeerWallDataSource,
     private val tokenManager: TokenManager
 ) : AuthRepository {
+
     override suspend fun googleSignIn(idToken: String): Result<GoogleUser> {
         return dataSource.googleSignIn(idToken).map { response ->
             // Zapisz tokeny do lokalnego storage
@@ -21,6 +29,8 @@ class AuthRepositoryImpl(
             )
             tokenManager.saveTokens(tokens)
 
+            // TODO: Zwracany obiekt GoogleUser wydaje się być mapowany bezpośrednio z DTO odpowiedzi logowania.
+            // Warto sprawdzić czy GoogleUser w domenie powinien zawierać tokeny techniczne, czy raczej dane profilowe.
             GoogleUser(
                 idToken = response.token,
                 tokenExpires = response.tokenExpires,
@@ -71,6 +81,9 @@ class AuthRepositoryImpl(
         val refreshToken = tokenManager.getRefreshToken() ?: return false
 
         // Jeśli oba tokeny wygasły, użytkownik nie jest zalogowany
+        // TODO: Logika 'jeśli OBA wygasły' może być zbyt luźna. Zazwyczaj jeśli Access Token wygasł, próbujemy go odświeżyć.
+        // Tutaj zwracamy true nawet jeśli Access Token wygasł, ale Refresh Token jest ważny. To jest poprawne przy założeniu,
+        // że mechanizm odświeżania zadziała przy najbliższym zapytaniu API.
         if (tokenManager.isTokenExpired() && tokenManager.isRefreshTokenExpired()) {
             tokenManager.clearTokens()
             return false

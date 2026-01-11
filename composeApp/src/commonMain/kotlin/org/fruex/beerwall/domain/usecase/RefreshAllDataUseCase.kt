@@ -7,8 +7,8 @@ import org.fruex.beerwall.domain.model.Card
 import org.fruex.beerwall.domain.model.Transaction
 
 /**
- * Model danych zwracanych przez RefreshAllDataUseCase
- * Wszystkie pola są nullable - błędy w pojedynczych requestach nie blokują całej operacji
+ * Model danych zwracanych przez RefreshAllDataUseCase.
+ * Wszystkie pola są nullable - błędy w pojedynczych requestach nie blokują całej operacji.
  */
 data class AllData(
     val balances: List<Balance>? = null,
@@ -18,7 +18,7 @@ data class AllData(
 )
 
 /**
- * Use case do równoległego pobierania wszystkich danych aplikacji
+ * Przypadek użycia do równoległego pobierania wszystkich danych aplikacji.
  *
  * Wykonuje równolegle następujące operacje:
  * - Pobieranie sald z wszystkich miejsc
@@ -27,13 +27,21 @@ data class AllData(
  * - Pobieranie punktów lojalnościowych
  *
  * Błędy w pojedynczych requestach nie blokują całej operacji - zwracane są wszystkie
- * pomyślnie pobrane dane, a błędne pola pozostają null
+ * pomyślnie pobrane dane, a błędne pola pozostają null.
+ *
+ * @property getBalancesUseCase
+ * @property getCardsUseCase
+ * @property getTransactionsUseCase
  */
 class RefreshAllDataUseCase(
     private val getBalancesUseCase: GetBalancesUseCase,
     private val getCardsUseCase: GetCardsUseCase,
     private val getTransactionsUseCase: GetTransactionsUseCase,
 ) {
+    /**
+     * Pobiera wszystkie dane asynchronicznie.
+     * @return [AllData] z wynikami.
+     */
     suspend operator fun invoke(): AllData = coroutineScope {
         val balancesDeferred = async { getBalancesUseCase() }
         val cardsDeferred = async { getCardsUseCase() }

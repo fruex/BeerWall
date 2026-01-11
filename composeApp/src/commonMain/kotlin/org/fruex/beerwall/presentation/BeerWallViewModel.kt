@@ -16,19 +16,24 @@ import org.fruex.beerwall.ui.BeerWallUiState
 import org.fruex.beerwall.ui.models.UserCard
 
 /**
- * ViewModel zarządzający stanem aplikacji BeerWall
+ * ViewModel zarządzający stanem aplikacji BeerWall.
  *
  * Odpowiedzialny za:
- * - Zarządzanie stanem UI (balanse, karty, transakcje, profil użytkownika)
- * - Komunikację z warstwą domenową poprzez Use Cases
- * - Obsługę akcji użytkownika (logowanie, dodawanie środków, zarządzanie kartami)
- * - Obsługę błędów i stanów ładowania
+ * - Zarządzanie stanem UI (balanse, karty, transakcje, profil użytkownika).
+ * - Komunikację z warstwą domenową poprzez Use Cases.
+ * - Obsługę akcji użytkownika (logowanie, dodawanie środków, zarządzanie kartami).
+ * - Obsługę błędów i stanów ładowania.
  *
- * @param refreshAllDataUseCase Use case do odświeżania wszystkich danych jednocześnie
- * @param getBalancesUseCase Use case do pobierania sald
- * @param topUpBalanceUseCase Use case do doładowania konta
- * @param getTransactionsUseCase Use case do pobierania historii transakcji
- * @param toggleCardStatusUseCase Use case do przełączania statusu karty
+ * @property refreshAllDataUseCase Use case do odświeżania wszystkich danych jednocześnie.
+ * @property getBalancesUseCase Use case do pobierania sald.
+ * @property topUpBalanceUseCase Use case do doładowania konta.
+ * @property getTransactionsUseCase Use case do pobierania historii transakcji.
+ * @property toggleCardStatusUseCase Use case do przełączania statusu karty.
+ * @property getPaymentOperatorsUseCase Use case do pobierania operatorów płatności.
+ * @property googleSignInUseCase Use case do logowania przez Google.
+ * @property emailPasswordSignInUseCase Use case do logowania emailem i hasłem.
+ * @property checkSessionUseCase Use case do sprawdzania ważności sesji.
+ * @property authRepository Repozytorium autoryzacji (używane bezpośrednio do wylogowania - TODO: przenieść do UseCase).
  */
 class BeerWallViewModel(
     private val refreshAllDataUseCase: RefreshAllDataUseCase,
@@ -40,6 +45,7 @@ class BeerWallViewModel(
     private val googleSignInUseCase: GoogleSignInUseCase,
     private val emailPasswordSignInUseCase: EmailPasswordSignInUseCase,
     private val checkSessionUseCase: CheckSessionUseCase,
+    // TODO: Bezpośrednie użycie repozytorium w ViewModelu łamie zasadę czystej architektury (powinien być UseCase 'LogoutUseCase').
     private val authRepository: org.fruex.beerwall.domain.repository.AuthRepository
 ) : ViewModel() {
 
@@ -47,8 +53,8 @@ class BeerWallViewModel(
     val uiState: StateFlow<BeerWallUiState> = _uiState.asStateFlow()
 
     /**
-     * Wywołane automatycznie gdy refresh token wygasł
-     * Czyści stan użytkownika i przekierowuje do ekranu logowania
+     * Wywołane automatycznie gdy refresh token wygasł.
+     * Czyści stan użytkownika i przekierowuje do ekranu logowania.
      */
     fun handleSessionExpired() {
         viewModelScope.launch {
@@ -70,14 +76,26 @@ class BeerWallViewModel(
         }
     }
 
+    /**
+     * Ustawia flagę ładowania (isRefreshing) w stanie UI.
+     * @param isLoading true jeśli trwa ładowanie, false w przeciwnym razie.
+     */
     private fun setLoading(isLoading: Boolean) {
         _uiState.update { it.copy(isRefreshing = isLoading) }
     }
 
+    /**
+     * Ustawia komunikat błędu w stanie UI.
+     * @param message Treść błędu.
+     */
     private fun setError(message: String) {
         _uiState.update { it.copy(errorMessage = message) }
     }
 
+    /**
+     * Wykonuje blok kodu z automatyczną obsługą stanu ładowania i błędów.
+     * @param block Zawieszająca funkcja (suspend) do wykonania.
+     */
     private fun launchWithLoading(block: suspend () -> Unit) {
         viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true, errorMessage = null) }
@@ -92,8 +110,8 @@ class BeerWallViewModel(
     }
 
     /**
-     * Sprawdza sesję przy starcie aplikacji
-     * Używa zapisanego tokenu .NET zamiast logowania Google
+     * Sprawdza sesję przy starcie aplikacji.
+     * Weryfikuje czy użytkownik ma zapisane ważne tokeny.
      */
     fun checkSession() {
         viewModelScope.launch {
@@ -117,12 +135,20 @@ class BeerWallViewModel(
         }
     }
 
+    /**
+     * Aktualizuje stan po udanym logowaniu.
+     * @param user Obiekt użytkownika Google.
+     */
     fun onLoginSuccess(user: GoogleUser) {
         updateUserProfile(user)
         _uiState.update { it.copy(isLoggedIn = true, isCheckingSession = false) }
         refreshAllData()
     }
 
+    /**
+     * Obsługuje proces logowania przez Google.
+     * @param googleAuthProvider Dostawca autoryzacji Google (platform-specific).
+     */
     fun handleGoogleSignIn(googleAuthProvider: org.fruex.beerwall.auth.GoogleAuthProvider) {
         viewModelScope.launch {
             setLoading(true)
@@ -142,6 +168,11 @@ class BeerWallViewModel(
         }
     }
 
+    /**
+     * Obsługuje proces logowania emailem i hasłem.
+     * @param email Adres email.
+     * @param password Hasło.
+     */
     fun handleEmailPasswordSignIn(email: String, password: String) {
         viewModelScope.launch {
             setLoading(true)
@@ -163,15 +194,25 @@ class BeerWallViewModel(
         }
     }
 
+    /**
+     * Ustawia tryb gościa (zalogowany bez danych).
+     * // TODO: Zweryfikować czy tryb gościa jest nadal potrzebny i jak powinien działać.
+     */
     fun setGuestSession() {
         _uiState.update { it.copy(isLoggedIn = true) }
         refreshAllData()
     }
 
+    /**
+     * Czyści aktualny komunikat błędu.
+     */
     fun onClearError() {
         _uiState.update { it.copy(errorMessage = null) }
     }
 
+    /**
+     * Wylogowuje użytkownika.
+     */
     fun onLogout() {
         viewModelScope.launch {
             authRepository.logout()
@@ -179,10 +220,14 @@ class BeerWallViewModel(
         }
     }
 
+    /**
+     * Odświeża wszystkie dane użytkownika (balanse, karty, historia).
+     */
     fun refreshAllData() {
         viewModelScope.launch {
             setLoading(true)
 
+            // TODO: Obsługa błędów wewnątrz refreshAllDataUseCase może być ulepszona, aby zwracać częściowe wyniki lub konkretne błędy.
             val allData = refreshAllDataUseCase()
 
             _uiState.update { currentState ->
@@ -210,6 +255,9 @@ class BeerWallViewModel(
         }
     }
 
+    /**
+     * Ładuje dostępne metody płatności.
+     */
     private fun loadPaymentMethods() {
         viewModelScope.launch {
             getPaymentOperatorsUseCase().onSuccess { operators ->
@@ -219,16 +267,26 @@ class BeerWallViewModel(
         }
     }
 
+    /**
+     * Inicjuje doładowanie konta.
+     * @param venueId ID lokalu.
+     * @param paymentMethodId ID metody płatności.
+     * @param balance Kwota doładowania.
+     */
     fun onAddFunds(venueId: Int, paymentMethodId: Int, balance: Double) {
         viewModelScope.launch {
             topUpBalanceUseCase(venueId, paymentMethodId, balance)
                 .onSuccess {
                     // Odpowiedź przyjdzie przez webhook, nie czekamy na response
+                    // TODO: Dodać obsługę przekierowania do bramki płatności jeśli usecase zwraca URL.
                 }
                 .onFailure { setError("Nie udało się doładować konta: ${it.message}") }
         }
     }
 
+    /**
+     * Aktualizuje saldo lokalu w stanie UI (lokalnie).
+     */
     private fun updateVenueBalance(venueName: String, newBalance: Double) {
         _uiState.update { currentState ->
             val updatedBalances = currentState.balances.map {
@@ -238,6 +296,10 @@ class BeerWallViewModel(
         }
     }
 
+    /**
+     * Przełącza status aktywności karty.
+     * @param cardId ID karty.
+     */
     fun onToggleCardStatus(cardId: String) {
         val card = _uiState.value.cards.find { it.id == cardId } ?: return
         viewModelScope.launch {
@@ -247,6 +309,9 @@ class BeerWallViewModel(
         }
     }
 
+    /**
+     * Aktualizuje status karty w stanie UI.
+     */
     private fun updateCardStatus(cardId: String, isActive: Boolean) {
         _uiState.update { currentState ->
             val updatedCards = currentState.cards.map {
@@ -258,6 +323,9 @@ class BeerWallViewModel(
         }
     }
 
+    /**
+     * Odświeża historię transakcji.
+     */
     fun refreshHistory() {
         launchWithLoading {
             getTransactionsUseCase().onSuccess { transactions ->
@@ -266,6 +334,9 @@ class BeerWallViewModel(
         }
     }
 
+    /**
+     * Odświeża salda.
+     */
     fun refreshBalance() {
         launchWithLoading {
             getBalancesUseCase().onSuccess { balances ->
@@ -274,10 +345,18 @@ class BeerWallViewModel(
         }
     }
 
+    /**
+     * Usuwa kartę (symulacja lokalna).
+     * // TODO: Dodać UseCase do usuwania karty w API.
+     */
     fun onDeleteCard(cardId: String) {
         updateCards { cards -> cards.filter { it.id != cardId || !it.isPhysical } }
     }
 
+    /**
+     * Zapisuje nową kartę (symulacja lokalna).
+     * // TODO: Dodać UseCase do dodawania karty w API.
+     */
     fun onSaveCard(name: String, cardId: String) {
         val newCard = UserCard(
             id = cardId,
@@ -288,6 +367,9 @@ class BeerWallViewModel(
         updateCards { cards -> cards + newCard }
     }
 
+    /**
+     * Pomocnicza funkcja do aktualizacji listy kart.
+     */
     private fun updateCards(transform: (List<UserCard>) -> List<UserCard>) {
         _uiState.update { currentState ->
             val updatedCards = transform(currentState.cards)
@@ -297,6 +379,9 @@ class BeerWallViewModel(
         }
     }
 
+    /**
+     * Aktualizuje dane profilowe użytkownika w stanie UI.
+     */
     private fun updateUserProfile(user: GoogleUser) {
         _uiState.update { currentState ->
             currentState.copy(
@@ -309,6 +394,9 @@ class BeerWallViewModel(
         }
     }
 
+    /**
+     * Generuje inicjały użytkownika na podstawie nazwy wyświetlanej.
+     */
     private fun getUserInitials(displayName: String?, fallback: String): String {
         return displayName?.split(" ")?.mapNotNull { it.firstOrNull() }?.joinToString("") ?: fallback
     }

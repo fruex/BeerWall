@@ -16,8 +16,10 @@ data class GoogleUser(
     val photoUrl: String? = null
 ) {
     /**
-     * Sprawdza czy token Google wygasł
-     * Google ID Token to JWT z polem 'exp' (expiration time w sekundach od epoch)
+     * Sprawdza czy token Google wygasł.
+     * Google ID Token to JWT z polem 'exp' (expiration time w sekundach od epoch).
+     *
+     * @return true jeśli token wygasł lub nie można go zweryfikować, false w przeciwnym razie.
      */
     @OptIn(ExperimentalEncodingApi::class)
     fun isGoogleTokenExpired(): Boolean {
@@ -31,21 +33,20 @@ data class GoogleUser(
                 return true
             }
 
-            // JWT używa Base64 URL-safe encoding - musimy dodać padding i zamienić znaki
-            var payload = parts[1]
-                .replace('-', '+')
-                .replace('_', '/')
-
-            // Dodaj padding jeśli potrzebny
-            when (payload.length % 4) {
-                2 -> payload += "=="
-                3 -> payload += "="
+            // JWT używa Base64 URL-safe encoding - musimy zamienić znaki
+            val payloadPart = parts[1]
+            val paddedPayload = when (payloadPart.length % 4) {
+                2 -> payloadPart + "=="
+                3 -> payloadPart + "="
+                else -> payloadPart
             }
+            val standardPayload = paddedPayload.replace('-', '+').replace('_', '/')
 
-            println("📦 Decoding payload (length: ${payload.length})")
+            println("📦 Decoding payload (length: ${standardPayload.length})")
 
-            // Dekoduj payload
-            val decodedPayload = String(Base64.decode(payload))
+            val decodedBytes = Base64.Mime.decode(standardPayload)
+            val decodedPayload = decodedBytes.decodeToString()
+
             println("✅ Decoded payload: ${decodedPayload.take(200)}...")
 
             // Wyciągnij wartość 'exp' z JSON
@@ -58,7 +59,8 @@ data class GoogleUser(
             }
 
             // Sprawdź czy token wygasł (z małym buforem 30 sekund dla opóźnień sieciowych)
-            val currentTime = System.currentTimeMillis() / 1000
+            // Używamy kotlinx-datetime Clock zamiast System.currentTimeMillis()
+            val currentTime = kotlinx.datetime.Clock.System.now().epochSeconds
             val bufferSeconds = 30L // 30 sekund buffer na opóźnienia sieciowe
             val validForSeconds = expiration - currentTime
             val isExpired = currentTime >= (expiration - bufferSeconds)
@@ -78,9 +80,25 @@ data class GoogleUser(
     }
 }
 
+/**
+ * Interfejs dostawcy autoryzacji Google.
+ * Implementowany w platform-specific code (Android/iOS).
+ */
 interface GoogleAuthProvider {
+    /**
+     * Rozpoczyna proces logowania.
+     * @return Zalogowany użytkownik lub null w przypadku anulowania/błędu.
+     */
     suspend fun signIn(): GoogleUser?
+
+    /**
+     * Wylogowuje użytkownika z Google.
+     */
     suspend fun signOut()
+
+    /**
+     * Pobiera aktualnie zalogowanego użytkownika (jeśli istnieje cicha sesja).
+     */
     suspend fun getSignedInUser(): GoogleUser?
 }
 
