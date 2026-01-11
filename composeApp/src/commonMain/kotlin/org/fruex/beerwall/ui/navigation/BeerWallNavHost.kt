@@ -43,6 +43,7 @@ fun BeerWallNavHost(
     onRefreshHistory: () -> Unit = {},
     onRefreshBalance: () -> Unit = {},
     scannedCardId: String? = null,
+    isNfcEnabled: Boolean = true,
 ) {
     NavHost(
         navController = navController,
@@ -146,6 +147,7 @@ fun BeerWallNavHost(
         composable(NavigationDestination.AddCard.route) {
             AddCardScreen(
                 scannedCardId = scannedCardId,
+                isNfcEnabled = isNfcEnabled,
                 onBackClick = { navController.popBackStack() },
                 onStartScanning = onStartNfcScanning,
                 onCardNameChanged = {},

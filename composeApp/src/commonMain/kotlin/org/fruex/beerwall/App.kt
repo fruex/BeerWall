@@ -25,6 +25,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Preview
 fun App(
     scannedCardId: String? = null,
+    isNfcEnabled: Boolean = true,
     onStartNfcScanning: () -> Unit = {}
 ) {
     val appContainer = createAppContainer()
@@ -77,6 +78,7 @@ fun App(
                     paymentMethods = uiState.paymentMethods,
                     isRefreshing = uiState.isRefreshing,
                     scannedCardId = scannedCardId,
+                    isNfcEnabled = isNfcEnabled,
                     onStartNfcScanning = onStartNfcScanning,
                     onRefreshHistory = viewModel::refreshHistory,
                     onRefreshBalance = viewModel::refreshBalance,
