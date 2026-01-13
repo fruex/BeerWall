@@ -1,6 +1,7 @@
 #@beerwall_apitest_HostAddress = http://localhost:5254/api
 #@beerwall_apitest_HostAddress = https://beerwall-apitest-cjcfgfehh9grhne5.polandcentral-01.azurewebsites.net/api
 @beerwall_apitest_HostAddress = http://api-debug.igibeer.pl:7000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjExMTExMTExLTExMTEtMTExMS0xMTExLTExMTExMTExMTExMSIsImp0aSI6ImYxMDFmM2FmLTRkY2ItNGU1Ni1hYThiLTZlYmM4NTFjMjMwOCIsInJvbGVzIjoiTW9iaWxlIiwiZXhwIjoxNzY4Mjg3OTYyLCJpc3MiOiJJZ2lCZWVyIiwiYXVkIjoiTW9iaWxlIn0.T07Pop8C8nEEWkrLoCU5IpVJH4OO4pHSrJsXFIY9pL4
 
 ### 1. SignIn - Login i automatycznie zapisz token
 # @name signin
@@ -10,7 +11,7 @@ Content-Type: application/json
 
 {
   "email": "mobile",
-  "password": "11111111-1111-1111-1111-111111111111"
+  "password": "mobile"
 }
 
 > {%
@@ -24,13 +25,10 @@ Content-Type: application/json
 
 ### 2. RefreshToken - Odśwież wygasły token
 # @name refreshToken
-POST {{beerwall_apitest_HostAddress}}/mobile/Auth/RefreshToken
+GET {{beerwall_apitest_HostAddress}}/mobile/Auth/RefreshToken
 Accept: application/json
+Authorization: Bearer {{token}}
 Content-Type: application/json
-
-{
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjExMTExMTExLTExMTEtMTExMS0xMTExLTExMTExMTExMTExMSIsImp0aSI6IjNmOTMxNThlLTc2NzYtNGU4Ni1iYWRjLWVkMGFkODk2M2JkYiIsImV4cCI6MTc2ODQyMDE3OSwiaXNzIjoiSWdpQmVlciIsImF1ZCI6IlJlZnJlc2gifQ.kLy10GH2m1ZXgM2-eXbFHgF17BJ8HG3xxh-kjiRlNsk"
-}
 
 > {%
     client.global.set("net_token", response.body.data.token);
@@ -57,13 +55,13 @@ Content-Type: application/json
 ### 4. GetCards - Pobierz karty (używa zapisanego tokenu)
 GET {{beerwall_apitest_HostAddress}}/mobile/Card
 Accept: application/json
-Authorization: Bearer {{net_token}}
+Authorization: Bearer {{token}}
 
 ### 5. ToggleCardStatus - Aktywuj/Dezaktywuj kartę
 POST {{beerwall_apitest_HostAddress}}/mobile/Card/Activation
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer {{net_token}}
+Authorization: Bearer {{token}}
 
 {
   "cardId": "550e8400-e29b-41d4-a716-446655440000",
@@ -73,17 +71,17 @@ Authorization: Bearer {{net_token}}
 ### 6. GetHistory - Pobierz historię transakcji
 GET {{beerwall_apitest_HostAddress}}/mobile/User/History
 Accept: application/json
-Authorization: Bearer {{net_token}}
+Authorization: Bearer {{token}}
 
 ### 7. GetPaymentOperators - Pobierz operatorów płatności
 GET {{beerwall_apitest_HostAddress}}/mobile/Payment/operators
 Accept: application/json
-Authorization: Bearer {{net_token}}
+Authorization: Bearer {{token}}
 
 ### 8. GetBalance - Pobierz saldo
 GET {{beerwall_apitest_HostAddress}}/mobile/User/balance
 Accept: application/json
-Authorization: Bearer {{net_token}}
+Authorization: Bearer {{token}}
 
 ### 9. TopUp - Doładuj konto
 POST {{beerwall_apitest_HostAddress}}/mobile/Payment/top-up
