@@ -13,7 +13,6 @@ data class EmailPasswordSignInRequest(
 @Serializable
 data class EmailPasswordSignInResponseData(
     val tokenDto: TokenDto,
-    val is2FARequired: Boolean
 )
 
 @Serializable

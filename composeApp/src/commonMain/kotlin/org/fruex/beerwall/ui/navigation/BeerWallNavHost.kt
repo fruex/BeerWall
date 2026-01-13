@@ -35,7 +35,7 @@ fun BeerWallNavHost(
     onLoginWithEmail: (email: String, password: String) -> Unit = { _, _ -> },
     onLoginWithGoogle: () -> Unit = {},
     onLogout: () -> Unit = {},
-    onAddFunds: (venueId: Int, paymentMethodId: Int, balance: Double) -> Unit = { _, _, _ -> },
+    onAddFunds: (premisesId: Int, paymentMethodId: Int, balance: Double) -> Unit = { _, _, _ -> },
     onToggleCardStatus: (String) -> Unit = {},
     onDeleteCard: (String) -> Unit = {},
     onSaveCard: (name: String, cardId: String) -> Unit = { _, _ -> },
@@ -80,8 +80,8 @@ fun BeerWallNavHost(
         composable(NavigationDestination.Main.route) {
             MainScreen(
                 balances = balances,
-                onAddFundsClick = { venueId ->
-                    navController.navigate("${NavigationDestination.AddFunds.route}/$venueId")
+                onAddFundsClick = { premisesId ->
+                    navController.navigate("${NavigationDestination.AddFunds.route}/$premisesId")
                 },
                 onAddLocationClick = {
                     navController.navigate(NavigationDestination.AddFunds.route)
@@ -122,7 +122,7 @@ fun BeerWallNavHost(
                 onBackClick = { navController.popBackStack() },
                 onAddFunds = { paymentMethodId, balance ->
                     // Domyślny lokal jeśli nie został wybrany
-                    onAddFunds(balances.firstOrNull()?.venueId ?: 0, paymentMethodId, balance)
+                    onAddFunds(balances.firstOrNull()?.premisesId ?: 0, paymentMethodId, balance)
                     navController.popBackStack()
                 }
             )
@@ -131,7 +131,7 @@ fun BeerWallNavHost(
         // Add Funds with pre-selected venue
         composable("${NavigationDestination.AddFunds.route}/{venueId}") { backStackEntry ->
             val venueId = backStackEntry.savedStateHandle.get<String>("venueId")?.toIntOrNull() ?: 0
-            val venue = balances.find { it.venueId == venueId }
+            val venue = balances.find { it.premisesId == venueId }
             AddFundsScreen(
                 availablePaymentMethods = paymentMethods,
                 onBackClick = { navController.popBackStack() },
@@ -139,7 +139,7 @@ fun BeerWallNavHost(
                     onAddFunds(venueId, paymentMethodId, balance)
                     navController.popBackStack()
                 },
-                venueName = venue?.venueName
+                premisesName = venue?.premisesName
             )
         }
 
