@@ -1,8 +1,7 @@
 package org.fruex.beerwall.remote.dto.auth
 
 import kotlinx.serialization.Serializable
-import org.fruex.beerwall.remote.common.ApiError
-import org.fruex.beerwall.remote.common.ApiResponse
+import org.fruex.beerwall.remote.common.ApiEnvelope
 
 @Serializable
 data class RefreshTokenRequest(
@@ -17,8 +16,4 @@ data class RefreshTokenResponseData(
     val refreshTokenExpires: Long
 )
 
-@Serializable
-data class RefreshTokenResponse(
-    override val data: RefreshTokenResponseData? = null,
-    override val error: ApiError? = null
-) : ApiResponse<RefreshTokenResponseData>
+typealias RefreshTokenResponse = ApiEnvelope<RefreshTokenResponseData>
