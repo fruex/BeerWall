@@ -211,7 +211,7 @@ class BeerWallDataSource(
         Result.failure(e)
     }
 
-    suspend fun emailPasswordSignIn(email: String, password: String): Result<EmailPasswordSignInResponseData> = try {
+    suspend fun emailPasswordSignIn(email: String, password: String): Result<EmailPasswordSignInResponse> = try {
         platform.log("📤 Email SignIn Request", this, LogSeverity.INFO)
         val response = client.post("${ApiConfig.BASE_URL}/mobile/Auth/SignIn") {
             contentType(ContentType.Application.Json)
@@ -220,7 +220,7 @@ class BeerWallDataSource(
 
         if (response.status == HttpStatusCode.OK) {
             // API zwraca bezpośrednio obiekt danych, a nie wrapper ApiResponse
-            val responseData: EmailPasswordSignInResponseData = response.body()
+            val responseData: EmailPasswordSignInResponse = response.body()
             platform.log("✅ Email SignIn Success", this, LogSeverity.INFO)
             Result.success(responseData)
         } else {

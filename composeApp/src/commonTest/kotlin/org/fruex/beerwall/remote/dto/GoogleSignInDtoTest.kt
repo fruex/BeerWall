@@ -101,7 +101,7 @@ class GoogleSignInDtoTest {
     }
 
     @Test
-    fun `EmailPasswordSignInResponseData should deserialize correctly`() {
+    fun `EmailPasswordSignInResponse should deserialize correctly`() {
         // Given
         val jsonString = """
             {
@@ -115,13 +115,13 @@ class GoogleSignInDtoTest {
         """.trimIndent()
 
         // When
-        val response = json.decodeFromString<EmailPasswordSignInResponseData>(jsonString)
+        val response = json.decodeFromString<EmailPasswordSignInResponse>(jsonString)
 
         // Then
-        assertNotNull(response.tokenDto)
-        assertEquals("test-token", response.tokenDto.token)
-        assertEquals(3600L, response.tokenDto.tokenExpires)
-        assertEquals("refresh-token", response.tokenDto.refreshToken)
-        assertEquals(7200L, response.tokenDto.refreshTokenExpires)
+        assertNotNull(response)
+        assertEquals("test-token", response.token)
+        assertEquals(3600L, response.tokenExpires)
+        assertEquals("refresh-token", response.refreshToken)
+        assertEquals(7200L, response.refreshTokenExpires)
     }
 }
