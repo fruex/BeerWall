@@ -154,9 +154,9 @@ class BeerWallDataSource(
         platform.log("📤 Google SignIn Request to .NET Backend", this, LogSeverity.INFO)
         platform.log("  🔑 ID Token (first 50 chars): ${idToken.take(50)}...", this, LogSeverity.DEBUG)
         platform.log("  📏 ID Token length: ${idToken.length}", this, LogSeverity.DEBUG)
-        platform.log("  🌐 Endpoint: ${ApiConfig.BASE_URL}/mobile/auth/googleSignIn", this, LogSeverity.DEBUG)
+        platform.log("  🌐 Endpoint: ${ApiConfig.BASE_URL}/mobile/Auth/GoogleSignIn", this, LogSeverity.DEBUG)
 
-        val httpResponse: HttpResponse = client.post("${ApiConfig.BASE_URL}/mobile/auth/googleSignIn") {
+        val httpResponse: HttpResponse = client.post("${ApiConfig.BASE_URL}/mobile/Auth/GoogleSignIn") {
             contentType(ContentType.Application.Json)
             header(HttpHeaders.Authorization, "Bearer $idToken")
         }
@@ -214,7 +214,7 @@ class BeerWallDataSource(
 
     suspend fun emailPasswordSignIn(email: String, password: String): Result<EmailPasswordSignInResponse> = try {
         platform.log("📤 Email SignIn Request", this, LogSeverity.INFO)
-        val response = client.post("${ApiConfig.BASE_URL}/mobile/auth/signIn") {
+        val response = client.post("${ApiConfig.BASE_URL}/mobile/Auth/SignIn") {
             contentType(ContentType.Application.Json)
             setBody(EmailPasswordSignInRequest(email, password))
         }
@@ -237,54 +237,54 @@ class BeerWallDataSource(
 
     suspend fun refreshToken(refreshToken: String): Result<RefreshTokenResponseData> =
         safeCall<RefreshTokenResponse, RefreshTokenResponseData> {
-            post("${ApiConfig.BASE_URL}/mobile/auth/refreshToken") {
+            post("${ApiConfig.BASE_URL}/mobile/Auth/RefreshToken") {
                 contentType(ContentType.Application.Json)
                 setBody(RefreshTokenRequest(refreshToken))
             }.body()
         }
 
-    suspend fun getCards(): Result<List<CardItemDto>> =
-        safeCallWithAuth<GetCardsResponse, List<CardItemDto>> {
-            get("${ApiConfig.BASE_URL}/mobile/cards") {
-                addAuthToken()
-            }.body()
-        }
-
-    suspend fun toggleCardStatus(cardId: String, activate: Boolean): Result<CardActivationData> =
-        safeCallWithAuth<CardActivationResponse, CardActivationData> {
-            post("${ApiConfig.BASE_URL}/mobile/cards/activation") {
-                addAuthToken()
-                contentType(ContentType.Application.Json)
-                setBody(CardActivationRequest(cardId, activate))
-            }.body()
-        }
-
-    suspend fun getPaymentOperators(): Result<List<PaymentOperator>> =
-        safeCallWithAuth<GetPaymentOperatorsResponse, List<PaymentOperator>> {
-            get("${ApiConfig.BASE_URL}/mobile/payment/operators") {
+    suspend fun getBalance(): Result<List<GetBalanceResponseData>> =
+        safeCallWithAuth<GetBalanceResponse, List<GetBalanceResponseData>> {
+            get("${ApiConfig.BASE_URL}/mobile/User/balance") {
                 addAuthToken()
             }.body()
         }
 
     suspend fun topUp(premisesId: Int, paymentMethodId: Int, balance: Double): Result<TopUpResponseData> =
         safeCallWithAuth<TopUpResponse, TopUpResponseData> {
-            post("${ApiConfig.BASE_URL}/mobile/payments/topUp") {
+            post("${ApiConfig.BASE_URL}/mobile/Payment/top-up") {
                 addAuthToken()
                 contentType(ContentType.Application.Json)
                 setBody(TopUpRequest(premisesId, paymentMethodId, balance))
             }.body()
         }
 
-    suspend fun getBalance(): Result<List<GetBalanceResponseData>> =
-        safeCallWithAuth<GetBalanceResponse, List<GetBalanceResponseData>> {
-            get("${ApiConfig.BASE_URL}/mobile/users/balance") {
+    suspend fun getPaymentOperators(): Result<List<PaymentOperator>> =
+        safeCallWithAuth<GetPaymentOperatorsResponse, List<PaymentOperator>> {
+            get("${ApiConfig.BASE_URL}/mobile/Payment/operators") {
                 addAuthToken()
+            }.body()
+        }
+
+    suspend fun getCards(): Result<List<CardItemDto>> =
+        safeCallWithAuth<GetCardsResponse, List<CardItemDto>> {
+            get("${ApiConfig.BASE_URL}/mobile/Card") {
+                addAuthToken()
+            }.body()
+        }
+
+    suspend fun toggleCardStatus(cardId: String, activate: Boolean): Result<CardActivationData> =
+        safeCallWithAuth<CardActivationResponse, CardActivationData> {
+            post("${ApiConfig.BASE_URL}/mobile/Card/Activation") {
+                addAuthToken()
+                contentType(ContentType.Application.Json)
+                setBody(CardActivationRequest(cardId, activate))
             }.body()
         }
 
     suspend fun getHistory(): Result<List<TransactionDto>> =
         safeCallWithAuth<GetHistoryResponse, List<TransactionDto>> {
-            get("${ApiConfig.BASE_URL}/mobile/users/history") {
+            get("${ApiConfig.BASE_URL}/mobile/User/History") {
                 addAuthToken()
             }.body()
         }
