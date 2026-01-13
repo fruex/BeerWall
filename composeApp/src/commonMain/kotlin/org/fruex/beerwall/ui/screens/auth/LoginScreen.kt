@@ -42,7 +42,7 @@ fun LoginScreen(
 //    var showEmailLogin by rememberSaveable { mutableStateOf(false) }
 
     var email by rememberSaveable { mutableStateOf("mobile") }
-    var password by rememberSaveable { mutableStateOf("11111111-1111-1111-1111-111111111111") }
+    var password by rememberSaveable { mutableStateOf("mobile") }
     var showEmailLogin by rememberSaveable { mutableStateOf(true) }
 
     LoadingDialog(
