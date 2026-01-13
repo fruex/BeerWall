@@ -15,8 +15,8 @@ class BalanceRepositoryImpl(
         return dataSource.getBalance().map { it.toDomain() }
     }
 
-    override suspend fun topUp(venueId: Int, paymentMethodId: Int, balance: Double): Result<TopUpResponseData> {
-        return dataSource.topUp(venueId, paymentMethodId, balance)
+    override suspend fun topUp(premisesId: Int, paymentMethodId: Int, balance: Double): Result<TopUpResponseData> {
+        return dataSource.topUp(premisesId, paymentMethodId, balance)
     }
 
     override suspend fun getPaymentOperators(): Result<List<PaymentOperator>> {

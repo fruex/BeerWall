@@ -110,8 +110,7 @@ class GoogleSignInDtoTest {
                     "tokenExpires": 3600,
                     "refreshToken": "refresh-token",
                     "refreshTokenExpires": 7200
-                },
-                "is2FARequired": false
+                }
             }
         """.trimIndent()
 
@@ -124,6 +123,5 @@ class GoogleSignInDtoTest {
         assertEquals(3600L, response.tokenDto.tokenExpires)
         assertEquals("refresh-token", response.tokenDto.refreshToken)
         assertEquals(7200L, response.tokenDto.refreshTokenExpires)
-        assertEquals(false, response.is2FARequired)
     }
 }

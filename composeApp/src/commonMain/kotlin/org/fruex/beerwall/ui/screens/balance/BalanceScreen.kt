@@ -62,13 +62,13 @@ fun BalanceScreen(
 
             items(
                 items = balances,
-                key = { it.venueId }
+                key = { it.premisesId }
             ) { venueBalance ->
                 BalanceCard(
-                    venueName = venueBalance.venueName,
+                    venueName = venueBalance.premisesName,
                     balance = venueBalance.balance,
-                    loyaltyPoints = venueBalance.loyaltyPoints,
-                    onAddFundsClick = { onAddFundsClick(venueBalance.venueId) }
+                    loyaltyPoints = venueBalance.loyalityPoints,
+                    onAddFundsClick = { onAddFundsClick(venueBalance.premisesId) }
                 )
             }
 
@@ -196,16 +196,16 @@ fun BalanceScreenPreview() {
         BalanceScreen(
             balances = listOf(
                 VenueBalance(
-                    venueId = 1,
-                    venueName = "Pub Centrum",
+                    premisesId = 1,
+                    premisesName = "Pub Centrum",
                     balance = 45.50,
-                    loyaltyPoints = 120
+                    loyalityPoints = 120
                 ),
                 VenueBalance(
-                    venueId = 2,
-                    venueName = "Bar przy Rynku",
+                    premisesId = 2,
+                    premisesName = "Bar przy Rynku",
                     balance = 12.00,
-                    loyaltyPoints = 50
+                    loyalityPoints = 50
                 )
             ),
             onAddFundsClick = {},

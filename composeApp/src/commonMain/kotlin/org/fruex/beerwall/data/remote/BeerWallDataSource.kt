@@ -249,12 +249,12 @@ class BeerWallDataSource(
             }.body()
         }
 
-    suspend fun topUp(venueId: Int, paymentMethodId: Int, balance: Double): Result<TopUpResponseData> =
+    suspend fun topUp(premisesId: Int, paymentMethodId: Int, balance: Double): Result<TopUpResponseData> =
         safeCallWithAuth<TopUpResponse, TopUpResponseData> {
             post("${ApiConfig.BASE_URL}/mobile/Payment/top-up") {
                 addAuthToken()
                 contentType(ContentType.Application.Json)
-                setBody(TopUpRequest(venueId, paymentMethodId, balance))
+                setBody(TopUpRequest(premisesId, paymentMethodId, balance))
             }.body()
         }
 

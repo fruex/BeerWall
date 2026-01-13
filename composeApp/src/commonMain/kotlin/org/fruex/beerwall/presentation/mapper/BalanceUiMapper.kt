@@ -5,10 +5,10 @@ import org.fruex.beerwall.ui.models.VenueBalance
 
 fun Balance.toUi(): VenueBalance {
     return VenueBalance(
-        venueId = venueId,
-        venueName = venueName,
-        balance = amount,
-        loyaltyPoints = loyaltyPoints
+        premisesId = premisesId,
+        premisesName = premisesName,
+        balance = balance,
+        loyalityPoints = loyalityPoints
     )
 }
 

@@ -30,7 +30,7 @@ fun AddFundsScreen(
     availablePaymentMethods: List<PaymentMethod>,
     onBackClick: () -> Unit,
     onAddFunds: (paymentMethodId: Int, balance: Double) -> Unit,
-    venueName: String? = null,
+    premisesName: String? = null,
 ) {
     var selectedAmount by rememberSaveable { mutableStateOf("") }
     var customAmount by rememberSaveable { mutableStateOf("") }
@@ -127,7 +127,7 @@ fun AddFundsScreen(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Doładuj saldo Beer Wall",
+                    text = if (premisesName != null) "Doładuj saldo w $premisesName" else "Doładuj saldo Beer Wall",
                     style = MaterialTheme.typography.bodyMedium,
                     color = TextSecondary
                 )

@@ -219,9 +219,9 @@ class BeerWallViewModel(
         }
     }
 
-    fun onAddFunds(venueId: Int, paymentMethodId: Int, balance: Double) {
+    fun onAddFunds(premisesId: Int, paymentMethodId: Int, balance: Double) {
         viewModelScope.launch {
-            topUpBalanceUseCase(venueId, paymentMethodId, balance)
+            topUpBalanceUseCase(premisesId, paymentMethodId, balance)
                 .onSuccess {
                     // Odpowiedź przyjdzie przez webhook, nie czekamy na response
                 }
@@ -232,7 +232,7 @@ class BeerWallViewModel(
     private fun updateVenueBalance(venueName: String, newBalance: Double) {
         _uiState.update { currentState ->
             val updatedBalances = currentState.balances.map {
-                if (it.venueName == venueName) it.copy(balance = newBalance) else it
+                if (it.premisesName == venueName) it.copy(balance = newBalance) else it
             }
             currentState.copy(balances = updatedBalances)
         }
