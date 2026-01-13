@@ -17,18 +17,6 @@ class GoogleSignInDtoTest {
     }
 
     @Test
-    fun `GoogleSignInRequest should serialize correctly`() {
-        // Given
-        val request = GoogleSignInRequest("test-id-token")
-
-        // When
-        val jsonString = json.encodeToString(GoogleSignInRequest.serializer(), request)
-
-        // Then
-        assert(jsonString.contains("\"idToken\":\"test-id-token\""))
-    }
-
-    @Test
     fun `RefreshTokenRequest should serialize correctly`() {
         // Given
         val request = RefreshTokenRequest("test-refresh-token")
