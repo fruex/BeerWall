@@ -5,7 +5,7 @@
 
 ### 1. SignIn - Login i automatycznie zapisz token
 # @name signin
-POST {{beerwall_apitest_HostAddress}}/mobile/Auth/SignIn
+POST {{beerwall_apitest_HostAddress}}/mobile/auth/signIn
 Accept: application/json
 Content-Type: application/json
 
@@ -25,7 +25,7 @@ Content-Type: application/json
 
 ### 2. RefreshToken - Odśwież wygasły token
 # @name refreshToken
-GET {{beerwall_apitest_HostAddress}}/mobile/Auth/RefreshToken
+GET {{beerwall_apitest_HostAddress}}/mobile/auth/refreshToken
 Accept: application/json
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -38,7 +38,7 @@ Content-Type: application/json
 
 ### 3. GoogleSignIn - Logowanie przez Google
 # @name googleSignIn
-POST {{beerwall_apitest_HostAddress}}/mobile/Auth/GoogleSignIn
+POST {{beerwall_apitest_HostAddress}}/mobile/auth/googleSignIn
 Accept: application/json
 Content-Type: application/json
 
@@ -58,7 +58,7 @@ Accept: application/json
 Authorization: Bearer {{token}}
 
 ### 5. ToggleCardStatus - Aktywuj/Dezaktywuj kartę
-POST {{beerwall_apitest_HostAddress}}/mobile/Card/Activation
+POST {{beerwall_apitest_HostAddress}}/mobile/card/activation
 Accept: application/json
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -84,7 +84,7 @@ Accept: application/json
 Authorization: Bearer {{token}}
 
 ### 9. TopUp - Doładuj konto
-POST {{beerwall_apitest_HostAddress}}/mobile/Payment/top-up
+POST {{beerwall_apitest_HostAddress}}/mobile/payments/topUp
 Accept: application/json
 Content-Type: application/json
 Authorization: Bearer {{net_token}}
@@ -96,5 +96,5 @@ Authorization: Bearer {{net_token}}
 }
 
 ### GoogleSignIn
-POST {{beerwall_apitest_HostAddress}}/mobile/Auth/GoogleSignIn
+POST {{beerwall_apitest_HostAddress}}/mobile/auth/googleSignIn
 Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjRiYTZlZmVmNWUxNzIxNDk5NzFhMmQzYWJiNWYzMzJlMGY3ODcxNjUiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIyMjA1MjI5MzI2OTQtM3I3YjQ3cTIydGZuYzBibWszNHM5YjloYXB2YjdxdW8uYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIyMjA1MjI5MzI2OTQtZ2hhbWdvcXBxdG1iMHZrOWFqbm91aXFlMmg1MmF0ZWIuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDc0Nzk3NTQ4MDY2MDQzOTMzNDQiLCJlbWFpbCI6ImFkcmlhbi5ib3RvckBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IkFkcmlhbiBCb3RvciIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NKbkhDR0JIanpvVndBaVlJMnBaaU1zNlFQV2JUTmpNVFF4RXRHYVBnOGd0bkZRVUE9czk2LWMiLCJnaXZlbl9uYW1lIjoiQWRyaWFuIiwiZmFtaWx5X25hbWUiOiJCb3RvciIsImlhdCI6MTc2ODI5NDU3OCwiZXhwIjoxNzY4Mjk4MTc4fQ.HeEEzyDny3Jzc63XyDw6wknkGA8skaL6Pygpvv2WcnEI_pwCrLfxYFB2TlOn8S6lbpUksPNedzacovLE0A5UhUOKSG-hv9Ec-McGp-Dn-3sdhyozHBby8kdUjDTab9msZnXHsTTLp7xEZnbXNRTkcIE7av0cU8lrL4A7n1tYxKOiek2Z0R6zyjmHridE1WckosTarq5zS7nLWBMeG9vgivBSWC1UVAb-B-WtMb-Pc1kuqjAfU1QHOMaRqniDSVp2YZ3lTAYJpYUm_6wNvaaIXdTGasA_LDXjz_cUYsk2Yg8n2yvz4bQThruizvREz-ZrZEqRSGIF0fIy6Zo1s9QEmw

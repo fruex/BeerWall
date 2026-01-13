@@ -1,16 +1,17 @@
 package org.fruex.beerwall.remote.dto.balance
 
 import kotlinx.serialization.Serializable
-import org.fruex.beerwall.remote.common.ApiError
-import org.fruex.beerwall.remote.common.ApiResponse
+import org.fruex.beerwall.remote.common.ApiEnvelope
 
 @Serializable
-data class GetBalanceResponse(
+data class GetBalanceResponseData(
     val premisesId: Int,
     val premisesName: String,
     val balance: Double,
     val loyalityPoints: Int
 )
+
+typealias GetBalanceResponse = ApiEnvelope<List<GetBalanceResponseData>>
 
 @Serializable
 data class TopUpRequest(
@@ -25,8 +26,4 @@ data class TopUpResponseData(
     val status: String
 )
 
-@Serializable
-data class TopUpResponse(
-    override val data: TopUpResponseData? = null,
-    override val error: ApiError? = null
-) : ApiResponse<TopUpResponseData>
+typealias TopUpResponse = ApiEnvelope<TopUpResponseData>
