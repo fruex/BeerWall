@@ -42,10 +42,10 @@ class AuthRepositoryImpl(
             platform.log("🔐 Email Login success, saving tokens...", this, LogSeverity.INFO)
             // Zapisz tokeny do lokalnego storage
             val tokens = AuthTokens(
-                token = response.tokenDto.token,
-                tokenExpires = response.tokenDto.tokenExpires,
-                refreshToken = response.tokenDto.refreshToken,
-                refreshTokenExpires = response.tokenDto.refreshTokenExpires
+                token = response.token,
+                tokenExpires = response.tokenExpires,
+                refreshToken = response.refreshToken,
+                refreshTokenExpires = response.refreshTokenExpires
             )
             tokenManager.saveTokens(tokens)
             platform.log("✅ Tokens saved", this, LogSeverity.DEBUG)

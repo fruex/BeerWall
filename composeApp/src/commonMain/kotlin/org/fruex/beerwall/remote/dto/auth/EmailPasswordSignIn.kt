@@ -1,8 +1,6 @@
 package org.fruex.beerwall.remote.dto.auth
 
 import kotlinx.serialization.Serializable
-import org.fruex.beerwall.remote.common.ApiError
-import org.fruex.beerwall.remote.common.ApiResponse
 
 @Serializable
 data class EmailPasswordSignInRequest(
@@ -11,12 +9,9 @@ data class EmailPasswordSignInRequest(
 )
 
 @Serializable
-data class EmailPasswordSignInResponseData(
-    val tokenDto: TokenDto,
-)
-
-@Serializable
 data class EmailPasswordSignInResponse(
-    override val data: EmailPasswordSignInResponseData? = null,
-    override val error: ApiError? = null
-) : ApiResponse<EmailPasswordSignInResponseData>
+    val token: String,
+    val tokenExpires: Long,
+    val refreshToken: String,
+    val refreshTokenExpires: Long
+)
