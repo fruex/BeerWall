@@ -12,8 +12,7 @@ data class GoogleUser(
     val refreshToken: String? = null,
     val refreshTokenExpires: Long? = null,
     val displayName: String? = null,
-    val email: String? = null,
-    val photoUrl: String? = null
+    val email: String? = null
 ) {
     /**
      * Sprawdza czy token Google wygasł

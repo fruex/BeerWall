@@ -17,7 +17,10 @@ import org.fruex.beerwall.getPlatform
 import org.fruex.beerwall.log
 import org.fruex.beerwall.remote.common.ApiResponse
 import org.fruex.beerwall.remote.dto.auth.*
-import org.fruex.beerwall.remote.dto.balance.*
+import org.fruex.beerwall.remote.dto.balance.GetBalanceResponse
+import org.fruex.beerwall.remote.dto.balance.TopUpRequest
+import org.fruex.beerwall.remote.dto.balance.TopUpResponse
+import org.fruex.beerwall.remote.dto.balance.TopUpResponseData
 import org.fruex.beerwall.remote.dto.cards.*
 import org.fruex.beerwall.remote.dto.history.GetHistoryResponse
 import org.fruex.beerwall.remote.dto.history.TransactionDto
@@ -156,7 +159,7 @@ class BeerWallDataSource(
 
         val httpResponse: HttpResponse = client.post("${ApiConfig.BASE_URL}/mobile/Auth/GoogleSignIn") {
             contentType(ContentType.Application.Json)
-            setBody(GoogleSignInRequest(idToken))
+            header(HttpHeaders.Authorization, "Bearer $idToken")
         }
 
         platform.log("📥 Google SignIn Response from .NET Backend", this, LogSeverity.INFO)
@@ -242,12 +245,27 @@ class BeerWallDataSource(
             }.body()
         }
 
-    suspend fun getBalance(): Result<List<BalanceItem>> =
-        safeCallWithAuth<GetBalanceResponse, List<BalanceItem>> {
-            get("${ApiConfig.BASE_URL}/mobile/User/balance") {
-                addAuthToken()
-            }.body()
+    suspend fun getBalance(): Result<List<GetBalanceResponse>> = try {
+        platform.log("📤 GetBalance Request", this, LogSeverity.INFO)
+        val response = client.get("${ApiConfig.BASE_URL}/mobile/User/balance") {
+            addAuthToken()
         }
+        
+        if (response.status == HttpStatusCode.OK) {
+            // API zwraca bezpośrednio listę, a nie wrapper ApiResponse
+            val responseData: List<GetBalanceResponse> = response.body()
+            platform.log("✅ GetBalance Success", this, LogSeverity.INFO)
+            Result.success(responseData)
+        } else {
+            val bodyText = response.bodyAsText()
+            platform.log("❌ GetBalance Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
+            Result.failure(Exception("Błąd pobierania salda: ${response.status}"))
+        }
+    } catch (e: Exception) {
+        platform.log("❌ GetBalance Exception: ${e.message}", this, LogSeverity.ERROR)
+        e.printStackTrace()
+        Result.failure(e)
+    }
 
     suspend fun topUp(premisesId: Int, paymentMethodId: Int, balance: Double): Result<TopUpResponseData> =
         safeCallWithAuth<TopUpResponse, TopUpResponseData> {

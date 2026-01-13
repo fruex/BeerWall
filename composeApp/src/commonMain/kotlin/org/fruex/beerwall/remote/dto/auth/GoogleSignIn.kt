@@ -5,11 +5,6 @@ import org.fruex.beerwall.remote.common.ApiError
 import org.fruex.beerwall.remote.common.ApiResponse
 
 @Serializable
-data class GoogleSignInRequest(
-    val idToken: String
-)
-
-@Serializable
 data class GoogleSignInResponseData(
     val token: String,
     val tokenExpires: Long,
