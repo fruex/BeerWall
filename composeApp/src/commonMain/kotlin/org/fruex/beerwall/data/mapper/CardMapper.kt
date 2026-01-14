@@ -5,8 +5,8 @@ import org.fruex.beerwall.remote.dto.cards.CardResponse
 
 fun CardResponse.toDomain(): Card {
     return Card(
-        id = id,
-        name = name,
+        id = cardGuid,
+        name = description,
         isActive = isActive,
         isPhysical = isPhysical
     )

@@ -87,7 +87,7 @@ fun HistoryScreen(
 
                     items(
                         items = group.transactions,
-                        key = { it.id }
+                        key = { it.transactionId }
                     ) { transaction ->
                         TransactionItem(transaction)
                     }
@@ -134,19 +134,13 @@ fun TransactionItem(transaction: Transaction) {
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = transaction.beverageName,
+                    text = transaction.commodityName,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = transaction.timestamp,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = TextSecondary
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = transaction.venueName,
+                    text = transaction.startDateTime,
                     style = MaterialTheme.typography.bodySmall,
                     color = TextSecondary
                 )
@@ -154,14 +148,14 @@ fun TransactionItem(transaction: Transaction) {
 
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "${(if (transaction.amount < 0) "" else "+")}${transaction.amount} zł",
+                    text = "${(if (transaction.grossPrice < 0) "" else "+")}${transaction.grossPrice} zł",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = if (transaction.amount < 0) Error else TextPrimary
+                    color = if (transaction.grossPrice < 0) Error else TextPrimary
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "${transaction.volumeMilliliters}ml",
+                    text = "${transaction.capacity}ml",
                     style = MaterialTheme.typography.bodySmall,
                     color = TextSecondary
                 )
@@ -206,20 +200,18 @@ fun HistoryScreenPreview() {
                     date = "Dzisiaj",
                     transactions = listOf(
                         Transaction(
-                            id = "1",
-                            beverageName = "Piwo Jasne",
-                            amount = -12.50,
-                            volumeMilliliters = 500,
-                            timestamp = "18:30",
-                            venueName = "Pub u Zdzicha"
+                            transactionId = 1,
+                            commodityName = "Piwo Jasne",
+                            grossPrice = -12.50,
+                            capacity = 500,
+                            startDateTime = "2024-11-24T18:30:00"
                         ),
                         Transaction(
-                            id = "2",
-                            beverageName = "Doładowanie",
-                            amount = 50.00,
-                            volumeMilliliters = 0,
-                            timestamp = "18:00",
-                            venueName = "Pub u Zdzicha"
+                            transactionId = 2,
+                            commodityName = "Doładowanie",
+                            grossPrice = 50.00,
+                            capacity = 0,
+                            startDateTime = "2024-11-24T18:00:00"
                         )
                     )
                 ),
@@ -227,12 +219,11 @@ fun HistoryScreenPreview() {
                     date = "Wczoraj",
                     transactions = listOf(
                         Transaction(
-                            id = "3",
-                            beverageName = "Piwo Ciemne",
-                            amount = -15.00,
-                            volumeMilliliters = 500,
-                            timestamp = "20:15",
-                            venueName = "Bar Mleczny"
+                            transactionId = 3,
+                            commodityName = "Piwo Ciemne",
+                            grossPrice = -15.00,
+                            capacity = 500,
+                            startDateTime = "2024-11-23T20:15:00"
                         )
                     )
                 )

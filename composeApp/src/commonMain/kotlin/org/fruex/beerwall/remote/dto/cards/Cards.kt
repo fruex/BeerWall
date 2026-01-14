@@ -5,8 +5,8 @@ import org.fruex.beerwall.remote.common.ApiEnvelope
 
 @Serializable
 data class CardResponse(
-    val id: String,
-    val name: String,
+    val cardGuid: String,
+    val description: String,
     val isActive: Boolean,
     val isPhysical: Boolean
 )

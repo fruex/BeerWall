@@ -1,7 +1,7 @@
 #@beerwall_apitest_HostAddress = http://localhost:5254/api
 #@beerwall_apitest_HostAddress = https://beerwall-apitest-cjcfgfehh9grhne5.polandcentral-01.azurewebsites.net/api
 @beerwall_apitest_HostAddress = http://api-debug.igibeer.pl:7000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjExMTExMTExLTExMTEtMTExMS0xMTExLTExMTExMTExMTExMSIsImp0aSI6ImNjNjQwYzE4LWI3ZjAtNDZlMy05MDA5LWYyYzQ4YmZhMWZjOCIsInJvbGVzIjoiTW9iaWxlIiwiZXhwIjoxNzY4Mjg5MzgxLCJpc3MiOiJJZ2lCZWVyIiwiYXVkIjoiTW9iaWxlIn0.YZ_AkhnY4NiCSyi3wyug5HEuVdS727PULzhP_R7yRZ4
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjExMTExMTExLTExMTEtMTExMS0xMTExLTExMTExMTExMTExMSIsImp0aSI6IjM3OTVlMmE3LTE3YmItNGM1My1iODg1LTQ1OGIxMmIzZWFjMiIsInJvbGVzIjoiTW9iaWxlIiwiZmlyc3ROYW1lIjoiTW9iaWxlIiwibGFzdE5hbWUiOiJVc2VyIiwiZXhwIjoxNzY4Mzg5NzE0LCJpc3MiOiJJZ2lCZWVyIiwiYXVkIjoiTW9iaWxlIn0.73zHJL5mmCU89bz9yjxziDiOsoYuWTshAUHNSVehAvc
 
 ### 1. SignIn - Login i automatycznie zapisz token
 # @name signin
@@ -53,12 +53,12 @@ Content-Type: application/json
 %}
 
 ### 4. GetCards - Pobierz karty (używa zapisanego tokenu)
-GET {{beerwall_apitest_HostAddress}}/mobile/Card
+GET {{beerwall_apitest_HostAddress}}/mobile/cards
 Accept: application/json
 Authorization: Bearer {{token}}
 
 ### 5. ToggleCardStatus - Aktywuj/Dezaktywuj kartę
-POST {{beerwall_apitest_HostAddress}}/mobile/card/activation
+POST {{beerwall_apitest_HostAddress}}/mobile/cards/activation
 Accept: application/json
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -69,12 +69,12 @@ Authorization: Bearer {{token}}
 }
 
 ### 6. GetHistory - Pobierz historię transakcji
-GET {{beerwall_apitest_HostAddress}}/mobile/User/History
+GET {{beerwall_apitest_HostAddress}}/mobile/users/history
 Accept: application/json
 Authorization: Bearer {{token}}
 
 ### 7. GetPaymentOperators - Pobierz operatorów płatności
-GET {{beerwall_apitest_HostAddress}}/mobile/Payment/operators
+GET {{beerwall_apitest_HostAddress}}/mobile/payments/operators
 Accept: application/json
 Authorization: Bearer {{token}}
 
