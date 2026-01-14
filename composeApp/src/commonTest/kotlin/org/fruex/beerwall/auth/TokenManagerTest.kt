@@ -37,7 +37,6 @@ class TokenManagerTest {
             refreshTokenExpires = 7200L,
             displayName = "Test User",
             email = "test@example.com",
-            photoUrl = "https://example.com/photo.jpg"
         )
 
         // Then
@@ -47,7 +46,6 @@ class TokenManagerTest {
         assertEquals(7200L, user.refreshTokenExpires)
         assertEquals("Test User", user.displayName)
         assertEquals("test@example.com", user.email)
-        assertEquals("https://example.com/photo.jpg", user.photoUrl)
     }
 
     @Test
@@ -59,8 +57,7 @@ class TokenManagerTest {
             refreshToken = null,
             refreshTokenExpires = null,
             displayName = null,
-            email = null,
-            photoUrl = null
+            email = null
         )
 
         // Then
@@ -70,7 +67,6 @@ class TokenManagerTest {
         assertNull(user.refreshTokenExpires)
         assertNull(user.displayName)
         assertNull(user.email)
-        assertNull(user.photoUrl)
     }
 
     @Test

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import kotlinx.serialization.Serializable
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
+import kotlin.time.Clock
 
 @Serializable
 data class GoogleUser(
@@ -44,7 +45,7 @@ data class GoogleUser(
             println("📦 Decoding payload (length: ${payload.length})")
 
             // Dekoduj payload
-            val decodedPayload = String(Base64.decode(payload))
+            val decodedPayload = Base64.Mime.decode(payload).decodeToString()
             println("✅ Decoded payload: ${decodedPayload.take(200)}...")
 
             // Wyciągnij wartość 'exp' z JSON
@@ -57,7 +58,8 @@ data class GoogleUser(
             }
 
             // Sprawdź czy token wygasł (z małym buforem 30 sekund dla opóźnień sieciowych)
-            val currentTime = System.currentTimeMillis() / 1000
+            // Używamy kotlinx-datetime Clock zamiast System.currentTimeMillis()
+            val currentTime = Clock.System.now().epochSeconds
             val bufferSeconds = 30L // 30 sekund buffer na opóźnienia sieciowe
             val validForSeconds = expiration - currentTime
             val isExpired = currentTime >= (expiration - bufferSeconds)
