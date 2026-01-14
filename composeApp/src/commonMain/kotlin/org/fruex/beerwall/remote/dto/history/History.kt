@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import org.fruex.beerwall.remote.common.ApiEnvelope
 
 @Serializable
-data class TransactionDto(
+data class TransactionResponse(
     val id: String,
     val beverageName: String,
     val timestamp: String,
@@ -13,4 +13,4 @@ data class TransactionDto(
     val volumeMilliliters: Int
 )
 
-typealias GetHistoryResponse = ApiEnvelope<List<TransactionDto>>
+typealias GetHistoryEnvelope = ApiEnvelope<List<TransactionResponse>>

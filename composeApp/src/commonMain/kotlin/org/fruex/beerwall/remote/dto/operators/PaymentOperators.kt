@@ -13,9 +13,9 @@ data class PaymentMethod(
 )
 
 @Serializable
-data class PaymentOperator(
+data class PaymentOperatorResponse(
     val type: String,
     val paymentMethods: List<PaymentMethod>
 )
 
-typealias GetPaymentOperatorsResponse = ApiEnvelope<List<PaymentOperator>>
+typealias GetPaymentOperatorsEnvelope = ApiEnvelope<List<PaymentOperatorResponse>>

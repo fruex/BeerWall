@@ -1,9 +1,9 @@
 package org.fruex.beerwall.data.mapper
 
 import org.fruex.beerwall.domain.model.Card
-import org.fruex.beerwall.remote.dto.cards.CardItemDto
+import org.fruex.beerwall.remote.dto.cards.CardResponse
 
-fun CardItemDto.toDomain(): Card {
+fun CardResponse.toDomain(): Card {
     return Card(
         id = id,
         name = name,
@@ -12,6 +12,6 @@ fun CardItemDto.toDomain(): Card {
     )
 }
 
-fun List<CardItemDto>.toDomain(): List<Card> {
+fun List<CardResponse>.toDomain(): List<Card> {
     return map { it.toDomain() }
 }

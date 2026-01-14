@@ -1,11 +1,11 @@
 package org.fruex.beerwall.domain.repository
 
 import org.fruex.beerwall.domain.model.Balance
-import org.fruex.beerwall.remote.dto.balance.TopUpResponseData
-import org.fruex.beerwall.remote.dto.operators.PaymentOperator
+import org.fruex.beerwall.remote.dto.balance.TopUpResponse
+import org.fruex.beerwall.remote.dto.operators.PaymentOperatorResponse
 
 interface BalanceRepository {
     suspend fun getBalances(): Result<List<Balance>>
-    suspend fun topUp(premisesId: Int, paymentMethodId: Int, balance: Double): Result<TopUpResponseData>
-    suspend fun getPaymentOperators(): Result<List<PaymentOperator>>
+    suspend fun topUp(premisesId: Int, paymentMethodId: Int, balance: Double): Result<TopUpResponse>
+    suspend fun getPaymentOperators(): Result<List<PaymentOperatorResponse>>
 }

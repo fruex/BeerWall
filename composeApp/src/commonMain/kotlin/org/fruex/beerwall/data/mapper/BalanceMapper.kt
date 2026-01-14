@@ -1,9 +1,9 @@
 package org.fruex.beerwall.data.mapper
 
 import org.fruex.beerwall.domain.model.Balance
-import org.fruex.beerwall.remote.dto.balance.GetBalanceResponseData
+import org.fruex.beerwall.remote.dto.balance.BalanceResponse
 
-fun GetBalanceResponseData.toDomain(): Balance {
+fun BalanceResponse.toDomain(): Balance {
     return Balance(
         premisesId = premisesId,
         premisesName = premisesName,
@@ -12,6 +12,6 @@ fun GetBalanceResponseData.toDomain(): Balance {
     )
 }
 
-fun List<GetBalanceResponseData>.toDomain(): List<Balance> {
+fun List<BalanceResponse>.toDomain(): List<Balance> {
     return map { it.toDomain() }
 }
