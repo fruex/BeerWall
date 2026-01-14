@@ -24,6 +24,12 @@ data class CardActivationResponse(
     val status: String
 )
 
+@Serializable
+data class AssignCardRequest(
+    val guid: String,
+    val description: String
+)
+
 typealias CardActivationEnvelope = ApiEnvelope<CardActivationResponse>
 
 typealias GetCardsEnvelope = ApiEnvelope<List<CardResponse>>

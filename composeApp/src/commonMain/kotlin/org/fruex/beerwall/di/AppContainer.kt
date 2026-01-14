@@ -62,6 +62,14 @@ abstract class AppContainer {
     private val toggleCardStatusUseCase: ToggleCardStatusUseCase by lazy { 
         ToggleCardStatusUseCase(cardRepository) 
     }
+
+    private val assignCardUseCase: AssignCardUseCase by lazy {
+        AssignCardUseCase(cardRepository)
+    }
+
+    private val deleteCardUseCase: DeleteCardUseCase by lazy {
+        DeleteCardUseCase(cardRepository)
+    }
     
     private val getTransactionsUseCase: GetTransactionsUseCase by lazy { 
         GetTransactionsUseCase(transactionRepository) 
@@ -99,6 +107,9 @@ abstract class AppContainer {
             topUpBalanceUseCase = topUpBalanceUseCase,
             getTransactionsUseCase = getTransactionsUseCase,
             toggleCardStatusUseCase = toggleCardStatusUseCase,
+            assignCardUseCase = assignCardUseCase,
+            deleteCardUseCase = deleteCardUseCase,
+            getCardsUseCase = getCardsUseCase,
             getPaymentOperatorsUseCase = getPaymentOperatorsUseCase,
             googleSignInUseCase = googleSignInUseCase,
             emailPasswordSignInUseCase = emailPasswordSignInUseCase,

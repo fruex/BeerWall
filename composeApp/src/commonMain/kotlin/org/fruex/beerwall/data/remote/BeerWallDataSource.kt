@@ -264,6 +264,71 @@ class BeerWallDataSource(
             }.body()
         }
 
+    suspend fun assignCard(guid: String, description: String): Result<Unit> = try {
+        platform.log("📤 Assign Card Request", this, LogSeverity.INFO)
+        val response = client.post("${ApiConfig.BASE_URL}/mobile/cards/assign") {
+            addAuthToken()
+            contentType(ContentType.Application.Json)
+            setBody(AssignCardRequest(guid, description))
+        }
+
+        when (response.status) {
+            HttpStatusCode.NoContent -> {
+                platform.log("✅ Assign Card Success", this, LogSeverity.INFO)
+                Result.success(Unit)
+            }
+            HttpStatusCode.Unauthorized -> {
+                platform.log("❌ Assign Card Unauthorized", this, LogSeverity.ERROR)
+                Result.failure(Exception("Unauthorized"))
+            }
+            HttpStatusCode.NotFound -> {
+                platform.log("❌ Assign Card Not Found", this, LogSeverity.ERROR)
+                Result.failure(Exception("Card not found"))
+            }
+            else -> {
+                val bodyText = response.bodyAsText()
+                platform.log("❌ Assign Card Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
+                Result.failure(Exception("Error assigning card: ${response.status}"))
+            }
+        }
+    } catch (e: Exception) {
+        platform.log("❌ Assign Card Exception: ${e.message}", this, LogSeverity.ERROR)
+        e.printStackTrace()
+        Result.failure(e)
+    }
+
+    suspend fun deleteCard(guid: String): Result<Unit> = try {
+        platform.log("📤 Delete Card Request", this, LogSeverity.INFO)
+        val response = client.delete("${ApiConfig.BASE_URL}/mobile/cards") {
+            addAuthToken()
+            parameter("guid", guid)
+        }
+
+        when (response.status) {
+            HttpStatusCode.NoContent -> {
+                platform.log("✅ Delete Card Success", this, LogSeverity.INFO)
+                Result.success(Unit)
+            }
+            HttpStatusCode.Unauthorized -> {
+                platform.log("❌ Delete Card Unauthorized", this, LogSeverity.ERROR)
+                Result.failure(Exception("Unauthorized"))
+            }
+            HttpStatusCode.NotFound -> {
+                platform.log("❌ Delete Card Not Found", this, LogSeverity.ERROR)
+                Result.failure(Exception("Card not found"))
+            }
+            else -> {
+                val bodyText = response.bodyAsText()
+                platform.log("❌ Delete Card Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
+                Result.failure(Exception("Error deleting card: ${response.status}"))
+            }
+        }
+    } catch (e: Exception) {
+        platform.log("❌ Delete Card Exception: ${e.message}", this, LogSeverity.ERROR)
+        e.printStackTrace()
+        Result.failure(e)
+    }
+
     suspend fun getPaymentOperators(): Result<List<PaymentOperatorResponse>> =
         safeCallWithAuth<GetPaymentOperatorsEnvelope, List<PaymentOperatorResponse>> {
             get("${ApiConfig.BASE_URL}/mobile/payment/operators") {
