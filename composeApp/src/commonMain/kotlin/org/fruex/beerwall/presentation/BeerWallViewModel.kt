@@ -35,6 +35,9 @@ class BeerWallViewModel(
     private val topUpBalanceUseCase: TopUpBalanceUseCase,
     private val getTransactionsUseCase: GetTransactionsUseCase,
     private val toggleCardStatusUseCase: ToggleCardStatusUseCase,
+    private val assignCardUseCase: AssignCardUseCase,
+    private val deleteCardUseCase: DeleteCardUseCase,
+    private val getCardsUseCase: GetCardsUseCase,
     private val getPaymentOperatorsUseCase: GetPaymentOperatorsUseCase,
     private val googleSignInUseCase: GoogleSignInUseCase,
     private val emailPasswordSignInUseCase: EmailPasswordSignInUseCase,
@@ -177,34 +180,10 @@ class BeerWallViewModel(
     }
 
     fun refreshAllData() {
-        viewModelScope.launch {
-            setLoading(true)
-
-            val allData = refreshAllDataUseCase()
-
-            _uiState.update { currentState ->
-                var newState = currentState
-
-                allData.balances?.let { balances ->
-                    newState = newState.copy(balances = balances.toUi())
-                }
-                allData.cards?.let { cards ->
-                    newState = newState.copy(
-                        cards = cards.toUi()
-                    )
-                }
-                allData.transactions?.let { transactions ->
-                    newState = newState.copy(transactionGroups = transactions.groupByDate())
-                }
-
-                newState
-            }
-
-            // Pobierz metody płatności
-            loadPaymentMethods()
-
-            setLoading(false)
-        }
+        refreshBalance()
+        refreshCards()
+        refreshHistory()
+        loadPaymentMethods()
     }
 
     private fun loadPaymentMethods() {
@@ -262,18 +241,40 @@ class BeerWallViewModel(
         }
     }
 
+    fun refreshCards() {
+        launchWithLoading {
+            getCardsUseCase().onSuccess { cards ->
+                _uiState.update { it.copy(cards = cards.toUi()) }
+            }
+        }
+    }
+
     fun onDeleteCard(cardId: String) {
-        updateCards { cards -> cards.filter { it.id != cardId || !it.isPhysical } }
+        viewModelScope.launch {
+            setLoading(true)
+            deleteCardUseCase(cardId)
+                .onSuccess {
+                    refreshCards()
+                }
+                .onFailure {
+                    setError("Nie udało się usunąć karty: ${it.message}")
+                }
+            setLoading(false)
+        }
     }
 
     fun onSaveCard(name: String, cardId: String) {
-        val newCard = UserCard(
-            id = cardId,
-            name = name,
-            isActive = true,
-            isPhysical = true
-        )
-        updateCards { cards -> cards + newCard }
+        viewModelScope.launch {
+            setLoading(true)
+            assignCardUseCase(cardId, name)
+                .onSuccess {
+                    refreshCards()
+                }
+                .onFailure {
+                    setError("Nie udało się zapisać karty: ${it.message}")
+                }
+            setLoading(false)
+        }
     }
 
     private fun updateCards(transform: (List<UserCard>) -> List<UserCard>) {

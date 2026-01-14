@@ -16,4 +16,12 @@ class CardRepositoryImpl(
     override suspend fun toggleCardStatus(cardId: String, isActive: Boolean): Result<Boolean> {
         return dataSource.toggleCardStatus(cardId, isActive).map { it.isActive }
     }
+
+    override suspend fun assignCard(guid: String, description: String): Result<Unit> {
+        return dataSource.assignCard(guid, description)
+    }
+
+    override suspend fun deleteCard(guid: String): Result<Unit> {
+        return dataSource.deleteCard(guid)
+    }
 }
