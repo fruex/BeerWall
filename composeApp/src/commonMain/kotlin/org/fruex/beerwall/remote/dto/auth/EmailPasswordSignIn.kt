@@ -8,10 +8,4 @@ data class EmailPasswordSignInRequest(
     val password: String
 )
 
-@Serializable
-data class EmailPasswordSignInResponse(
-    val token: String,
-    val tokenExpires: Long,
-    val refreshToken: String,
-    val refreshTokenExpires: Long
-)
+typealias EmailPasswordSignInResponse = AuthResponse
