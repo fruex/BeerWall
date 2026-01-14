@@ -5,7 +5,7 @@ import org.fruex.beerwall.remote.common.ApiEnvelope
 
 @Serializable
 data class PaymentMethod(
-    val id: Int,
+    val paymentMethodId: Int,
     val name: String,
     val description: String,
     val image: String,

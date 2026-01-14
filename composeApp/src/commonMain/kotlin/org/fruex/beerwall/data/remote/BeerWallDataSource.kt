@@ -17,7 +17,9 @@ import org.fruex.beerwall.getPlatform
 import org.fruex.beerwall.log
 import org.fruex.beerwall.remote.common.ApiResponse
 import org.fruex.beerwall.remote.dto.auth.*
-import org.fruex.beerwall.remote.dto.balance.*
+import org.fruex.beerwall.remote.dto.balance.BalanceResponse
+import org.fruex.beerwall.remote.dto.balance.GetBalanceEnvelope
+import org.fruex.beerwall.remote.dto.balance.TopUpRequest
 import org.fruex.beerwall.remote.dto.cards.*
 import org.fruex.beerwall.remote.dto.history.GetHistoryEnvelope
 import org.fruex.beerwall.remote.dto.history.TransactionResponse
@@ -266,7 +268,7 @@ class BeerWallDataSource(
 
     suspend fun assignCard(guid: String, description: String): Result<Unit> = try {
         platform.log("📤 Assign Card Request", this, LogSeverity.INFO)
-        val response = client.post("${ApiConfig.BASE_URL}/mobile/cards/assign") {
+        val response = client.put("${ApiConfig.BASE_URL}/mobile/cards/assign") {
             addAuthToken()
             contentType(ContentType.Application.Json)
             setBody(AssignCardRequest(guid, description))
@@ -331,19 +333,39 @@ class BeerWallDataSource(
 
     suspend fun getPaymentOperators(): Result<List<PaymentOperatorResponse>> =
         safeCallWithAuth<GetPaymentOperatorsEnvelope, List<PaymentOperatorResponse>> {
-            get("${ApiConfig.BASE_URL}/mobile/payment/operators") {
+            get("${ApiConfig.BASE_URL}/mobile/payments/operators") {
                 addAuthToken()
             }.body()
         }
 
-    suspend fun topUp(premisesId: Int, paymentMethodId: Int, balance: Double): Result<TopUpResponse> =
-        safeCallWithAuth<TopUpEnvelope, TopUpResponse> {
-            post("${ApiConfig.BASE_URL}/mobile/payments/topUp") {
-                addAuthToken()
-                contentType(ContentType.Application.Json)
-                setBody(TopUpRequest(premisesId, paymentMethodId, balance))
-            }.body()
+    suspend fun topUp(premisesId: Int, paymentMethodId: Int, balance: Double): Result<Unit> = try {
+        platform.log("📤 TopUp Request", this, LogSeverity.INFO)
+        val response = client.post("${ApiConfig.BASE_URL}/mobile/payments/topUp") {
+            addAuthToken()
+            contentType(ContentType.Application.Json)
+            setBody(TopUpRequest(premisesId, paymentMethodId, balance))
         }
+
+        when (response.status) {
+            HttpStatusCode.NoContent -> {
+                platform.log("✅ TopUp Success", this, LogSeverity.INFO)
+                Result.success(Unit)
+            }
+            HttpStatusCode.Unauthorized -> {
+                platform.log("❌ TopUp Unauthorized", this, LogSeverity.ERROR)
+                Result.failure(Exception("Unauthorized"))
+            }
+            else -> {
+                val bodyText = response.bodyAsText()
+                platform.log("❌ TopUp Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
+                Result.failure(Exception("Error topping up: ${response.status}"))
+            }
+        }
+    } catch (e: Exception) {
+        platform.log("❌ TopUp Exception: ${e.message}", this, LogSeverity.ERROR)
+        e.printStackTrace()
+        Result.failure(e)
+    }
 
     suspend fun getBalance(): Result<List<BalanceResponse>> =
         safeCallWithAuth<GetBalanceEnvelope, List<BalanceResponse>> {

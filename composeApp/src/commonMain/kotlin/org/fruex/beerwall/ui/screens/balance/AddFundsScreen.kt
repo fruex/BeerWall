@@ -49,7 +49,7 @@ fun AddFundsScreen(
             kotlinx.coroutines.delay(3000)
             finalAmount.toDoubleOrNull()?.let { balanceValue ->
                 selectedPaymentMethod?.let { method ->
-                    onAddFunds(method.id, balanceValue)
+                    onAddFunds(method.paymentMethodId, balanceValue)
                 }
             }
             isProcessing = false
@@ -145,7 +145,7 @@ fun AddFundsScreen(
                 availablePaymentMethods.forEach { method ->
                     PaymentMethodCard(
                         paymentMethod = method,
-                        isSelected = selectedPaymentMethod?.id == method.id,
+                        isSelected = selectedPaymentMethod?.paymentMethodId == method.paymentMethodId,
                         onClick = { selectedPaymentMethod = method }
                     )
                     Spacer(modifier = Modifier.height(12.dp))
@@ -378,14 +378,14 @@ fun AddFundsScreenPreview() {
         AddFundsScreen(
             availablePaymentMethods = listOf(
                 PaymentMethod(
-                    id = 1,
+                    paymentMethodId = 1,
                     name = "BLIK",
                     description = "Szybka płatność kodem",
                     image = "https://example.com/blik.png",
                     status = "ACTIVE"
                 ),
                 PaymentMethod(
-                    id = 2,
+                    paymentMethodId = 2,
                     name = "Karta płatnicza",
                     description = "Visa / Mastercard",
                     image = "https://example.com/card.png",
