@@ -3,9 +3,11 @@ package org.fruex.beerwall.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import org.fruex.beerwall.ui.models.DailyTransactions
 import org.fruex.beerwall.ui.models.UserCard
 import org.fruex.beerwall.ui.models.UserProfile
@@ -129,8 +131,11 @@ fun BeerWallNavHost(
         }
 
         // Add Funds with pre-selected venue
-        composable("${NavigationDestination.AddFunds.route}/{venueId}") { backStackEntry ->
-            val venueId = backStackEntry.savedStateHandle.get<String>("venueId")?.toIntOrNull() ?: 0
+        composable(
+            route = "${NavigationDestination.AddFunds.route}/{venueId}",
+            arguments = listOf(navArgument("venueId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val venueId = backStackEntry.arguments?.getInt("venueId") ?: 0
             val venue = balances.find { it.premisesId == venueId }
             AddFundsScreen(
                 availablePaymentMethods = paymentMethods,
