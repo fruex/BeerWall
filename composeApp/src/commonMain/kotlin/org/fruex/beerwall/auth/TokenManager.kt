@@ -54,7 +54,7 @@ fun decodeTokenPayload(token: String): Map<String, String> {
             3 -> payload += "="
         }
 
-        val decodedPayload = String(Base64.decode(payload))
+        val decodedPayload = Base64.decode(payload).decodeToString()
         
         // Prosty parser JSON dla płaskiej struktury
         val result = mutableMapOf<String, String>()

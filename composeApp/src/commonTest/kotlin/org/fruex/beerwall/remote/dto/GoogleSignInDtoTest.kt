@@ -9,6 +9,7 @@ import kotlin.test.assertNotNull
 /**
  * Testy serializacji/deserializacji DTO dla logowania
  */
+@OptIn(kotlin.experimental.ExperimentalNativeApi::class)
 class GoogleSignInDtoTest {
 
     private val json = Json {
@@ -45,7 +46,7 @@ class GoogleSignInDtoTest {
     }
 
     @Test
-    fun `GoogleSignInResponseData should deserialize correctly`() {
+    fun `GoogleSignInResponse should deserialize correctly`() {
         // Given
         val jsonString = """
             {
@@ -57,7 +58,7 @@ class GoogleSignInDtoTest {
         """.trimIndent()
 
         // When
-        val response = json.decodeFromString<GoogleSignInResponseData>(jsonString)
+        val response = json.decodeFromString<GoogleSignInResponse>(jsonString)
 
         // Then
         assertEquals("test-token", response.token)
@@ -67,7 +68,7 @@ class GoogleSignInDtoTest {
     }
 
     @Test
-    fun `RefreshTokenResponseData should deserialize correctly`() {
+    fun `RefreshTokenResponse should deserialize correctly`() {
         // Given
         val jsonString = """
             {
@@ -79,7 +80,7 @@ class GoogleSignInDtoTest {
         """.trimIndent()
 
         // When
-        val response = json.decodeFromString<RefreshTokenResponseData>(jsonString)
+        val response = json.decodeFromString<RefreshTokenResponse>(jsonString)
 
         // Then
         assertEquals("new-token", response.token)
@@ -93,12 +94,10 @@ class GoogleSignInDtoTest {
         // Given
         val jsonString = """
             {
-                "tokenDto": {
-                    "token": "test-token",
-                    "tokenExpires": 3600,
-                    "refreshToken": "refresh-token",
-                    "refreshTokenExpires": 7200
-                }
+                "token": "test-token",
+                "tokenExpires": 3600,
+                "refreshToken": "refresh-token",
+                "refreshTokenExpires": 7200
             }
         """.trimIndent()
 
