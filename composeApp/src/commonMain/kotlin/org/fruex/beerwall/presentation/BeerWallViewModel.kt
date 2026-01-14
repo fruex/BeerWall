@@ -2,7 +2,6 @@ package org.fruex.beerwall.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -161,11 +160,6 @@ class BeerWallViewModel(
         }
     }
 
-    fun setGuestSession() {
-        _uiState.update { it.copy(isLoggedIn = true) }
-        refreshAllData()
-    }
-
     fun onClearError() {
         _uiState.update { it.copy(errorMessage = null) }
     }
@@ -224,15 +218,6 @@ class BeerWallViewModel(
                     // Odpowiedź przyjdzie przez webhook, nie czekamy na response
                 }
                 .onFailure { setError("Nie udało się doładować konta: ${it.message}") }
-        }
-    }
-
-    private fun updateVenueBalance(venueName: String, newBalance: Double) {
-        _uiState.update { currentState ->
-            val updatedBalances = currentState.balances.map {
-                if (it.premisesName == venueName) it.copy(balance = newBalance) else it
-            }
-            currentState.copy(balances = updatedBalances)
         }
     }
 

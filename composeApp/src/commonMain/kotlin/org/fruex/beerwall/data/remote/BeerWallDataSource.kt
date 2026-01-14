@@ -220,10 +220,15 @@ class BeerWallDataSource(
         }
 
         if (response.status == HttpStatusCode.OK) {
-            // API zwraca bezpośrednio obiekt danych, a nie wrapper ApiResponse
-            val responseData: EmailPasswordSignInResponse = response.body()
-            platform.log("✅ Email SignIn Success", this, LogSeverity.INFO)
-            Result.success(responseData)
+            val envelope: EmailPasswordSignInEnvelope = response.body()
+            if (envelope.data != null) {
+                platform.log("✅ Email SignIn Success", this, LogSeverity.INFO)
+                Result.success(envelope.data)
+            } else {
+                val errorMsg = envelope.error?.message ?: "Unknown error"
+                platform.log("❌ Email SignIn Error: $errorMsg", this, LogSeverity.ERROR)
+                Result.failure(Exception(errorMsg))
+            }
         } else {
             val bodyText = response.bodyAsText()
             platform.log("❌ Email SignIn Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
