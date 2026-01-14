@@ -160,6 +160,11 @@ class BeerWallViewModel(
         }
     }
 
+    fun setGuestSession() {
+        _uiState.update { it.copy(isLoggedIn = true) }
+        refreshAllData()
+    }
+
     fun onClearError() {
         _uiState.update { it.copy(errorMessage = null) }
     }
