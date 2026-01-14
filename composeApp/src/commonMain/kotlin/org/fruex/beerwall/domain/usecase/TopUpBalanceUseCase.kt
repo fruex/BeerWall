@@ -1,7 +1,7 @@
 package org.fruex.beerwall.domain.usecase
 
 import org.fruex.beerwall.domain.repository.BalanceRepository
-import org.fruex.beerwall.remote.dto.balance.TopUpResponseData
+import org.fruex.beerwall.remote.dto.balance.TopUpResponse
 
 /**
  * Przypadek użycia do doładowania konta.
@@ -13,12 +13,12 @@ class TopUpBalanceUseCase(
 ) {
     /**
      * Inicjuje doładowanie.
-     * @param venueId ID lokalu.
+     * @param premisesId ID lokalu.
      * @param paymentMethodId ID metody płatności.
      * @param balance Kwota doładowania.
      * @return Result z danymi odpowiedzi [TopUpResponseData].
      */
-    suspend operator fun invoke(venueId: Int, paymentMethodId: Int, balance: Double): Result<TopUpResponseData> {
-        return balanceRepository.topUp(venueId, paymentMethodId, balance)
+    suspend operator fun invoke(premisesId: Int, paymentMethodId: Int, balance: Double): Result<TopUpResponse> {
+        return balanceRepository.topUp(premisesId, paymentMethodId, balance)
     }
 }

@@ -1,8 +1,7 @@
 package org.fruex.beerwall.remote.dto.operators
 
 import kotlinx.serialization.Serializable
-import org.fruex.beerwall.remote.common.ApiError
-import org.fruex.beerwall.remote.common.ApiResponse
+import org.fruex.beerwall.remote.common.ApiEnvelope
 
 @Serializable
 data class PaymentMethod(
@@ -14,13 +13,9 @@ data class PaymentMethod(
 )
 
 @Serializable
-data class PaymentOperator(
+data class PaymentOperatorResponse(
     val type: String,
     val paymentMethods: List<PaymentMethod>
 )
 
-@Serializable
-data class GetPaymentOperatorsResponse(
-    override val data: List<PaymentOperator>? = null,
-    override val error: ApiError? = null
-) : ApiResponse<List<PaymentOperator>>
+typealias GetPaymentOperatorsEnvelope = ApiEnvelope<List<PaymentOperatorResponse>>

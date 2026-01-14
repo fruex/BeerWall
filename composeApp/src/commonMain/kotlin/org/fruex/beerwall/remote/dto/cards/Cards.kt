@@ -1,11 +1,10 @@
 package org.fruex.beerwall.remote.dto.cards
 
 import kotlinx.serialization.Serializable
-import org.fruex.beerwall.remote.common.ApiError
-import org.fruex.beerwall.remote.common.ApiResponse
+import org.fruex.beerwall.remote.common.ApiEnvelope
 
 @Serializable
-data class CardItemDto(
+data class CardResponse(
     val id: String,
     val name: String,
     val isActive: Boolean,
@@ -20,19 +19,11 @@ data class CardActivationRequest(
 
 @Serializable
 data class CardActivationResponse(
-    override val data: CardActivationData? = null,
-    override val error: ApiError? = null
-) : ApiResponse<CardActivationData>
-
-@Serializable
-data class CardActivationData(
     val cardId: String,
     val isActive: Boolean,
     val status: String
 )
 
-@Serializable
-data class GetCardsResponse(
-    override val data: List<CardItemDto>? = null,
-    override val error: ApiError? = null
-) : ApiResponse<List<CardItemDto>>
+typealias CardActivationEnvelope = ApiEnvelope<CardActivationResponse>
+
+typealias GetCardsEnvelope = ApiEnvelope<List<CardResponse>>

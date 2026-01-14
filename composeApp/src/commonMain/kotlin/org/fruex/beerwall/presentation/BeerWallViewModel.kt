@@ -2,13 +2,12 @@ package org.fruex.beerwall.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.fruex.beerwall.auth.GoogleUser
+import org.fruex.beerwall.auth.AuthTokens
 import org.fruex.beerwall.domain.usecase.*
 import org.fruex.beerwall.presentation.mapper.groupByDate
 import org.fruex.beerwall.presentation.mapper.toUi
@@ -137,10 +136,10 @@ class BeerWallViewModel(
 
     /**
      * Aktualizuje stan po udanym logowaniu.
-     * @param user Obiekt użytkownika Google.
+     * @param tokens Obiekt użytkownika (tokeny).
      */
-    fun onLoginSuccess(user: GoogleUser) {
-        updateUserProfile(user)
+    fun onLoginSuccess(tokens: AuthTokens) {
+        updateUserProfile(tokens)
         _uiState.update { it.copy(isLoggedIn = true, isCheckingSession = false) }
         refreshAllData()
     }
@@ -154,8 +153,8 @@ class BeerWallViewModel(
             setLoading(true)
             try {
                 googleSignInUseCase(googleAuthProvider)
-                    .onSuccess { user ->
-                        onLoginSuccess(user)
+                    .onSuccess { tokens ->
+                        onLoginSuccess(tokens)
                     }
                     .onFailure { error ->
                         setError(error.message ?: "Błąd logowania Google")
@@ -178,10 +177,8 @@ class BeerWallViewModel(
             setLoading(true)
             try {
                 emailPasswordSignInUseCase(email, password)
-                    .onSuccess {
-                        // Tokeny zostały zapisane w TokenManager przez repository
-                        _uiState.update { it.copy(isLoggedIn = true, isCheckingSession = false) }
-                        refreshAllData()
+                    .onSuccess { tokens ->
+                        onLoginSuccess(tokens)
                     }
                     .onFailure { error ->
                         setError(error.message ?: "Błąd logowania")
@@ -192,15 +189,6 @@ class BeerWallViewModel(
                 setLoading(false)
             }
         }
-    }
-
-    /**
-     * Ustawia tryb gościa (zalogowany bez danych).
-     * // TODO: Zweryfikować czy tryb gościa jest nadal potrzebny i jak powinien działać.
-     */
-    fun setGuestSession() {
-        _uiState.update { it.copy(isLoggedIn = true) }
-        refreshAllData()
     }
 
     /**
@@ -269,30 +257,18 @@ class BeerWallViewModel(
 
     /**
      * Inicjuje doładowanie konta.
-     * @param venueId ID lokalu.
+     * @param premisesId ID lokalu.
      * @param paymentMethodId ID metody płatności.
      * @param balance Kwota doładowania.
      */
-    fun onAddFunds(venueId: Int, paymentMethodId: Int, balance: Double) {
+    fun onAddFunds(premisesId: Int, paymentMethodId: Int, balance: Double) {
         viewModelScope.launch {
-            topUpBalanceUseCase(venueId, paymentMethodId, balance)
+            topUpBalanceUseCase(premisesId, paymentMethodId, balance)
                 .onSuccess {
                     // Odpowiedź przyjdzie przez webhook, nie czekamy na response
                     // TODO: Dodać obsługę przekierowania do bramki płatności jeśli usecase zwraca URL.
                 }
                 .onFailure { setError("Nie udało się doładować konta: ${it.message}") }
-        }
-    }
-
-    /**
-     * Aktualizuje saldo lokalu w stanie UI (lokalnie).
-     */
-    private fun updateVenueBalance(venueName: String, newBalance: Double) {
-        _uiState.update { currentState ->
-            val updatedBalances = currentState.balances.map {
-                if (it.venueName == venueName) it.copy(balance = newBalance) else it
-            }
-            currentState.copy(balances = updatedBalances)
         }
     }
 
@@ -382,13 +358,18 @@ class BeerWallViewModel(
     /**
      * Aktualizuje dane profilowe użytkownika w stanie UI.
      */
-    private fun updateUserProfile(user: GoogleUser) {
+    private fun updateUserProfile(tokens: AuthTokens) {
+        val displayName = if (tokens.firstName != null || tokens.lastName != null)
+            "${tokens.firstName ?: ""} ${tokens.lastName ?: ""}".trim()
+            else null
+
         _uiState.update { currentState ->
             currentState.copy(
                 userProfile = currentState.userProfile.copy(
-                    name = user.displayName ?: currentState.userProfile.name,
-                    email = user.email ?: currentState.userProfile.email,
-                    initials = getUserInitials(user.displayName, currentState.userProfile.initials)
+                    name = displayName ?: currentState.userProfile.name,
+                    // Email nie jest dostępny w AuthTokens, więc zostawiamy stary lub pusty
+                    // Jeśli potrzebujemy emaila, musielibyśmy go też wyciągnąć z tokenu (jeśli tam jest)
+                    initials = getUserInitials(displayName, currentState.userProfile.initials)
                 )
             )
         }

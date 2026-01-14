@@ -45,4 +45,26 @@ actual class TokenManagerImpl : TokenManager {
         tokens = null
         // TODO: Implement secure storage for iOS (Keychain)
     }
+
+    actual override suspend fun getUserName(): String? {
+        val currentTokens = tokens ?: return null
+
+        // Najpierw sprawdź czy mamy imię i nazwisko zapisane wprost w obiekcie AuthTokens
+        if (!currentTokens.firstName.isNullOrBlank() || !currentTokens.lastName.isNullOrBlank()) {
+            val first = currentTokens.firstName ?: ""
+            val last = currentTokens.lastName ?: ""
+            return "$first $last".trim()
+        }
+
+        // Jeśli nie, spróbuj wyciągnąć z tokenu JWT
+        val payload = decodeTokenPayload(currentTokens.token)
+        val firstName = payload["firstName"] ?: ""
+        val lastName = payload["lastName"] ?: ""
+
+        return if (firstName.isNotBlank() || lastName.isNotBlank()) {
+            "$firstName $lastName".trim()
+        } else {
+            null
+        }
+    }
 }

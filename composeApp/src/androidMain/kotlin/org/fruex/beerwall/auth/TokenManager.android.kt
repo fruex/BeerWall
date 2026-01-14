@@ -1,14 +1,17 @@
 package org.fruex.beerwall.auth
 
 import android.content.Context
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import org.fruex.beerwall.LogSeverity
+import org.fruex.beerwall.getPlatform
+import org.fruex.beerwall.log
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -17,18 +20,38 @@ private data class TokenSession(val tokens: AuthTokens? = null)
 
 private object TokenSerializer : Serializer<TokenSession> {
     override val defaultValue: TokenSession = TokenSession()
+    private val platform = getPlatform()
+
+    private val json = Json {
+        ignoreUnknownKeys = true
+        isLenient = true
+        encodeDefaults = true
+    }
 
     override suspend fun readFrom(input: InputStream): TokenSession = try {
         val text = input.readBytes().decodeToString()
-        if (text.isEmpty()) defaultValue else Json.decodeFromString<TokenSession>(text)
+        if (text.isBlank()) {
+            defaultValue
+        } else {
+            json.decodeFromString<TokenSession>(text)
+        }
+    } catch (e: SerializationException) {
+        platform.log("Error deserializing TokenSession: ${e.message}", this, LogSeverity.ERROR)
+        defaultValue
     } catch (e: Exception) {
-        Log.e("TokenSerializer", "Error reading TokenSession", e)
+        platform.log("Error reading TokenSession: ${e.message}", this, LogSeverity.ERROR)
         defaultValue
     }
 
     override suspend fun writeTo(t: TokenSession, output: OutputStream) {
         withContext(Dispatchers.IO) {
-            output.write(Json.encodeToString(TokenSession.serializer(), t).encodeToByteArray())
+            try {
+                val text = json.encodeToString(TokenSession.serializer(), t)
+                output.write(text.encodeToByteArray())
+            } catch (e: Exception) {
+                platform.log("Error writing TokenSession: ${e.message}", this, LogSeverity.ERROR)
+                throw e
+            }
         }
     }
 }
@@ -39,10 +62,16 @@ private val Context.tokenDataStore: DataStore<TokenSession> by dataStore(
 )
 
 actual class TokenManagerImpl(private val context: Context) : TokenManager {
+    private val platform = getPlatform()
     
     actual override suspend fun saveTokens(tokens: AuthTokens) {
-        context.tokenDataStore.updateData { it.copy(tokens = tokens) }
-        Log.d("TokenManager", "Tokens saved")
+        try {
+            context.tokenDataStore.updateData { it.copy(tokens = tokens) }
+            platform.log("Tokens saved successfully", this, LogSeverity.INFO)
+        } catch (e: Exception) {
+            platform.log("Error saving tokens: ${e.message}", this, LogSeverity.ERROR)
+            throw e
+        }
     }
 
     actual override suspend fun getToken(): String? = withContext(Dispatchers.IO) {
@@ -50,7 +79,7 @@ actual class TokenManagerImpl(private val context: Context) : TokenManager {
             val session = context.tokenDataStore.data.first()
             session.tokens?.token
         } catch (e: Exception) {
-            Log.e("TokenManager", "Error reading token", e)
+            platform.log("Error reading token: ${e.message}", this, LogSeverity.ERROR)
             null
         }
     }
@@ -60,7 +89,7 @@ actual class TokenManagerImpl(private val context: Context) : TokenManager {
             val session = context.tokenDataStore.data.first()
             session.tokens?.refreshToken
         } catch (e: Exception) {
-            Log.e("TokenManager", "Error reading refresh token", e)
+            platform.log("Error reading refresh token: ${e.message}", this, LogSeverity.ERROR)
             null
         }
     }
@@ -72,7 +101,7 @@ actual class TokenManagerImpl(private val context: Context) : TokenManager {
             val currentTime = System.currentTimeMillis() / 1000
             currentTime >= tokens.tokenExpires
         } catch (e: Exception) {
-            Log.e("TokenManager", "Error checking token expiration", e)
+            platform.log("Error checking token expiration: ${e.message}", this, LogSeverity.ERROR)
             true
         }
     }
@@ -84,7 +113,7 @@ actual class TokenManagerImpl(private val context: Context) : TokenManager {
             val currentTime = System.currentTimeMillis() / 1000
             currentTime >= tokens.refreshTokenExpires
         } catch (e: Exception) {
-            Log.e("TokenManager", "Error checking refresh token expiration", e)
+            platform.log("Error checking refresh token expiration: ${e.message}", this, LogSeverity.ERROR)
             true
         }
     }
@@ -94,7 +123,7 @@ actual class TokenManagerImpl(private val context: Context) : TokenManager {
             val session = context.tokenDataStore.data.first()
             session.tokens?.tokenExpires
         } catch (e: Exception) {
-            Log.e("TokenManager", "Error reading token expires", e)
+            platform.log("Error reading token expires: ${e.message}", this, LogSeverity.ERROR)
             null
         }
     }
@@ -104,13 +133,45 @@ actual class TokenManagerImpl(private val context: Context) : TokenManager {
             val session = context.tokenDataStore.data.first()
             session.tokens?.refreshTokenExpires
         } catch (e: Exception) {
-            Log.e("TokenManager", "Error reading refresh token expires", e)
+            platform.log("Error reading refresh token expires: ${e.message}", this, LogSeverity.ERROR)
             null
         }
     }
 
     actual override suspend fun clearTokens() {
-        context.tokenDataStore.updateData { it.copy(tokens = null) }
-        Log.d("TokenManager", "Tokens cleared")
+        try {
+            context.tokenDataStore.updateData { it.copy(tokens = null) }
+            platform.log("Tokens cleared", this, LogSeverity.INFO)
+        } catch (e: Exception) {
+            platform.log("Error clearing tokens: ${e.message}", this, LogSeverity.ERROR)
+        }
+    }
+
+    actual override suspend fun getUserName(): String? = withContext(Dispatchers.IO) {
+        try {
+            val session = context.tokenDataStore.data.first()
+            val tokens = session.tokens ?: return@withContext null
+
+            // Najpierw sprawdź czy mamy imię i nazwisko zapisane wprost w obiekcie AuthTokens
+            if (!tokens.firstName.isNullOrBlank() || !tokens.lastName.isNullOrBlank()) {
+                val first = tokens.firstName ?: ""
+                val last = tokens.lastName ?: ""
+                return@withContext "$first $last".trim()
+            }
+
+            // Jeśli nie, spróbuj wyciągnąć z tokenu JWT
+            val payload = decodeTokenPayload(tokens.token)
+            val firstName = payload["firstName"] ?: ""
+            val lastName = payload["lastName"] ?: ""
+
+            if (firstName.isNotBlank() || lastName.isNotBlank()) {
+                "$firstName $lastName".trim()
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            platform.log("Error getting user name: ${e.message}", this, LogSeverity.ERROR)
+            null
+        }
     }
 }

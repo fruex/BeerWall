@@ -1,7 +1,6 @@
 package org.fruex.beerwall.domain.repository
 
 import org.fruex.beerwall.auth.AuthTokens
-import org.fruex.beerwall.auth.GoogleUser
 
 /**
  * Interfejs repozytorium odpowiedzialnego za autoryzację użytkownika.
@@ -12,7 +11,7 @@ interface AuthRepository {
      * @param idToken Token tożsamości otrzymany od Google.
      * @return Result zawierający dane użytkownika Google w przypadku sukcesu.
      */
-    suspend fun googleSignIn(idToken: String): Result<GoogleUser>
+    suspend fun googleSignIn(idToken: String): Result<AuthTokens>
 
     /**
      * Loguje użytkownika za pomocą adresu email i hasła.

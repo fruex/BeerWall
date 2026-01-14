@@ -17,18 +17,6 @@ class GoogleSignInDtoTest {
     }
 
     @Test
-    fun `GoogleSignInRequest should serialize correctly`() {
-        // Given
-        val request = GoogleSignInRequest("test-id-token")
-
-        // When
-        val jsonString = json.encodeToString(GoogleSignInRequest.serializer(), request)
-
-        // Then
-        assert(jsonString.contains("\"idToken\":\"test-id-token\""))
-    }
-
-    @Test
     fun `RefreshTokenRequest should serialize correctly`() {
         // Given
         val request = RefreshTokenRequest("test-refresh-token")
@@ -101,7 +89,7 @@ class GoogleSignInDtoTest {
     }
 
     @Test
-    fun `EmailPasswordSignInResponseData should deserialize correctly`() {
+    fun `EmailPasswordSignInResponse should deserialize correctly`() {
         // Given
         val jsonString = """
             {
@@ -110,20 +98,18 @@ class GoogleSignInDtoTest {
                     "tokenExpires": 3600,
                     "refreshToken": "refresh-token",
                     "refreshTokenExpires": 7200
-                },
-                "is2FARequired": false
+                }
             }
         """.trimIndent()
 
         // When
-        val response = json.decodeFromString<EmailPasswordSignInResponseData>(jsonString)
+        val response = json.decodeFromString<EmailPasswordSignInResponse>(jsonString)
 
         // Then
-        assertNotNull(response.tokenDto)
-        assertEquals("test-token", response.tokenDto.token)
-        assertEquals(3600L, response.tokenDto.tokenExpires)
-        assertEquals("refresh-token", response.tokenDto.refreshToken)
-        assertEquals(7200L, response.tokenDto.refreshTokenExpires)
-        assertEquals(false, response.is2FARequired)
+        assertNotNull(response)
+        assertEquals("test-token", response.token)
+        assertEquals(3600L, response.tokenExpires)
+        assertEquals("refresh-token", response.refreshToken)
+        assertEquals(7200L, response.refreshTokenExpires)
     }
 }

@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Nfc
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -28,6 +29,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun AddCardScreen(
     scannedCardId: String?,
+    isNfcEnabled: Boolean,
     onBackClick: () -> Unit,
     onStartScanning: () -> Unit,
     onCardNameChanged: (String) -> Unit,
@@ -92,6 +94,33 @@ fun AddCardScreen(
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                if (!isNfcEnabled) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = "NFC jest wyłączone. Włącz NFC w ustawieniach telefonu, aby zeskanować kartę.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        }
+                    }
+                }
+
                 Text(
                     text = "Nazwa karty (opcjonalnie)",
                     style = MaterialTheme.typography.bodyMedium,
@@ -117,7 +146,7 @@ fun AddCardScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = GoldPrimary
+                        containerColor = if (isNfcEnabled) GoldPrimary else TextSecondary
                     )
                 ) {
                     Column(
@@ -126,12 +155,12 @@ fun AddCardScreen(
                             .padding(32.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        NFCIcon(isScanning = scannedCardId == null)
+                        NFCIcon(isScanning = scannedCardId == null && isNfcEnabled)
 
                         Spacer(modifier = Modifier.height(24.dp))
 
                         Text(
-                            text = if (scannedCardId != null) "Karta wykryta!" else "Gotowe do skanowania",
+                            text = if (scannedCardId != null) "Karta wykryta!" else if (isNfcEnabled) "Gotowe do skanowania" else "NFC wyłączone",
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Bold,
                             color = DarkBackground,
@@ -143,8 +172,10 @@ fun AddCardScreen(
                         Text(
                             text = if (scannedCardId != null) {
                                 "Karta została pomyślnie zeskanowana $scannedCardId"
-                            } else {
+                            } else if (isNfcEnabled) {
                                 "Przytrzymaj kartę NFC blisko urządzenia, aby ją zarejestrować"
+                            } else {
+                                "Włącz moduł NFC w ustawieniach"
                             },
                             style = MaterialTheme.typography.bodyMedium,
                             color = DarkBackground.copy(alpha = 0.8f),
@@ -216,6 +247,7 @@ fun AddCardScreenPreview() {
     BeerWallTheme {
         AddCardScreen(
             scannedCardId = null,
+            isNfcEnabled = true,
             onBackClick = {},
             onStartScanning = {},
             onCardNameChanged = {},

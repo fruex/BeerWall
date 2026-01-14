@@ -5,10 +5,10 @@ import androidx.compose.runtime.Immutable
 // Balance models
 @Immutable
 data class VenueBalance(
-    val venueId: Int,
-    val venueName: String,
+    val premisesId: Int,
+    val premisesName: String,
     val balance: Double,
-    val loyaltyPoints: Int
+    val loyalityPoints: Int
 )
 
 // Card models

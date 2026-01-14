@@ -3,9 +3,11 @@ package org.fruex.beerwall.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import org.fruex.beerwall.ui.models.DailyTransactions
 import org.fruex.beerwall.ui.models.UserCard
 import org.fruex.beerwall.ui.models.UserProfile
@@ -31,11 +33,11 @@ fun BeerWallNavHost(
     paymentMethods: List<org.fruex.beerwall.remote.dto.operators.PaymentMethod> = emptyList(),
     isRefreshing: Boolean = false,
     // Callbacks
-    onRegister: (email: String, password: String) -> Unit = { _, _ -> },
-    onLogin: (email: String, password: String) -> Unit = { _, _ -> },
-    onGoogleSignIn: () -> Unit = {},
+    onRegisterWithEmail: (email: String, password: String) -> Unit = { _, _ -> },
+    onLoginWithEmail: (email: String, password: String) -> Unit = { _, _ -> },
+    onLoginWithGoogle: () -> Unit = {},
     onLogout: () -> Unit = {},
-    onAddFunds: (venueId: Int, paymentMethodId: Int, balance: Double) -> Unit = { _, _, _ -> },
+    onAddFunds: (premisesId: Int, paymentMethodId: Int, balance: Double) -> Unit = { _, _, _ -> },
     onToggleCardStatus: (String) -> Unit = {},
     onDeleteCard: (String) -> Unit = {},
     onSaveCard: (name: String, cardId: String) -> Unit = { _, _ -> },
@@ -43,6 +45,7 @@ fun BeerWallNavHost(
     onRefreshHistory: () -> Unit = {},
     onRefreshBalance: () -> Unit = {},
     scannedCardId: String? = null,
+    isNfcEnabled: Boolean = true,
 ) {
     NavHost(
         navController = navController,
@@ -53,9 +56,9 @@ fun BeerWallNavHost(
         composable(NavigationDestination.Registration.route) {
             RegistrationScreen(
                 onRegisterClick = { email, password ->
-                    onRegister(email, password)
+                    onRegisterWithEmail(email, password)
                 },
-                onGoogleSignInClick = onGoogleSignIn,
+                onGoogleSignInClick = onLoginWithGoogle,
                 onLoginClick = {
                     navController.navigate(NavigationDestination.Login.route)
                 }
@@ -65,9 +68,9 @@ fun BeerWallNavHost(
         composable(NavigationDestination.Login.route) {
             LoginScreen(
                 onLoginClick = { email, password ->
-                    onLogin(email, password)
+                    onLoginWithEmail(email, password)
                 },
-                onGoogleSignInClick = onGoogleSignIn,
+                onGoogleSignInClick = onLoginWithGoogle,
                 onRegisterClick = {
                     navController.navigate(NavigationDestination.Registration.route)
                 },
@@ -79,8 +82,8 @@ fun BeerWallNavHost(
         composable(NavigationDestination.Main.route) {
             MainScreen(
                 balances = balances,
-                onAddFundsClick = { venueId ->
-                    navController.navigate("${NavigationDestination.AddFunds.route}/$venueId")
+                onAddFundsClick = { premisesId ->
+                    navController.navigate("${NavigationDestination.AddFunds.route}/$premisesId")
                 },
                 onAddLocationClick = {
                     navController.navigate(NavigationDestination.AddFunds.route)
@@ -121,16 +124,19 @@ fun BeerWallNavHost(
                 onBackClick = { navController.popBackStack() },
                 onAddFunds = { paymentMethodId, balance ->
                     // Domyślny lokal jeśli nie został wybrany
-                    onAddFunds(balances.firstOrNull()?.venueId ?: 0, paymentMethodId, balance)
+                    onAddFunds(balances.firstOrNull()?.premisesId ?: 0, paymentMethodId, balance)
                     navController.popBackStack()
                 }
             )
         }
 
         // Add Funds with pre-selected venue
-        composable("${NavigationDestination.AddFunds.route}/{venueId}") { backStackEntry ->
-            val venueId = backStackEntry.savedStateHandle.get<String>("venueId")?.toIntOrNull() ?: 0
-            val venue = balances.find { it.venueId == venueId }
+        composable(
+            route = "${NavigationDestination.AddFunds.route}/{venueId}",
+            arguments = listOf(navArgument("venueId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val venueId = backStackEntry.savedStateHandle.get<Int>("venueId") ?: 0
+            val venue = balances.find { it.premisesId == venueId }
             AddFundsScreen(
                 availablePaymentMethods = paymentMethods,
                 onBackClick = { navController.popBackStack() },
@@ -138,7 +144,7 @@ fun BeerWallNavHost(
                     onAddFunds(venueId, paymentMethodId, balance)
                     navController.popBackStack()
                 },
-                venueName = venue?.venueName
+                premisesName = venue?.premisesName
             )
         }
 
@@ -146,6 +152,7 @@ fun BeerWallNavHost(
         composable(NavigationDestination.AddCard.route) {
             AddCardScreen(
                 scannedCardId = scannedCardId,
+                isNfcEnabled = isNfcEnabled,
                 onBackClick = { navController.popBackStack() },
                 onStartScanning = onStartNfcScanning,
                 onCardNameChanged = {},

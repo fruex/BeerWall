@@ -1,6 +1,7 @@
 package org.fruex.beerwall.auth
 
 import androidx.compose.runtime.Composable
+import kotlinx.datetime.Clock
 import kotlinx.serialization.Serializable
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -60,7 +61,7 @@ data class GoogleUser(
 
             // Sprawdź czy token wygasł (z małym buforem 30 sekund dla opóźnień sieciowych)
             // Używamy kotlinx-datetime Clock zamiast System.currentTimeMillis()
-            val currentTime = kotlinx.datetime.Clock.System.now().epochSeconds
+            val currentTime = Clock.System.now().epochSeconds
             val bufferSeconds = 30L // 30 sekund buffer na opóźnienia sieciowe
             val validForSeconds = expiration - currentTime
             val isExpired = currentTime >= (expiration - bufferSeconds)

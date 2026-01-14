@@ -1,9 +1,9 @@
 package org.fruex.beerwall.data.mapper
 
 import org.fruex.beerwall.domain.model.Transaction
-import org.fruex.beerwall.remote.dto.history.TransactionDto
+import org.fruex.beerwall.remote.dto.history.TransactionResponse
 
-fun TransactionDto.toDomain(): Transaction {
+fun TransactionResponse.toDomain(): Transaction {
     return Transaction(
         id = id,
         beverageName = beverageName,
@@ -14,6 +14,6 @@ fun TransactionDto.toDomain(): Transaction {
     )
 }
 
-fun List<TransactionDto>.toDomain(): List<Transaction> {
+fun List<TransactionResponse>.toDomain(): List<Transaction> {
     return map { it.toDomain() }
 }

@@ -1,7 +1,7 @@
 package org.fruex.beerwall.domain.usecase
 
 import org.fruex.beerwall.domain.repository.BalanceRepository
-import org.fruex.beerwall.remote.dto.operators.PaymentOperator
+import org.fruex.beerwall.remote.dto.operators.PaymentOperatorResponse
 
 /**
  * Przypadek użycia do pobierania operatorów płatności.
@@ -16,7 +16,7 @@ class GetPaymentOperatorsUseCase(
      * @return Result z listą operatorów.
      * // TODO: Dodać mapowanie na model domenowy zamiast zwracać DTO (PaymentOperator).
      */
-    suspend operator fun invoke(): Result<List<PaymentOperator>> {
+    suspend operator fun invoke(): Result<List<PaymentOperatorResponse>> {
         return balanceRepository.getPaymentOperators()
     }
 }

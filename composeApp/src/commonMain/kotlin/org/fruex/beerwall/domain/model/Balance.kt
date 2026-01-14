@@ -9,8 +9,8 @@ package org.fruex.beerwall.domain.model
  * @property loyaltyPoints Liczba punktów lojalnościowych zgromadzonych w lokalu.
  */
 data class Balance(
-    val venueId: Int,
-    val venueName: String,
-    val amount: Double,
-    val loyaltyPoints: Int
+    val premisesId: Int,
+    val premisesName: String,
+    val balance: Double,
+    val loyalityPoints: Int
 )

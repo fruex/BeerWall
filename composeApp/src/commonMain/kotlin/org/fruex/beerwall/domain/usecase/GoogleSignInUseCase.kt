@@ -1,7 +1,7 @@
 package org.fruex.beerwall.domain.usecase
 
+import org.fruex.beerwall.auth.AuthTokens
 import org.fruex.beerwall.auth.GoogleAuthProvider
-import org.fruex.beerwall.auth.GoogleUser
 import org.fruex.beerwall.domain.repository.AuthRepository
 
 /**
@@ -22,7 +22,7 @@ class GoogleSignInUseCase(
      * @param googleAuthProvider Platform-specific provider do obsługi logowania Google.
      * @return Result z zalogowanym użytkownikiem [GoogleUser].
      */
-    suspend operator fun invoke(googleAuthProvider: GoogleAuthProvider): Result<GoogleUser> {
+    suspend operator fun invoke(googleAuthProvider: GoogleAuthProvider): Result<AuthTokens> {
         return try {
             println("📱 Google Sign In: Requesting fresh token from Google")
 
@@ -41,13 +41,7 @@ class GoogleSignInUseCase(
             println("📤 Sending Google token to .NET backend for verification")
 
             // Wyślij ID Token do backendu w celu weryfikacji i uzyskania tokenu .NET
-            authRepository.googleSignIn(localUser.idToken).map { backendUser ->
-                // Połącz dane z Google (displayName, email) z danymi z backendu (tokeny)
-                backendUser.copy(
-                    displayName = localUser.displayName ?: backendUser.displayName,
-                    email = localUser.email ?: backendUser.email
-                )
-            }
+            authRepository.googleSignIn(localUser.idToken)
         } catch (e: Exception) {
             println("❌ Google Sign In error: ${e.message}")
             Result.failure(e)
