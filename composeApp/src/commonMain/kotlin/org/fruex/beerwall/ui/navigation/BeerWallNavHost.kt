@@ -135,7 +135,7 @@ fun BeerWallNavHost(
             route = "${NavigationDestination.AddFunds.route}/{venueId}",
             arguments = listOf(navArgument("venueId") { type = NavType.IntType })
         ) { backStackEntry ->
-            val venueId = backStackEntry.arguments?.getInt("venueId") ?: 0
+            val venueId = backStackEntry.savedStateHandle.get<Int>("venueId") ?: 0
             val venue = balances.find { it.premisesId == venueId }
             AddFundsScreen(
                 availablePaymentMethods = paymentMethods,
