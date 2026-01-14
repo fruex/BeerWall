@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import org.fruex.beerwall.remote.common.ApiEnvelope
 
 @Serializable
-data class CardItemDto(
+data class CardResponse(
     val id: String,
     val name: String,
     val isActive: Boolean,
@@ -18,12 +18,12 @@ data class CardActivationRequest(
 )
 
 @Serializable
-data class CardActivationData(
+data class CardActivationResponse(
     val cardId: String,
     val isActive: Boolean,
     val status: String
 )
 
-typealias CardActivationResponse = ApiEnvelope<CardActivationData>
+typealias CardActivationEnvelope = ApiEnvelope<CardActivationResponse>
 
-typealias GetCardsResponse = ApiEnvelope<List<CardItemDto>>
+typealias GetCardsEnvelope = ApiEnvelope<List<CardResponse>>

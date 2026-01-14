@@ -9,11 +9,11 @@ data class RefreshTokenRequest(
 )
 
 @Serializable
-data class RefreshTokenResponseData(
+data class RefreshTokenResponse(
     val token: String,
     val tokenExpires: Long,
     val refreshToken: String,
     val refreshTokenExpires: Long
 )
 
-typealias RefreshTokenResponse = ApiEnvelope<RefreshTokenResponseData>
+typealias RefreshTokenEnvelope = ApiEnvelope<RefreshTokenResponse>

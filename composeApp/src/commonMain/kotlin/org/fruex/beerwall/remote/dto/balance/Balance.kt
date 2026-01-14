@@ -4,14 +4,14 @@ import kotlinx.serialization.Serializable
 import org.fruex.beerwall.remote.common.ApiEnvelope
 
 @Serializable
-data class GetBalanceResponseData(
+data class BalanceResponse(
     val premisesId: Int,
     val premisesName: String,
     val balance: Double,
     val loyalityPoints: Int
 )
 
-typealias GetBalanceResponse = ApiEnvelope<List<GetBalanceResponseData>>
+typealias GetBalanceEnvelope = ApiEnvelope<List<BalanceResponse>>
 
 @Serializable
 data class TopUpRequest(
@@ -21,9 +21,9 @@ data class TopUpRequest(
 )
 
 @Serializable
-data class TopUpResponseData(
+data class TopUpResponse(
     val paymentId: String,
     val status: String
 )
 
-typealias TopUpResponse = ApiEnvelope<TopUpResponseData>
+typealias TopUpEnvelope = ApiEnvelope<TopUpResponse>
