@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.fruex.beerwall.auth.GoogleUser
+import org.fruex.beerwall.auth.AuthTokens
 import org.fruex.beerwall.domain.usecase.*
 import org.fruex.beerwall.presentation.mapper.groupByDate
 import org.fruex.beerwall.presentation.mapper.toUi
@@ -117,8 +117,8 @@ class BeerWallViewModel(
         }
     }
 
-    fun onLoginSuccess(user: GoogleUser) {
-        updateUserProfile(user)
+    fun onLoginSuccess(tokens: AuthTokens) {
+        updateUserProfile(tokens)
         _uiState.update { it.copy(isLoggedIn = true, isCheckingSession = false) }
         refreshAllData()
     }
@@ -128,8 +128,8 @@ class BeerWallViewModel(
             setLoading(true)
             try {
                 googleSignInUseCase(googleAuthProvider)
-                    .onSuccess { user ->
-                        onLoginSuccess(user)
+                    .onSuccess { tokens ->
+                        onLoginSuccess(tokens)
                     }
                     .onFailure { error ->
                         setError(error.message ?: "Błąd logowania Google")
@@ -147,10 +147,8 @@ class BeerWallViewModel(
             setLoading(true)
             try {
                 emailPasswordSignInUseCase(email, password)
-                    .onSuccess {
-                        // Tokeny zostały zapisane w TokenManager przez repository
-                        _uiState.update { it.copy(isLoggedIn = true, isCheckingSession = false) }
-                        refreshAllData()
+                    .onSuccess { tokens ->
+                        onLoginSuccess(tokens)
                     }
                     .onFailure { error ->
                         setError(error.message ?: "Błąd logowania")
@@ -297,13 +295,18 @@ class BeerWallViewModel(
         }
     }
 
-    private fun updateUserProfile(user: GoogleUser) {
+    private fun updateUserProfile(tokens: AuthTokens) {
+        val displayName = if (tokens.firstName != null || tokens.lastName != null) 
+            "${tokens.firstName ?: ""} ${tokens.lastName ?: ""}".trim() 
+            else null
+            
         _uiState.update { currentState ->
             currentState.copy(
                 userProfile = currentState.userProfile.copy(
-                    name = user.displayName ?: currentState.userProfile.name,
-                    email = user.email ?: currentState.userProfile.email,
-                    initials = getUserInitials(user.displayName, currentState.userProfile.initials)
+                    name = displayName ?: currentState.userProfile.name,
+                    // Email nie jest dostępny w AuthTokens, więc zostawiamy stary lub pusty
+                    // Jeśli potrzebujemy emaila, musielibyśmy go też wyciągnąć z tokenu (jeśli tam jest)
+                    initials = getUserInitials(displayName, currentState.userProfile.initials)
                 )
             )
         }

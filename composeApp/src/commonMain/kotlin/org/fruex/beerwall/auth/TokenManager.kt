@@ -1,13 +1,17 @@
 package org.fruex.beerwall.auth
 
 import kotlinx.serialization.Serializable
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 @Serializable
 data class AuthTokens(
     val token: String,
     val tokenExpires: Long,
     val refreshToken: String,
-    val refreshTokenExpires: Long
+    val refreshTokenExpires: Long,
+    val firstName: String? = null,
+    val lastName: String? = null
 )
 
 interface TokenManager {
@@ -19,6 +23,7 @@ interface TokenManager {
     suspend fun getTokenExpires(): Long?
     suspend fun getRefreshTokenExpires(): Long?
     suspend fun clearTokens()
+    suspend fun getUserName(): String?
 }
 
 
@@ -31,4 +36,39 @@ expect class TokenManagerImpl : TokenManager {
     override suspend fun getTokenExpires(): Long?
     override suspend fun getRefreshTokenExpires(): Long?
     override suspend fun clearTokens()
+    override suspend fun getUserName(): String?
+}
+
+@OptIn(ExperimentalEncodingApi::class)
+fun decodeTokenPayload(token: String): Map<String, String> {
+    try {
+        val parts = token.split(".")
+        if (parts.size < 2) return emptyMap()
+
+        var payload = parts[1]
+            .replace('-', '+')
+            .replace('_', '/')
+
+        when (payload.length % 4) {
+            2 -> payload += "=="
+            3 -> payload += "="
+        }
+
+        val decodedPayload = String(Base64.decode(payload))
+        
+        // Prosty parser JSON dla płaskiej struktury
+        val result = mutableMapOf<String, String>()
+        val regex = """"([^"]+)":\s*("([^"]*)"|(\d+))""".toRegex()
+        
+        regex.findAll(decodedPayload).forEach { match ->
+            val key = match.groupValues[1]
+            val value = match.groupValues[3].ifEmpty { match.groupValues[4] }
+            result[key] = value
+        }
+        
+        return result
+    } catch (e: Exception) {
+        e.printStackTrace()
+        return emptyMap()
+    }
 }

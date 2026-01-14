@@ -146,4 +146,32 @@ actual class TokenManagerImpl(private val context: Context) : TokenManager {
             platform.log("Error clearing tokens: ${e.message}", this, LogSeverity.ERROR)
         }
     }
+
+    actual override suspend fun getUserName(): String? = withContext(Dispatchers.IO) {
+        try {
+            val session = context.tokenDataStore.data.first()
+            val tokens = session.tokens ?: return@withContext null
+            
+            // Najpierw sprawdź czy mamy imię i nazwisko zapisane wprost w obiekcie AuthTokens
+            if (!tokens.firstName.isNullOrBlank() || !tokens.lastName.isNullOrBlank()) {
+                val first = tokens.firstName ?: ""
+                val last = tokens.lastName ?: ""
+                return@withContext "$first $last".trim()
+            }
+            
+            // Jeśli nie, spróbuj wyciągnąć z tokenu JWT
+            val payload = decodeTokenPayload(tokens.token)
+            val firstName = payload["firstName"] ?: ""
+            val lastName = payload["lastName"] ?: ""
+            
+            if (firstName.isNotBlank() || lastName.isNotBlank()) {
+                "$firstName $lastName".trim()
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            platform.log("Error getting user name: ${e.message}", this, LogSeverity.ERROR)
+            null
+        }
+    }
 }
