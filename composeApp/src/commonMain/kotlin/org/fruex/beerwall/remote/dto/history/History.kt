@@ -5,12 +5,11 @@ import org.fruex.beerwall.remote.common.ApiEnvelope
 
 @Serializable
 data class TransactionResponse(
-    val id: String,
-    val beverageName: String,
-    val timestamp: String,
-    val venueName: String,
-    val amount: Double,
-    val volumeMilliliters: Int
+    val transactionId: Int,
+    val commodityName: String,
+    val startDateTime: String,
+    val grossPrice: Double,
+    val capacity: Int
 )
 
 typealias GetHistoryEnvelope = ApiEnvelope<List<TransactionResponse>>

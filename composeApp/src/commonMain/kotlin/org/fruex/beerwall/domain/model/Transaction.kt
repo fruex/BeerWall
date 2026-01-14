@@ -1,10 +1,9 @@
 package org.fruex.beerwall.domain.model
 
 data class Transaction(
-    val id: String,
-    val beverageName: String,
-    val timestamp: String,
-    val venueName: String,
-    val amount: Double,
-    val volumeMilliliters: Int
+    val transactionId: Int,
+    val commodityName: String,
+    val startDateTime: String,
+    val grossPrice: Double,
+    val capacity: Int
 )
