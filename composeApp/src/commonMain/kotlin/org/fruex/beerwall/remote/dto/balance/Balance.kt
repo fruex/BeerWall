@@ -20,10 +20,3 @@ data class TopUpRequest(
     val amount: Double
 )
 
-@Serializable
-data class TopUpResponse(
-    val paymentId: String,
-    val status: String
-)
-
-typealias TopUpEnvelope = ApiEnvelope<TopUpResponse>
