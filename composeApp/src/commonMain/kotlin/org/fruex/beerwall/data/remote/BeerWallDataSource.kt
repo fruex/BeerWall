@@ -242,6 +242,34 @@ class BeerWallDataSource(
         Result.failure(e)
     }
 
+    suspend fun register(email: String, password: String): Result<Unit> = try {
+        platform.log("📤 Register Request", this, LogSeverity.INFO)
+        val response = client.post("${ApiConfig.BASE_URL}/mobile/auth/register") {
+            contentType(ContentType.Application.Json)
+            setBody(RegisterRequest(email, password))
+        }
+
+        when (response.status) {
+            HttpStatusCode.NoContent -> {
+                platform.log("✅ Register Success", this, LogSeverity.INFO)
+                Result.success(Unit)
+            }
+            HttpStatusCode.BadRequest -> {
+                platform.log("❌ Register Bad Request", this, LogSeverity.ERROR)
+                Result.failure(Exception("Nieprawidłowe dane rejestracji"))
+            }
+            else -> {
+                val bodyText = response.bodyAsText()
+                platform.log("❌ Register Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
+                Result.failure(Exception("Błąd rejestracji: ${response.status}"))
+            }
+        }
+    } catch (e: Exception) {
+        platform.log("❌ Register Exception: ${e.message}", this, LogSeverity.ERROR)
+        e.printStackTrace()
+        Result.failure(e)
+    }
+
     suspend fun forgotPassword(email: String): Result<Unit> = try {
         platform.log("📤 Forgot Password Request", this, LogSeverity.INFO)
         val response = client.post("${ApiConfig.BASE_URL}/mobile/auth/forgotPassword") {
