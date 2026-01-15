@@ -93,6 +93,7 @@ fun App(
                     onSaveCard = viewModel::onSaveCard,
                     onForgotPassword = viewModel::handleForgotPassword,
                     onResetPassword = viewModel::handleResetPassword,
+                    onSendMessage = viewModel::onSendMessage,
                     onLogout = {
                         scope.launch {
                             googleAuthProvider.signOut()

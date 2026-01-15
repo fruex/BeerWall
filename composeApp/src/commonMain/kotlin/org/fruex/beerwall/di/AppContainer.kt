@@ -45,6 +45,10 @@ abstract class AppContainer {
     private val authRepository: AuthRepository by lazy {
         AuthRepositoryImpl(dataSource, tokenManager)
     }
+
+    private val supportRepository: SupportRepository by lazy {
+        SupportRepositoryImpl(dataSource)
+    }
     
     // Use Cases
     private val getBalancesUseCase: GetBalancesUseCase by lazy { 
@@ -103,6 +107,10 @@ abstract class AppContainer {
         CheckSessionUseCase(authRepository)
     }
 
+    private val sendMessageUseCase: SendMessageUseCase by lazy {
+        SendMessageUseCase(supportRepository)
+    }
+
     private val refreshAllDataUseCase: RefreshAllDataUseCase by lazy {
         RefreshAllDataUseCase(
             getBalancesUseCase,
@@ -114,7 +122,6 @@ abstract class AppContainer {
     // ViewModel Factory
     fun createBeerWallViewModel(): BeerWallViewModel {
         val viewModel = BeerWallViewModel(
-            refreshAllDataUseCase = refreshAllDataUseCase,
             getBalancesUseCase = getBalancesUseCase,
             topUpBalanceUseCase = topUpBalanceUseCase,
             getTransactionsUseCase = getTransactionsUseCase,
@@ -129,6 +136,7 @@ abstract class AppContainer {
             forgotPasswordUseCase = forgotPasswordUseCase,
             resetPasswordUseCase = resetPasswordUseCase,
             checkSessionUseCase = checkSessionUseCase,
+            sendMessageUseCase = sendMessageUseCase,
             authRepository = authRepository
         )
 
