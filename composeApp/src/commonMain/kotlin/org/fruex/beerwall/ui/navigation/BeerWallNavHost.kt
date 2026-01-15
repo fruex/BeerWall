@@ -75,7 +75,7 @@ fun BeerWallNavHost(
     onRefreshHistory: () -> Unit = {},
     onRefreshBalance: () -> Unit = {},
     onForgotPassword: (email: String) -> Unit = {},
-    onResetPassword: (email: String) -> Unit = {},
+    onResetPassword: (String, String, String) -> Unit = { _, _, _ -> },
     onSendMessage: (message: String) -> Unit = {},
     scannedCardId: String? = null,
     isNfcEnabled: Boolean = true,
@@ -203,8 +203,8 @@ fun BeerWallNavHost(
         composable(NavigationDestination.ChangePassword.route) {
             ChangePasswordScreen(
                 onBackClick = { navController.popBackStack() },
-                onForgotPassword = { email ->
-                    onResetPassword(email)
+                onResetPassword = { email, resetCode, newPassword ->
+                    onResetPassword(email, resetCode, newPassword)
                     navController.popBackStack()
                 }
             )

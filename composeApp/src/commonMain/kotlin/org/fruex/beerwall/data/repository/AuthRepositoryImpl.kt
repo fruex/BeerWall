@@ -84,8 +84,8 @@ class AuthRepositoryImpl(
         return dataSource.forgotPassword(email)
     }
 
-    override suspend fun resetPassword(email: String): Result<Unit> {
-        return dataSource.resetPassword(email)
+    override suspend fun resetPassword(email: String, resetCode: String, newPassword: String): Result<Unit> {
+        return dataSource.resetPassword(email, resetCode, newPassword)
     }
 
     override suspend fun refreshToken(): Result<AuthTokens> {

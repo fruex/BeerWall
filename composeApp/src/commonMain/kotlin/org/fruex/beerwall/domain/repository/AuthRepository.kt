@@ -42,12 +42,14 @@ interface AuthRepository {
     suspend fun forgotPassword(email: String): Result<Unit>
 
     /**
-     * Resetuje hasło użytkownika (prawdopodobnie wysyła link resetujący).
+     * Resetuje hasło użytkownika.
      *
      * @param email Adres email użytkownika.
+     * @param resetCode Kod resetujący hasło.
+     * @param newPassword Nowe hasło.
      * @return [Result] typu Unit w przypadku sukcesu lub błąd.
      */
-    suspend fun resetPassword(email: String): Result<Unit>
+    suspend fun resetPassword(email: String, resetCode: String, newPassword: String): Result<Unit>
 
     /**
      * Odświeża tokeny sesji.

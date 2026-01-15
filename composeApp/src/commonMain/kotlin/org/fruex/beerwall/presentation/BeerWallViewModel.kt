@@ -208,11 +208,11 @@ class BeerWallViewModel(
         }
     }
 
-    fun handleResetPassword(email: String) {
+    fun handleResetPassword(email: String, resetCode: String, newPassword: String) {
         viewModelScope.launch {
             setLoading(true)
             try {
-                resetPasswordUseCase(email)
+                resetPasswordUseCase(email, resetCode, newPassword)
                     .onSuccess {
                         setMessage("Hasło zostało pomyślnie zresetowane.")
                     }
