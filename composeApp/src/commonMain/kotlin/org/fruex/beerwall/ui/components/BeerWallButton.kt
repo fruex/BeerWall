@@ -27,6 +27,15 @@ import org.fruex.beerwall.ui.theme.TextPrimary
 import org.fruex.beerwall.ui.theme.TextSecondary
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+/**
+ * Standardowy przycisk aplikacji.
+ *
+ * @param text Tekst przycisku.
+ * @param onClick Akcja po kliknięciu.
+ * @param modifier Modyfikator.
+ * @param enabled Czy przycisk jest aktywny.
+ * @param icon Opcjonalna ikona.
+ */
 @Composable
 fun BeerWallButton(
     text: String,
@@ -65,6 +74,15 @@ fun BeerWallButton(
     }
 }
 
+/**
+ * Przycisk z obrysem (outline button).
+ *
+ * @param text Tekst przycisku.
+ * @param onClick Akcja po kliknięciu.
+ * @param modifier Modyfikator.
+ * @param enabled Czy przycisk jest aktywny.
+ * @param icon Opcjonalna ikona.
+ */
 @Composable
 fun BeerWallOutlinedButton(
     text: String,

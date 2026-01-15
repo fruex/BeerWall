@@ -6,6 +6,16 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.time.Clock
 
+/**
+ * Model użytkownika Google (zwracany przez Google Sign-In).
+ *
+ * @property idToken Token ID (JWT).
+ * @property tokenExpires Czas wygaśnięcia tokenu.
+ * @property refreshToken Token odświeżania (rzadko używany w tym kontekście na mobile).
+ * @property refreshTokenExpires Czas wygaśnięcia tokenu odświeżania.
+ * @property displayName Wyświetlana nazwa użytkownika.
+ * @property email Adres email użytkownika.
+ */
 @Serializable
 data class GoogleUser(
     val idToken: String,
@@ -16,8 +26,8 @@ data class GoogleUser(
     val email: String? = null
 ) {
     /**
-     * Sprawdza czy token Google wygasł
-     * Google ID Token to JWT z polem 'exp' (expiration time w sekundach od epoch)
+     * Sprawdza czy token Google wygasł.
+     * Google ID Token to JWT z polem 'exp' (expiration time w sekundach od epoch).
      */
     @OptIn(ExperimentalEncodingApi::class)
     fun isGoogleTokenExpired(): Boolean {
@@ -79,6 +89,9 @@ data class GoogleUser(
     }
 }
 
+/**
+ * Interfejs dostawcy autoryzacji Google.
+ */
 interface GoogleAuthProvider {
     suspend fun signIn(): GoogleUser?
     suspend fun signOut()

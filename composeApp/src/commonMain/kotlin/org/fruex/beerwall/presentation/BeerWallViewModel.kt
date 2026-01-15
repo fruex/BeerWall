@@ -14,18 +14,19 @@ import org.fruex.beerwall.presentation.mapper.toUi
 import org.fruex.beerwall.ui.BeerWallUiState
 
 /**
- * ViewModel zarządzający stanem aplikacji BeerWall
+ * ViewModel zarządzający stanem aplikacji BeerWall.
  *
  * Odpowiedzialny za:
- * - Zarządzanie stanem UI (balanse, karty, transakcje, profil użytkownika)
- * - Komunikację z warstwą domenową poprzez Use Cases
- * - Obsługę akcji użytkownika (logowanie, dodawanie środków, zarządzanie kartami)
- * - Obsługę błędów i stanów ładowania
+ * - Zarządzanie stanem UI (balanse, karty, transakcje, profil użytkownika).
+ * - Komunikację z warstwą domenową poprzez Use Cases.
+ * - Obsługę akcji użytkownika (logowanie, dodawanie środków, zarządzanie kartami).
+ * - Obsługę błędów i stanów ładowania.
  *
- * @param getBalancesUseCase Use case do pobierania sald
- * @param topUpBalanceUseCase Use case do doładowania konta
- * @param getTransactionsUseCase Use case do pobierania historii transakcji
- * @param toggleCardStatusUseCase Use case do przełączania statusu karty
+ * @param getBalancesUseCase Use case do pobierania sald.
+ * @param topUpBalanceUseCase Use case do doładowania konta.
+ * @param getTransactionsUseCase Use case do pobierania historii transakcji.
+ * @param toggleCardStatusUseCase Use case do przełączania statusu karty.
+ * // TODO: Rozważyć rozbicie tego ViewModelu na mniejsze, feature-specific ViewModele (np. AuthViewModel, WalletViewModel, HistoryViewModel), ponieważ obecna klasa staje się "God Object", naruszając zasadę Single Responsibility Principle.
  */
 class BeerWallViewModel(
     private val getBalancesUseCase: GetBalancesUseCase,
@@ -49,8 +50,8 @@ class BeerWallViewModel(
     val uiState: StateFlow<BeerWallUiState> = _uiState.asStateFlow()
 
     /**
-     * Wywołane automatycznie gdy refresh token wygasł
-     * Czyści stan użytkownika i przekierowuje do ekranu logowania
+     * Wywołane automatycznie gdy refresh token wygasł.
+     * Czyści stan użytkownika i przekierowuje do ekranu logowania.
      */
     fun handleSessionExpired() {
         viewModelScope.launch {
@@ -94,8 +95,8 @@ class BeerWallViewModel(
     }
 
     /**
-     * Sprawdza sesję przy starcie aplikacji
-     * Używa zapisanego tokenu .NET zamiast logowania Google
+     * Sprawdza sesję przy starcie aplikacji.
+     * Używa zapisanego tokenu .NET zamiast logowania Google.
      */
     fun checkSession() {
         viewModelScope.launch {

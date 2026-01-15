@@ -27,16 +27,16 @@ import org.fruex.beerwall.remote.dto.operators.GetPaymentOperatorsEnvelope
 import org.fruex.beerwall.remote.dto.operators.PaymentOperatorResponse
 
 /**
- * Data Source do komunikacji z API BeerWall
+ * Data Source do komunikacji z API BeerWall.
  *
  * Odpowiedzialny za:
- * - Wykonywanie requestów HTTP do API
- * - Obsługę serializacji/deserializacji JSON
- * - Obsługę błędów sieciowych
- * - Dodawanie tokenu autoryzacji do requestów
- * - Zwracanie wyników w postaci Result<T>
+ * - Wykonywanie requestów HTTP do API.
+ * - Obsługę serializacji/deserializacji JSON.
+ * - Obsługę błędów sieciowych.
+ * - Dodawanie tokenu autoryzacji do requestów.
+ * - Zwracanie wyników w postaci Result<T>.
  *
- * Używa Ktor Client z Content Negotiation dla JSON
+ * Używa Ktor Client z Content Negotiation dla JSON.
  */
 class BeerWallDataSource(
     private val tokenManager: TokenManager

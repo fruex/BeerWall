@@ -21,6 +21,15 @@ import org.fruex.beerwall.ui.models.Transaction
 import org.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+/**
+ * Ekran historii transakcji.
+ *
+ * Wyświetla listę transakcji pogrupowanych według daty.
+ *
+ * @param transactionGroups Lista grup transakcji.
+ * @param isRefreshing Flaga odświeżania.
+ * @param onRefresh Callback odświeżania.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryScreen(
