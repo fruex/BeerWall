@@ -14,9 +14,11 @@ class ResetPasswordUseCase(
      * Wykonuje reset hasła.
      *
      * @param email Adres email użytkownika.
+     * @param resetCode Kod resetujący hasło.
+     * @param newPassword Nowe hasło.
      * @return [Result] typu Unit w przypadku sukcesu lub błąd.
      */
-    suspend operator fun invoke(email: String): Result<Unit> {
-        return authRepository.resetPassword(email)
+    suspend operator fun invoke(email: String, resetCode: String, newPassword: String): Result<Unit> {
+        return authRepository.resetPassword(email, resetCode, newPassword)
     }
 }

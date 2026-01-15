@@ -24,11 +24,17 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun ChangePasswordScreen(
     onBackClick: () -> Unit,
-    onForgotPassword: (email: String) -> Unit,
+    onResetPassword: (email: String, resetCode: String, newPassword: String) -> Unit,
 ) {
     var email by rememberSaveable { mutableStateOf("") }
+    var resetCode by rememberSaveable { mutableStateOf("") }
+    var newPassword by rememberSaveable { mutableStateOf("") }
+    var confirmPassword by rememberSaveable { mutableStateOf("") }
 
-    val isValid = email.isNotBlank() && email.contains("@")
+    val isValid = email.isNotBlank() && email.contains("@") &&
+                  resetCode.isNotBlank() &&
+                  newPassword.isNotBlank() &&
+                  newPassword == confirmPassword
 
     Scaffold(
         topBar = {
@@ -63,7 +69,7 @@ fun ChangePasswordScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "Wprowadź adres email, aby zresetować hasło",
+                text = "Wprowadź dane, aby zresetować hasło",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -77,11 +83,34 @@ fun ChangePasswordScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            BeerWallTextField(
+                value = resetCode,
+                onValueChange = { resetCode = it },
+                placeholder = "Kod resetujący",
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            BeerWallTextField(
+                value = newPassword,
+                onValueChange = { newPassword = it },
+                placeholder = "Nowe hasło",
+                isPassword = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            BeerWallTextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                placeholder = "Potwierdź hasło",
+                isPassword = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
 
             BeerWallButton(
                 text = "Zresetuj hasło",
-                onClick = { onForgotPassword(email) },
+                onClick = { onResetPassword(email, resetCode, newPassword) },
                 enabled = isValid
             )
         }
@@ -94,7 +123,7 @@ fun ChangePasswordScreenPreview() {
     BeerWallTheme {
         ChangePasswordScreen(
             onBackClick = {},
-            onForgotPassword = { _ -> }
+            onResetPassword = { _, _, _ -> }
         )
     }
 }

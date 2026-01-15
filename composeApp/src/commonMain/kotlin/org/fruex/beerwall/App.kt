@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.launch
 import org.fruex.beerwall.auth.rememberGoogleAuthProvider
 import org.fruex.beerwall.di.createAppContainer
 import org.fruex.beerwall.presentation.BeerWallViewModel
@@ -35,7 +34,6 @@ fun App(
     val uiState by viewModel.uiState.collectAsState()
 
     val googleAuthProvider = rememberGoogleAuthProvider()
-    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(uiState.errorMessage) {
@@ -95,7 +93,9 @@ fun App(
                     onDeleteCard = viewModel::onDeleteCard,
                     onSaveCard = viewModel::onSaveCard,
                     onForgotPassword = viewModel::handleForgotPassword,
-                    onResetPassword = viewModel::handleResetPassword,
+                    onResetPassword = { email, resetCode, newPassword ->
+                        viewModel.handleResetPassword(email, resetCode, newPassword)
+                    },
                     onSendMessage = viewModel::onSendMessage,
                     onLogout = {
                         viewModel.handleLogout(googleAuthProvider)
