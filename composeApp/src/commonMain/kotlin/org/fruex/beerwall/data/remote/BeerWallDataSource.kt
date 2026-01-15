@@ -465,4 +465,9 @@ class BeerWallDataSource(
             }.body()
         }
 
+    suspend fun sendMessage(message: String): Result<Unit> {
+        // MOCK: Symulacja wysyłania wiadomości
+        kotlinx.coroutines.delay(1000)
+        return Result.success(Unit)
+    }
 }
