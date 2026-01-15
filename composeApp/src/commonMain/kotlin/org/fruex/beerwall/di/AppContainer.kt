@@ -107,10 +107,6 @@ abstract class AppContainer {
         CheckSessionUseCase(authRepository)
     }
 
-    private val sendMessageUseCase: SendMessageUseCase by lazy {
-        SendMessageUseCase(supportRepository)
-    }
-
     // ViewModel Factory
     fun createBeerWallViewModel(): BeerWallViewModel {
         val viewModel = BeerWallViewModel(
