@@ -111,14 +111,6 @@ abstract class AppContainer {
         SendMessageUseCase(supportRepository)
     }
 
-    private val refreshAllDataUseCase: RefreshAllDataUseCase by lazy {
-        RefreshAllDataUseCase(
-            getBalancesUseCase,
-            getCardsUseCase,
-            getTransactionsUseCase
-        )
-    }
-
     // ViewModel Factory
     fun createBeerWallViewModel(): BeerWallViewModel {
         val viewModel = BeerWallViewModel(
