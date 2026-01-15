@@ -70,6 +70,10 @@ class AuthRepositoryImpl(
         }
     }
 
+    override suspend fun register(email: String, password: String): Result<Unit> {
+        return dataSource.register(email, password)
+    }
+
     override suspend fun forgotPassword(email: String): Result<Unit> {
         return dataSource.forgotPassword(email)
     }

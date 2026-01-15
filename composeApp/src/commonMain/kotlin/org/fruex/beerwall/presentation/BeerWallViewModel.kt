@@ -41,6 +41,7 @@ class BeerWallViewModel(
     private val getPaymentOperatorsUseCase: GetPaymentOperatorsUseCase,
     private val googleSignInUseCase: GoogleSignInUseCase,
     private val emailPasswordSignInUseCase: EmailPasswordSignInUseCase,
+    private val registerUseCase: RegisterUseCase,
     private val forgotPasswordUseCase: ForgotPasswordUseCase,
     private val checkSessionUseCase: CheckSessionUseCase,
     private val authRepository: org.fruex.beerwall.domain.repository.AuthRepository
@@ -158,6 +159,26 @@ class BeerWallViewModel(
                     }
             } catch (e: Exception) {
                 setError(e.message ?: "Błąd logowania")
+            } finally {
+                setLoading(false)
+            }
+        }
+    }
+
+    fun handleRegister(email: String, password: String) {
+        viewModelScope.launch {
+            setLoading(true)
+            try {
+                registerUseCase(email, password)
+                    .onSuccess {
+                        // Po udanej rejestracji logujemy użytkownika
+                        handleEmailPasswordSignIn(email, password)
+                    }
+                    .onFailure { error ->
+                        setError(error.message ?: "Błąd rejestracji")
+                    }
+            } catch (e: Exception) {
+                setError(e.message ?: "Błąd rejestracji")
             } finally {
                 setLoading(false)
             }

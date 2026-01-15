@@ -87,6 +87,10 @@ abstract class AppContainer {
         EmailPasswordSignInUseCase(authRepository)
     }
 
+    private val registerUseCase: RegisterUseCase by lazy {
+        RegisterUseCase(authRepository)
+    }
+
     private val forgotPasswordUseCase: ForgotPasswordUseCase by lazy {
         ForgotPasswordUseCase(authRepository)
     }
@@ -117,6 +121,7 @@ abstract class AppContainer {
             getPaymentOperatorsUseCase = getPaymentOperatorsUseCase,
             googleSignInUseCase = googleSignInUseCase,
             emailPasswordSignInUseCase = emailPasswordSignInUseCase,
+            registerUseCase = registerUseCase,
             forgotPasswordUseCase = forgotPasswordUseCase,
             checkSessionUseCase = checkSessionUseCase,
             authRepository = authRepository
