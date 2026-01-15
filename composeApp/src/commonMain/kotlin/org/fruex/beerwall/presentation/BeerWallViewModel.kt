@@ -12,7 +12,6 @@ import org.fruex.beerwall.domain.usecase.*
 import org.fruex.beerwall.presentation.mapper.groupByDate
 import org.fruex.beerwall.presentation.mapper.toUi
 import org.fruex.beerwall.ui.BeerWallUiState
-import org.fruex.beerwall.ui.models.UserCard
 
 /**
  * ViewModel zarządzający stanem aplikacji BeerWall
@@ -23,14 +22,12 @@ import org.fruex.beerwall.ui.models.UserCard
  * - Obsługę akcji użytkownika (logowanie, dodawanie środków, zarządzanie kartami)
  * - Obsługę błędów i stanów ładowania
  *
- * @param refreshAllDataUseCase Use case do odświeżania wszystkich danych jednocześnie
  * @param getBalancesUseCase Use case do pobierania sald
  * @param topUpBalanceUseCase Use case do doładowania konta
  * @param getTransactionsUseCase Use case do pobierania historii transakcji
  * @param toggleCardStatusUseCase Use case do przełączania statusu karty
  */
 class BeerWallViewModel(
-    private val refreshAllDataUseCase: RefreshAllDataUseCase,
     private val getBalancesUseCase: GetBalancesUseCase,
     private val topUpBalanceUseCase: TopUpBalanceUseCase,
     private val getTransactionsUseCase: GetTransactionsUseCase,
@@ -116,7 +113,7 @@ class BeerWallViewModel(
                     .onFailure {
                         _uiState.update { it.copy(isCheckingSession = false) }
                     }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 _uiState.update { it.copy(isCheckingSession = false) }
             }
         }
@@ -222,11 +219,6 @@ class BeerWallViewModel(
                 setLoading(false)
             }
         }
-    }
-
-    fun setGuestSession() {
-        _uiState.update { it.copy(isLoggedIn = true) }
-        refreshAllData()
     }
 
     fun onClearError() {
@@ -335,15 +327,6 @@ class BeerWallViewModel(
                     setError("Nie udało się zapisać karty: ${it.message}")
                 }
             setLoading(false)
-        }
-    }
-
-    private fun updateCards(transform: (List<UserCard>) -> List<UserCard>) {
-        _uiState.update { currentState ->
-            val updatedCards = transform(currentState.cards)
-            currentState.copy(
-                cards = updatedCards
-            )
         }
     }
 
