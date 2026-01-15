@@ -76,6 +76,9 @@ fun BeerWallNavHost(
                 onRegisterClick = {
                     navController.navigate(NavigationDestination.Registration.route)
                 },
+                onForgotPasswordClick = { email ->
+                    onForgotPassword(email)
+                },
                 isLoading = isRefreshing
             )
         }

@@ -70,7 +70,10 @@ fun App(
             ) { paddingValues ->
                 BeerWallNavHost(
                     modifier = Modifier.padding(paddingValues),
-                    startDestination = if (uiState.isLoggedIn) NavigationDestination.Main.route else NavigationDestination.Login.route,
+                    startDestination =
+                        if (uiState.isLoggedIn)
+                            NavigationDestination.Main.route
+                        else NavigationDestination.Login.route,
                     balances = uiState.balances,
                     cards = uiState.cards,
                     transactionGroups = uiState.transactionGroups,
