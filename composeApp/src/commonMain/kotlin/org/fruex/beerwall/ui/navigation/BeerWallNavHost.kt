@@ -20,6 +20,36 @@ import org.fruex.beerwall.ui.screens.profile.AboutScreen
 import org.fruex.beerwall.ui.screens.profile.ChangePasswordScreen
 import org.fruex.beerwall.ui.screens.profile.SupportScreen
 
+/**
+ * Główny komponent nawigacyjny aplikacji (NavHost).
+ *
+ * Definiuje graf nawigacji i obsługuje przejścia między ekranami.
+ *
+ * @param modifier Modyfikator układu.
+ * @param navController Kontroler nawigacji.
+ * @param startDestination Punkt startowy nawigacji.
+ * @param balances Lista sald (stan).
+ * @param cards Lista kart (stan).
+ * @param transactionGroups Historia transakcji (stan).
+ * @param userProfile Profil użytkownika (stan).
+ * @param paymentMethods Metody płatności (stan).
+ * @param isRefreshing Flaga odświeżania (stan).
+ * @param onRegisterWithEmail Callback rejestracji.
+ * @param onLoginWithEmail Callback logowania email/hasło.
+ * @param onLoginWithGoogle Callback logowania Google.
+ * @param onLogout Callback wylogowania.
+ * @param onAddFunds Callback doładowania konta.
+ * @param onToggleCardStatus Callback zmiany statusu karty.
+ * @param onDeleteCard Callback usuwania karty.
+ * @param onSaveCard Callback zapisywania karty.
+ * @param onStartNfcScanning Callback startu skanowania NFC.
+ * @param onRefreshHistory Callback odświeżania historii.
+ * @param onRefreshBalance Callback odświeżania salda.
+ * @param onForgotPassword Callback przypomnienia hasła.
+ * @param onResetPassword Callback resetu hasła.
+ * @param scannedCardId Zeskanowane ID karty (stan).
+ * @param isNfcEnabled Flaga dostępności NFC (stan).
+ */
 @Composable
 fun BeerWallNavHost(
     modifier: Modifier = Modifier,

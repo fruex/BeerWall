@@ -5,6 +5,11 @@ import org.fruex.beerwall.data.remote.BeerWallDataSource
 import org.fruex.beerwall.domain.model.Card
 import org.fruex.beerwall.domain.repository.CardRepository
 
+/**
+ * Implementacja repozytorium kart.
+ *
+ * @property dataSource Źródło danych (API).
+ */
 class CardRepositoryImpl(
     private val dataSource: BeerWallDataSource
 ) : CardRepository {

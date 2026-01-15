@@ -16,6 +16,22 @@ import org.fruex.beerwall.ui.theme.TextPrimary
 import org.fruex.beerwall.ui.theme.TextSecondary
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+/**
+ * Standardowe pole tekstowe aplikacji.
+ *
+ * @param value Aktualna wartość.
+ * @param onValueChange Callback zmiany wartości.
+ * @param placeholder Tekst zastępczy.
+ * @param modifier Modyfikator.
+ * @param visualTransformation Transformacja wizualna (np. maskowanie hasła).
+ * @param keyboardOptions Opcje klawiatury.
+ * @param keyboardActions Akcje klawiatury.
+ * @param leadingIcon Ikona początkowa.
+ * @param trailingIcon Ikona końcowa.
+ * @param isError Flaga błędu.
+ * @param errorMessage Wiadomość błędu.
+ * @param enabled Czy pole jest aktywne.
+ */
 @Composable
 fun BeerWallTextField(
     value: String,

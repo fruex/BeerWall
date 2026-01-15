@@ -9,14 +9,14 @@ import org.fruex.beerwall.domain.repository.*
 import org.fruex.beerwall.domain.usecase.*
 
 /**
- * Factory function for creating AppContainer
+ * Funkcja fabryczna do tworzenia kontenera aplikacji.
  */
 @Composable
 expect fun createAppContainer(): AppContainer
 
 /**
- * Application dependency container - Simple Service Locator pattern
- * Zarządza tworzeniem i dostarczaniem zależności dla całej aplikacji
+ * Kontener zależności aplikacji - Implementacja wzorca Service Locator.
+ * Zarządza tworzeniem i dostarczaniem zależności dla całej aplikacji.
  */
 abstract class AppContainer {
 
@@ -104,6 +104,9 @@ abstract class AppContainer {
     }
 
     // ViewModel Factory
+    /**
+     * Tworzy instancję [BeerWallViewModel].
+     */
     fun createBeerWallViewModel(): BeerWallViewModel {
         val viewModel = BeerWallViewModel(
             getBalancesUseCase = getBalancesUseCase,
