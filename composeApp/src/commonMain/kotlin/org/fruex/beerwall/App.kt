@@ -97,10 +97,7 @@ fun App(
                     onForgotPassword = viewModel::handleForgotPassword,
                     onResetPassword = viewModel::handleResetPassword,
                     onLogout = {
-                        scope.launch {
-                            googleAuthProvider.signOut()
-                            viewModel.onLogout()
-                        }
+                        viewModel.handleLogout(googleAuthProvider)
                     }
                 )
             }
