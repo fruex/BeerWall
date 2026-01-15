@@ -62,6 +62,26 @@ sealed class BottomNavItem(
     )
 }
 
+/**
+ * Główny ekran aplikacji zawierający dolny pasek nawigacyjny.
+ *
+ * @param balances Lista sald (stan).
+ * @param onAddFundsClick Callback do ekranu doładowania.
+ * @param onAddLocationClick Callback do dodawania lokalizacji.
+ * @param onRefreshBalance Callback odświeżania salda.
+ * @param cards Lista kart (stan).
+ * @param onAddCardClick Callback do dodawania karty.
+ * @param onToggleCardStatus Callback zmiany statusu karty.
+ * @param onDeleteCard Callback usuwania karty.
+ * @param transactionGroups Grupy transakcji (stan).
+ * @param onRefreshHistory Callback odświeżania historii.
+ * @param isRefreshing Flaga odświeżania (stan).
+ * @param userProfile Profil użytkownika (stan).
+ * @param onLogoutClick Callback wylogowania.
+ * @param onChangePasswordClick Callback zmiany hasła.
+ * @param onSupportClick Callback pomocy.
+ * @param onAboutClick Callback "O aplikacji".
+ */
 @Composable
 fun MainScreen(
     // Balance callbacks

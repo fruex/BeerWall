@@ -5,15 +5,24 @@ import org.fruex.beerwall.auth.GoogleAuthProvider
 import org.fruex.beerwall.domain.repository.AuthRepository
 
 /**
- * Use case do logowania użytkownika przez Google
- * Obsługuje całą logikę: wywołanie Google Auth, weryfikację w backendzie, zapis tokenów
+ * Przypadek użycia do logowania użytkownika przez Google.
+ *
+ * Obsługuje całą logikę: wywołanie Google Auth, weryfikację w backendzie, zapis tokenów.
  *
  * WAŻNE: Google ID Token ma krótką ważność (zazwyczaj 1 godzinę) i nie może być odświeżony.
  * Zawsze pobieramy świeży token od Google podczas logowania.
+ *
+ * @property authRepository Repozytorium autoryzacji.
  */
 class GoogleSignInUseCase(
     private val authRepository: AuthRepository
 ) {
+    /**
+     * Wykonuje logowanie Google.
+     *
+     * @param googleAuthProvider Dostawca uwierzytelniania Google.
+     * @return [Result] zawierający [AuthTokens] w przypadku sukcesu lub błąd.
+     */
     suspend operator fun invoke(googleAuthProvider: GoogleAuthProvider): Result<AuthTokens> {
         return try {
             println("📱 Google Sign In: Requesting fresh token from Google")

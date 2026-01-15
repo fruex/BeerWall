@@ -25,6 +25,17 @@ import org.fruex.beerwall.ui.theme.DarkBackground
 import org.fruex.beerwall.ui.theme.GoldPrimary
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+/**
+ * Ekran salda.
+ *
+ * Wyświetla dostępne środki w różnych lokalach oraz punkty lojalnościowe.
+ *
+ * @param balances Lista sald.
+ * @param isRefreshing Flaga odświeżania.
+ * @param onRefresh Callback odświeżania.
+ * @param onAddFundsClick Callback do ekranu doładowania.
+ * @param onAddLocationClick Callback dodawania lokalizacji (nieużywany w UI, ale dostępny).
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BalanceScreen(

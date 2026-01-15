@@ -19,6 +19,16 @@ import org.fruex.beerwall.ui.models.UserCard
 import org.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+/**
+ * Ekran zarządzania kartami.
+ *
+ * Umożliwia przeglądanie, dodawanie, usuwanie i zmianę statusu kart użytkownika.
+ *
+ * @param cards Lista kart.
+ * @param onAddCardClick Callback do dodawania karty.
+ * @param onToggleCardStatus Callback zmiany statusu karty.
+ * @param onDeleteCard Callback usuwania karty.
+ */
 @Composable
 fun CardsScreen(
     cards: List<UserCard>,

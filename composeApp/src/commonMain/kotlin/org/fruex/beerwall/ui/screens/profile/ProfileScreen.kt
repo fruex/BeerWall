@@ -26,6 +26,17 @@ import org.fruex.beerwall.ui.models.UserProfile
 import org.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+/**
+ * Ekran profilu użytkownika.
+ *
+ * Wyświetla dane użytkownika oraz opcje ustawień.
+ *
+ * @param userProfile Dane profilu użytkownika.
+ * @param onLogoutClick Callback wylogowania.
+ * @param onChangePasswordClick Callback zmiany hasła.
+ * @param onSupportClick Callback pomocy.
+ * @param onAboutClick Callback informacji o aplikacji.
+ */
 @Composable
 fun ProfileScreen(
     userProfile: UserProfile,

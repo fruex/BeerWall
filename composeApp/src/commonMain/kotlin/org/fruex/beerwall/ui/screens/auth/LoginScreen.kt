@@ -30,6 +30,16 @@ import org.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+/**
+ * Ekran logowania.
+ *
+ * Umożliwia logowanie za pomocą emaila/hasła oraz kont społecznościowych.
+ *
+ * @param onLoginClick Callback logowania emailem.
+ * @param onGoogleSignInClick Callback logowania Google.
+ * @param onRegisterClick Callback przejścia do rejestracji.
+ * @param isLoading Flaga ładowania.
+ */
 @Composable
 fun LoginScreen(
     onLoginClick: (email: String, password: String) -> Unit,
@@ -37,13 +47,9 @@ fun LoginScreen(
     onRegisterClick: () -> Unit,
     isLoading: Boolean = false
 ) {
-//    var email by rememberSaveable { mutableStateOf("") }
-//    var password by rememberSaveable { mutableStateOf("") }
-//    var showEmailLogin by rememberSaveable { mutableStateOf(false) }
-
-    var email by rememberSaveable { mutableStateOf("mobile") }
-    var password by rememberSaveable { mutableStateOf("mobile") }
-    var showEmailLogin by rememberSaveable { mutableStateOf(true) }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var showEmailLogin by rememberSaveable { mutableStateOf(false) }
 
     LoadingDialog(
         isVisible = isLoading,
