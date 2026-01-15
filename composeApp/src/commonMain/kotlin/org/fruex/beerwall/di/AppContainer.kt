@@ -45,6 +45,10 @@ abstract class AppContainer {
     private val authRepository: AuthRepository by lazy {
         AuthRepositoryImpl(dataSource, tokenManager)
     }
+
+    private val supportRepository: SupportRepository by lazy {
+        SupportRepositoryImpl(dataSource)
+    }
     
     // Use Cases
     private val getBalancesUseCase: GetBalancesUseCase by lazy { 
@@ -123,6 +127,7 @@ abstract class AppContainer {
             forgotPasswordUseCase = forgotPasswordUseCase,
             resetPasswordUseCase = resetPasswordUseCase,
             checkSessionUseCase = checkSessionUseCase,
+            sendMessageUseCase = sendMessageUseCase,
             authRepository = authRepository
         )
 
