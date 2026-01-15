@@ -298,6 +298,34 @@ class BeerWallDataSource(
         Result.failure(e)
     }
 
+    suspend fun resetPassword(email: String): Result<Unit> = try {
+        platform.log("📤 Reset Password Request", this, LogSeverity.INFO)
+        val response = client.post("${ApiConfig.BASE_URL}/mobile/auth/resetPassword") {
+            contentType(ContentType.Application.Json)
+            setBody(ResetPasswordRequest(email))
+        }
+
+        when (response.status) {
+            HttpStatusCode.NoContent -> {
+                platform.log("✅ Reset Password Success", this, LogSeverity.INFO)
+                Result.success(Unit)
+            }
+            HttpStatusCode.BadRequest -> {
+                platform.log("❌ Reset Password Bad Request", this, LogSeverity.ERROR)
+                Result.failure(Exception("Nieprawidłowy adres email"))
+            }
+            else -> {
+                val bodyText = response.bodyAsText()
+                platform.log("❌ Reset Password Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
+                Result.failure(Exception("Błąd resetowania hasła: ${response.status}"))
+            }
+        }
+    } catch (e: Exception) {
+        platform.log("❌ Reset Password Exception: ${e.message}", this, LogSeverity.ERROR)
+        e.printStackTrace()
+        Result.failure(e)
+    }
+
     suspend fun refreshToken(refreshToken: String): Result<RefreshTokenResponse> =
         safeCall<RefreshTokenEnvelope, RefreshTokenResponse> {
             post("${ApiConfig.BASE_URL}/mobile/auth/refreshToken") {

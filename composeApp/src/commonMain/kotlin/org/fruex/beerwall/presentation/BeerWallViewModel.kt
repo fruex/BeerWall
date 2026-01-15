@@ -43,6 +43,7 @@ class BeerWallViewModel(
     private val emailPasswordSignInUseCase: EmailPasswordSignInUseCase,
     private val registerUseCase: RegisterUseCase,
     private val forgotPasswordUseCase: ForgotPasswordUseCase,
+    private val resetPasswordUseCase: ResetPasswordUseCase,
     private val checkSessionUseCase: CheckSessionUseCase,
     private val authRepository: org.fruex.beerwall.domain.repository.AuthRepository
 ) : ViewModel() {
@@ -190,6 +191,25 @@ class BeerWallViewModel(
             setLoading(true)
             try {
                 forgotPasswordUseCase(email)
+                    .onSuccess {
+                        setError("Wysłano link do resetowania hasła na podany adres email.")
+                    }
+                    .onFailure { error ->
+                        setError(error.message ?: "Błąd resetowania hasła")
+                    }
+            } catch (e: Exception) {
+                setError(e.message ?: "Błąd resetowania hasła")
+            } finally {
+                setLoading(false)
+            }
+        }
+    }
+
+    fun handleResetPassword(email: String) {
+        viewModelScope.launch {
+            setLoading(true)
+            try {
+                resetPasswordUseCase(email)
                     .onSuccess {
                         setError("Wysłano link do resetowania hasła na podany adres email.")
                     }

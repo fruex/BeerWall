@@ -82,7 +82,7 @@ fun App(
                     onStartNfcScanning = onStartNfcScanning,
                     onRefreshHistory = viewModel::refreshHistory,
                     onRefreshBalance = viewModel::refreshBalance,
-                    onRegisterWithEmail = { _, _ -> viewModel.setGuestSession() },
+                    onRegisterWithEmail = viewModel::handleRegister,
                     onLoginWithEmail = viewModel::handleEmailPasswordSignIn,
                     onLoginWithGoogle = {
                         viewModel.handleGoogleSignIn(googleAuthProvider)
@@ -92,6 +92,7 @@ fun App(
                     onDeleteCard = viewModel::onDeleteCard,
                     onSaveCard = viewModel::onSaveCard,
                     onForgotPassword = viewModel::handleForgotPassword,
+                    onResetPassword = viewModel::handleResetPassword,
                     onLogout = {
                         scope.launch {
                             googleAuthProvider.signOut()
