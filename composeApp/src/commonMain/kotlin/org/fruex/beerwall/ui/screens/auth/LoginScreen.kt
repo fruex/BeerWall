@@ -45,11 +45,13 @@ fun LoginScreen(
     onLoginClick: (email: String, password: String) -> Unit,
     onGoogleSignInClick: () -> Unit,
     onRegisterClick: () -> Unit,
+    onForgotPasswordClick: (email: String) -> Unit,
     isLoading: Boolean = false
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var showEmailLogin by rememberSaveable { mutableStateOf(false) }
+    var showPasswordStep by rememberSaveable { mutableStateOf(false) }
 
     LoadingDialog(
         isVisible = isLoading,
@@ -147,30 +149,54 @@ fun LoginScreen(
                     keyboardType = KeyboardType.Email
                 ),
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading
+                enabled = !isLoading && !showPasswordStep
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            if (!showPasswordStep) {
+                Spacer(modifier = Modifier.height(24.dp))
 
-            BeerWallTextField(
-                value = password,
-                onValueChange = { password = it },
-                placeholder = "Hasło",
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                    keyboardType = KeyboardType.Password
-                ),
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading
-            )
+                BeerWallButton(
+                    text = "Zaloguj",
+                    onClick = { showPasswordStep = true },
+                    enabled = email.isNotBlank() && !isLoading
+                )
+            } else {
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Spacer(modifier = Modifier.height(24.dp))
+                BeerWallTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    placeholder = "Hasło",
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardType = KeyboardType.Password
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !isLoading
+                )
 
-            BeerWallButton(
-                text = "Zaloguj",
-                onClick = { onLoginClick(email, password) },
-                enabled = email.isNotBlank() && password.isNotBlank() && !isLoading
-            )
+                Spacer(modifier = Modifier.height(24.dp))
+
+                BeerWallButton(
+                    text = "Zaloguj",
+                    onClick = { onLoginClick(email, password) },
+                    enabled = password.isNotBlank() && !isLoading
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                TextButton(
+                    onClick = { onForgotPasswordClick(email) },
+                    enabled = !isLoading,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Zapomniałeś hasła?",
+                        color = GoldPrimary,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -247,7 +273,8 @@ fun LoginScreenPreview() {
         LoginScreen(
             onLoginClick = { _, _ -> },
             onGoogleSignInClick = {},
-            onRegisterClick = {}
+            onRegisterClick = {},
+            onForgotPasswordClick = {}
         )
     }
 }

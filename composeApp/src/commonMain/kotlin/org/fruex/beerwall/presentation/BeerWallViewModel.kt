@@ -81,6 +81,10 @@ class BeerWallViewModel(
         _uiState.update { it.copy(errorMessage = message) }
     }
 
+    private fun setMessage(message: String) {
+        _uiState.update { it.copy(errorMessage = message) }
+    }
+
     private fun launchWithLoading(block: suspend () -> Unit) {
         viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true, errorMessage = null) }
@@ -190,7 +194,7 @@ class BeerWallViewModel(
             try {
                 forgotPasswordUseCase(email)
                     .onSuccess {
-                        setError("Wysłano link do resetowania hasła na podany adres email.")
+                        setMessage("Wysłano link do resetowania hasła na podany adres email.")
                     }
                     .onFailure { error ->
                         setError(error.message ?: "Błąd resetowania hasła")
@@ -209,7 +213,7 @@ class BeerWallViewModel(
             try {
                 resetPasswordUseCase(email)
                     .onSuccess {
-                        setError("Wysłano link do resetowania hasła na podany adres email.")
+                        setMessage("Hasło zostało pomyślnie zresetowane.")
                     }
                     .onFailure { error ->
                         setError(error.message ?: "Błąd resetowania hasła")
@@ -226,8 +230,9 @@ class BeerWallViewModel(
         _uiState.update { it.copy(errorMessage = null) }
     }
 
-    fun onLogout() {
+    fun handleLogout(googleAuthProvider: org.fruex.beerwall.auth.GoogleAuthProvider) {
         viewModelScope.launch {
+            googleAuthProvider.signOut()
             authRepository.logout()
             _uiState.update { it.copy(isLoggedIn = false) }
         }

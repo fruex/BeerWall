@@ -103,14 +103,6 @@ abstract class AppContainer {
         CheckSessionUseCase(authRepository)
     }
 
-    private val refreshAllDataUseCase: RefreshAllDataUseCase by lazy {
-        RefreshAllDataUseCase(
-            getBalancesUseCase,
-            getCardsUseCase,
-            getTransactionsUseCase
-        )
-    }
-
     // ViewModel Factory
     /**
      * Tworzy instancję [BeerWallViewModel].
