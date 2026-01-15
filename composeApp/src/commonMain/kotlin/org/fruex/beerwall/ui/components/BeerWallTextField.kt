@@ -8,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import org.fruex.beerwall.ui.theme.BeerWallTheme
@@ -38,6 +39,7 @@ fun BeerWallTextField(
     onValueChange: (String) -> Unit,
     placeholder: String,
     modifier: Modifier = Modifier,
+    isPassword: Boolean = false,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -47,6 +49,7 @@ fun BeerWallTextField(
     errorMessage: String? = null,
     enabled: Boolean = true
 ) {
+    val effectiveVisualTransformation = if (isPassword) PasswordVisualTransformation() else visualTransformation
     Column(modifier = modifier) {
         TextField(
             value = value,
@@ -58,7 +61,7 @@ fun BeerWallTextField(
                 )
             },
             modifier = Modifier.fillMaxWidth(),
-            visualTransformation = visualTransformation,
+            visualTransformation = effectiveVisualTransformation,
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
             leadingIcon = leadingIcon,
