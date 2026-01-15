@@ -91,6 +91,7 @@ fun App(
                     onToggleCardStatus = viewModel::onToggleCardStatus,
                     onDeleteCard = viewModel::onDeleteCard,
                     onSaveCard = viewModel::onSaveCard,
+                    onForgotPassword = viewModel::handleForgotPassword,
                     onLogout = {
                         scope.launch {
                             googleAuthProvider.signOut()
