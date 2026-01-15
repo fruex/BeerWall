@@ -70,7 +70,10 @@ fun App(
             ) { paddingValues ->
                 BeerWallNavHost(
                     modifier = Modifier.padding(paddingValues),
-                    startDestination = if (uiState.isLoggedIn) NavigationDestination.Main.route else NavigationDestination.Login.route,
+                    startDestination =
+                        if (uiState.isLoggedIn)
+                            NavigationDestination.Main.route
+                        else NavigationDestination.Login.route,
                     balances = uiState.balances,
                     cards = uiState.cards,
                     transactionGroups = uiState.transactionGroups,
@@ -94,10 +97,7 @@ fun App(
                     onForgotPassword = viewModel::handleForgotPassword,
                     onResetPassword = viewModel::handleResetPassword,
                     onLogout = {
-                        scope.launch {
-                            googleAuthProvider.signOut()
-                            viewModel.onLogout()
-                        }
+                        viewModel.handleLogout(googleAuthProvider)
                     }
                 )
             }
