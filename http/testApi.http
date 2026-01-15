@@ -79,7 +79,7 @@ Accept: application/json
 Authorization: Bearer {{token}}
 
 ### 8. GetBalance - Pobierz saldo
-GET {{beerwall_apitest_HostAddress}}/mobile/User/balance
+GET {{beerwall_apitest_HostAddress}}/mobile/users/balance
 Accept: application/json
 Authorization: Bearer {{token}}
 
@@ -90,8 +90,8 @@ Content-Type: application/json
 Authorization: Bearer {{net_token}}
 
 {
-  "venueId": 1,
-  "paymentMethodId": 1,
+  "premisesId": 5,
+  "paymentMethodId": 2007,
   "amount": 50.00
 }
 
