@@ -46,6 +46,7 @@ fun BeerWallNavHost(
     onRefreshBalance: () -> Unit = {},
     onForgotPassword: (email: String) -> Unit = {},
     onResetPassword: (email: String) -> Unit = {},
+    onSendMessage: (message: String) -> Unit = {},
     scannedCardId: String? = null,
     isNfcEnabled: Boolean = true,
 ) {
@@ -179,8 +180,8 @@ fun BeerWallNavHost(
         composable(NavigationDestination.Support.route) {
             SupportScreen(
                 onBackClick = { navController.popBackStack() },
-                onSendMessage = { _ ->
-                    // TODO: Implement send message logic
+                onSendMessage = { message ->
+                    onSendMessage(message)
                     navController.popBackStack()
                 }
             )

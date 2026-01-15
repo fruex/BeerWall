@@ -42,6 +42,7 @@ class BeerWallViewModel(
     private val forgotPasswordUseCase: ForgotPasswordUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val checkSessionUseCase: CheckSessionUseCase,
+    private val sendMessageUseCase: SendMessageUseCase,
     private val authRepository: org.fruex.beerwall.domain.repository.AuthRepository
 ) : ViewModel() {
 
@@ -215,6 +216,25 @@ class BeerWallViewModel(
                     }
             } catch (e: Exception) {
                 setError(e.message ?: "Błąd resetowania hasła")
+            } finally {
+                setLoading(false)
+            }
+        }
+    }
+
+    fun onSendMessage(message: String) {
+        viewModelScope.launch {
+            setLoading(true)
+            try {
+                sendMessageUseCase(message)
+                    .onSuccess {
+                        setError("Wiadomość została wysłana. Dziękujemy!")
+                    }
+                    .onFailure { error ->
+                        setError(error.message ?: "Błąd wysyłania wiadomości")
+                    }
+            } catch (e: Exception) {
+                setError(e.message ?: "Błąd wysyłania wiadomości")
             } finally {
                 setLoading(false)
             }
