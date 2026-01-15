@@ -9,6 +9,12 @@ import org.fruex.beerwall.domain.repository.AuthRepository
 import org.fruex.beerwall.getPlatform
 import org.fruex.beerwall.log
 
+/**
+ * Implementacja repozytorium autoryzacji.
+ *
+ * @property dataSource Źródło danych (API).
+ * @property tokenManager Menedżer tokenów do przechowywania danych sesji.
+ */
 class AuthRepositoryImpl(
     private val dataSource: BeerWallDataSource,
     private val tokenManager: TokenManager
