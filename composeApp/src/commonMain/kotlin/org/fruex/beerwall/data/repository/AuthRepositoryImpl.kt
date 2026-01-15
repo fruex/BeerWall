@@ -106,8 +106,10 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun isUserLoggedIn(): Boolean {
-        val token = tokenManager.getToken() ?: return false
-        val refreshToken = tokenManager.getRefreshToken() ?: return false
+        // Sprawdzamy tylko czy tokeny istnieją i nie wygasły
+        if (tokenManager.getToken() == null || tokenManager.getRefreshToken() == null) {
+            return false
+        }
 
         // Jeśli oba tokeny wygasły, użytkownik nie jest zalogowany
         if (tokenManager.isTokenExpired() && tokenManager.isRefreshTokenExpired()) {
