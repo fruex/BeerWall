@@ -326,6 +326,39 @@ class BeerWallDataSource(
         Result.failure(e)
     }
 
+    suspend fun changePassword(oldPassword: String, newPassword: String): Result<Unit> = try {
+        platform.log("📤 Change Password Request", this, LogSeverity.INFO)
+        val response = client.post("${ApiConfig.BASE_URL}/mobile/auth/changePassword") {
+            addAuthToken()
+            contentType(ContentType.Application.Json)
+            setBody(ChangePasswordRequest(oldPassword, newPassword))
+        }
+
+        when (response.status) {
+            HttpStatusCode.NoContent -> {
+                platform.log("✅ Change Password Success", this, LogSeverity.INFO)
+                Result.success(Unit)
+            }
+            HttpStatusCode.Unauthorized -> {
+                platform.log("❌ Change Password Unauthorized", this, LogSeverity.ERROR)
+                Result.failure(Exception("Unauthorized"))
+            }
+            HttpStatusCode.BadRequest -> {
+                platform.log("❌ Change Password Bad Request", this, LogSeverity.ERROR)
+                Result.failure(Exception("Nieprawidłowe hasło"))
+            }
+            else -> {
+                val bodyText = response.bodyAsText()
+                platform.log("❌ Change Password Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
+                Result.failure(Exception("Błąd zmiany hasła: ${response.status}"))
+            }
+        }
+    } catch (e: Exception) {
+        platform.log("❌ Change Password Exception: ${e.message}", this, LogSeverity.ERROR)
+        e.printStackTrace()
+        Result.failure(e)
+    }
+
     suspend fun refreshToken(refreshToken: String): Result<RefreshTokenResponse> =
         safeCall<RefreshTokenEnvelope, RefreshTokenResponse> {
             post("${ApiConfig.BASE_URL}/mobile/auth/refreshToken") {

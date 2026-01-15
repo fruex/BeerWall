@@ -7,8 +7,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.fruex.beerwall.LogSeverity
 import org.fruex.beerwall.auth.AuthTokens
 import org.fruex.beerwall.domain.usecase.*
+import org.fruex.beerwall.getPlatform
+import org.fruex.beerwall.log
 import org.fruex.beerwall.presentation.mapper.groupByDate
 import org.fruex.beerwall.presentation.mapper.toUi
 import org.fruex.beerwall.ui.BeerWallUiState
@@ -45,6 +48,7 @@ class BeerWallViewModel(
     private val authRepository: org.fruex.beerwall.domain.repository.AuthRepository
 ) : ViewModel() {
 
+    private val platform = getPlatform()
     private val _uiState = MutableStateFlow(BeerWallUiState())
     val uiState: StateFlow<BeerWallUiState> = _uiState.asStateFlow()
 
@@ -245,6 +249,19 @@ class BeerWallViewModel(
                 val methods = operators.flatMap { it.paymentMethods }
                 _uiState.update { it.copy(paymentMethods = methods) }
             }
+        }
+    }
+
+    fun handleChangePassword(oldPassword: String, newPassword: String) {
+        viewModelScope.launch {
+            authRepository.changePassword(oldPassword, newPassword)
+                .onSuccess {
+                    platform.log("✅ Hasło zmienione", this, LogSeverity.INFO)
+                }
+                .onFailure { error ->
+                    platform.log("❌ Błąd zmiany hasła: ${error.message}", this, LogSeverity.ERROR)
+                    _uiState.update { it.copy(errorMessage = error.message) }
+                }
         }
     }
 

@@ -114,7 +114,6 @@ abstract class AppContainer {
     // ViewModel Factory
     fun createBeerWallViewModel(): BeerWallViewModel {
         val viewModel = BeerWallViewModel(
-            refreshAllDataUseCase = refreshAllDataUseCase,
             getBalancesUseCase = getBalancesUseCase,
             topUpBalanceUseCase = topUpBalanceUseCase,
             getTransactionsUseCase = getTransactionsUseCase,
