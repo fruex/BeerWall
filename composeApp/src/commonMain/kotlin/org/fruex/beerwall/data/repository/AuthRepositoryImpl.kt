@@ -78,6 +78,10 @@ class AuthRepositoryImpl(
         return dataSource.forgotPassword(email)
     }
 
+    override suspend fun resetPassword(email: String): Result<Unit> {
+        return dataSource.resetPassword(email)
+    }
+
     override suspend fun refreshToken(): Result<AuthTokens> {
         val currentRefreshToken = tokenManager.getRefreshToken()
             ?: return Result.failure(Exception("No refresh token available"))
