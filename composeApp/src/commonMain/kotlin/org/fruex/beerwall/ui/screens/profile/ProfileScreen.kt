@@ -135,7 +135,7 @@ fun ProfileScreen(
             }
         }
 
-        // Logout Button
+        // Logout BeerWallButton
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),

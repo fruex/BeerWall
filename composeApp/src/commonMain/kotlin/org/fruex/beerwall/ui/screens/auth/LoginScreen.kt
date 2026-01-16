@@ -77,7 +77,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // Google Login Button
+        // Google Login BeerWallButton
         SocialLoginButton(
             text = "Kontynuuj z Google",
             onClick = onGoogleSignInClick,
@@ -87,7 +87,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Facebook Login Button (disabled)
+        // Facebook Login BeerWallButton (disabled)
         SocialLoginButton(
             text = "Kontynuuj z Facebook",
             onClick = { },
@@ -97,7 +97,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Apple Login Button (disabled)
+        // Apple Login BeerWallButton (disabled)
         SocialLoginButton(
             text = "Kontynuuj z Apple",
             onClick = { },

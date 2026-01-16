@@ -11,6 +11,7 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
+import org.fruex.beerwall.BuildKonfig
 import org.fruex.beerwall.LogSeverity
 import org.fruex.beerwall.auth.TokenManager
 import org.fruex.beerwall.getPlatform
@@ -156,9 +157,9 @@ class BeerWallDataSource(
         platform.log("📤 Google SignIn Request to .NET Backend", this, LogSeverity.INFO)
         platform.log("  🔑 ID Token (first 50 chars): ${idToken.take(50)}...", this, LogSeverity.DEBUG)
         platform.log("  📏 ID Token length: ${idToken.length}", this, LogSeverity.DEBUG)
-        platform.log("  🌐 Endpoint: ${ApiConfig.BASE_URL}/mobile/auth/googleSignIn", this, LogSeverity.DEBUG)
+        platform.log("  🌐 Endpoint: ${BuildKonfig.BASE_URL}/mobile/auth/googleSignIn", this, LogSeverity.DEBUG)
 
-        val httpResponse: HttpResponse = client.post("${ApiConfig.BASE_URL}/mobile/auth/googleSignIn") {
+        val httpResponse: HttpResponse = client.post("${BuildKonfig.BASE_URL}/mobile/auth/googleSignIn") {
             contentType(ContentType.Application.Json)
             header(HttpHeaders.Authorization, "Bearer $idToken")
         }
@@ -216,7 +217,7 @@ class BeerWallDataSource(
 
     suspend fun emailPasswordSignIn(email: String, password: String): Result<EmailPasswordSignInResponse> = try {
         platform.log("📤 Email SignIn Request", this, LogSeverity.INFO)
-        val response = client.post("${ApiConfig.BASE_URL}/mobile/auth/signIn") {
+        val response = client.post("${BuildKonfig.BASE_URL}/mobile/auth/signIn") {
             contentType(ContentType.Application.Json)
             setBody(EmailPasswordSignInRequest(email, password))
         }
@@ -244,7 +245,7 @@ class BeerWallDataSource(
 
     suspend fun register(email: String, password: String): Result<Unit> = try {
         platform.log("📤 Register Request", this, LogSeverity.INFO)
-        val response = client.post("${ApiConfig.BASE_URL}/mobile/auth/register") {
+        val response = client.post("${BuildKonfig.BASE_URL}/mobile/auth/register") {
             contentType(ContentType.Application.Json)
             setBody(RegisterRequest(email, password))
         }
@@ -272,7 +273,7 @@ class BeerWallDataSource(
 
     suspend fun forgotPassword(email: String): Result<Unit> = try {
         platform.log("📤 Forgot Password Request", this, LogSeverity.INFO)
-        val response = client.post("${ApiConfig.BASE_URL}/mobile/auth/forgotPassword") {
+        val response = client.post("${BuildKonfig.BASE_URL}/mobile/auth/forgotPassword") {
             contentType(ContentType.Application.Json)
             setBody(ForgotPasswordRequest(email))
         }
@@ -300,7 +301,7 @@ class BeerWallDataSource(
 
     suspend fun resetPassword(email: String, resetCode: String, newPassword: String): Result<Unit> = try {
         platform.log("📤 Reset Password Request", this, LogSeverity.INFO)
-        val response = client.post("${ApiConfig.BASE_URL}/mobile/auth/resetPassword") {
+        val response = client.post("${BuildKonfig.BASE_URL}/mobile/auth/resetPassword") {
             contentType(ContentType.Application.Json)
             setBody(ResetPasswordRequest(email, resetCode, newPassword))
         }
@@ -328,7 +329,7 @@ class BeerWallDataSource(
 
     suspend fun refreshToken(refreshToken: String): Result<RefreshTokenResponse> =
         safeCall<RefreshTokenEnvelope, RefreshTokenResponse> {
-            post("${ApiConfig.BASE_URL}/mobile/auth/refreshToken") {
+            post("${BuildKonfig.BASE_URL}/mobile/auth/refreshToken") {
                 contentType(ContentType.Application.Json)
                 setBody(RefreshTokenRequest(refreshToken))
             }.body()
@@ -336,14 +337,14 @@ class BeerWallDataSource(
 
     suspend fun getCards(): Result<List<CardResponse>> =
         safeCallWithAuth<GetCardsEnvelope, List<CardResponse>> {
-            get("${ApiConfig.BASE_URL}/mobile/cards") {
+            get("${BuildKonfig.BASE_URL}/mobile/cards") {
                 addAuthToken()
             }.body()
         }
 
     suspend fun toggleCardStatus(cardId: String, activate: Boolean): Result<CardActivationResponse> =
         safeCallWithAuth<CardActivationEnvelope, CardActivationResponse> {
-            post("${ApiConfig.BASE_URL}/mobile/cards/activation") {
+            post("${BuildKonfig.BASE_URL}/mobile/cards/activation") {
                 addAuthToken()
                 contentType(ContentType.Application.Json)
                 setBody(CardActivationRequest(cardId, activate))
@@ -352,7 +353,7 @@ class BeerWallDataSource(
 
     suspend fun assignCard(guid: String, description: String): Result<Unit> = try {
         platform.log("📤 Assign Card Request", this, LogSeverity.INFO)
-        val response = client.put("${ApiConfig.BASE_URL}/mobile/cards/assign") {
+        val response = client.put("${BuildKonfig.BASE_URL}/mobile/cards/assign") {
             addAuthToken()
             contentType(ContentType.Application.Json)
             setBody(AssignCardRequest(guid, description))
@@ -385,7 +386,7 @@ class BeerWallDataSource(
 
     suspend fun deleteCard(guid: String): Result<Unit> = try {
         platform.log("📤 Delete Card Request", this, LogSeverity.INFO)
-        val response = client.delete("${ApiConfig.BASE_URL}/mobile/cards") {
+        val response = client.delete("${BuildKonfig.BASE_URL}/mobile/cards") {
             addAuthToken()
             parameter("guid", guid)
         }
@@ -417,14 +418,14 @@ class BeerWallDataSource(
 
     suspend fun getPaymentOperators(): Result<List<PaymentOperatorResponse>> =
         safeCallWithAuth<GetPaymentOperatorsEnvelope, List<PaymentOperatorResponse>> {
-            get("${ApiConfig.BASE_URL}/mobile/payments/operators") {
+            get("${BuildKonfig.BASE_URL}/mobile/payments/operators") {
                 addAuthToken()
             }.body()
         }
 
     suspend fun topUp(premisesId: Int, paymentMethodId: Int, balance: Double): Result<Unit> = try {
         platform.log("📤 TopUp Request", this, LogSeverity.INFO)
-        val response = client.post("${ApiConfig.BASE_URL}/mobile/payments/topUp") {
+        val response = client.post("${BuildKonfig.BASE_URL}/mobile/payments/topUp") {
             addAuthToken()
             contentType(ContentType.Application.Json)
             setBody(TopUpRequest(premisesId, paymentMethodId, balance))
@@ -453,14 +454,14 @@ class BeerWallDataSource(
 
     suspend fun getBalance(): Result<List<BalanceResponse>> =
         safeCallWithAuth<GetBalanceEnvelope, List<BalanceResponse>> {
-            get("${ApiConfig.BASE_URL}/mobile/users/balance") {
+            get("${BuildKonfig.BASE_URL}/mobile/users/balance") {
                 addAuthToken()
             }.body()
         }
 
     suspend fun getHistory(): Result<List<TransactionResponse>> =
         safeCallWithAuth<GetHistoryEnvelope, List<TransactionResponse>> {
-            get("${ApiConfig.BASE_URL}/mobile/users/history") {
+            get("${BuildKonfig.BASE_URL}/mobile/users/history") {
                 addAuthToken()
             }.body()
         }

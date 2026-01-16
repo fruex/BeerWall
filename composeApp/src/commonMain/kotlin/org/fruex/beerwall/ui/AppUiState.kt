@@ -19,7 +19,7 @@ import org.fruex.beerwall.ui.models.VenueBalance
  * @property paymentMethods Dostępne metody płatności.
  * @property errorMessage Komunikat błędu do wyświetlenia (jeśli wystąpił).
  */
-data class BeerWallUiState(
+data class AppUiState(
     val isCheckingSession: Boolean = true,
     val isLoggedIn: Boolean = false,
     val isRefreshing: Boolean = false,

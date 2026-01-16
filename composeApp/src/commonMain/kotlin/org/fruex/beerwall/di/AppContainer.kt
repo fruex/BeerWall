@@ -1,7 +1,7 @@
 package org.fruex.beerwall.di
 
 import androidx.compose.runtime.Composable
-import org.fruex.beerwall.presentation.BeerWallViewModel
+import org.fruex.beerwall.presentation.AppViewModel
 import org.fruex.beerwall.auth.TokenManager
 import org.fruex.beerwall.data.remote.BeerWallDataSource
 import org.fruex.beerwall.data.repository.*
@@ -113,10 +113,10 @@ abstract class AppContainer {
 
     // ViewModel Factory
     /**
-     * Tworzy instancję [BeerWallViewModel].
+     * Tworzy instancję [AppViewModel].
      */
-    fun createBeerWallViewModel(): BeerWallViewModel {
-        val viewModel = BeerWallViewModel(
+    fun createBeerWallViewModel(): AppViewModel {
+        val viewModel = AppViewModel(
             getBalancesUseCase = getBalancesUseCase,
             topUpBalanceUseCase = topUpBalanceUseCase,
             getTransactionsUseCase = getTransactionsUseCase,

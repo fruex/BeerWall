@@ -256,16 +256,16 @@ fun CardsScreenPreview() {
         CardsScreen(
             cards = listOf(
                 UserCard(
-                    id = "1234567890",
-                    name = "Moja karta",
-                    isActive = true,
-                    isPhysical = true
-                ),
-                UserCard(
                     id = "0987654321",
                     name = "Karta wirtualna",
                     isActive = false,
                     isPhysical = false
+                ),
+                UserCard(
+                    id = "1234567890",
+                    name = "Moja karta",
+                    isActive = true,
+                    isPhysical = true
                 )
             ),
             onAddCardClick = {},
