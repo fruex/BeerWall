@@ -58,153 +58,154 @@ fun LoginScreen(
         title = "Logowanie..."
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(DarkBackground)
-            .verticalScroll(rememberScrollState())
-            .padding(start = 24.dp, end = 24.dp, bottom = 24.dp, top = 80.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        AppLogo()
+    AuthBackground {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(start = 24.dp, end = 24.dp, bottom = 24.dp, top = 80.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            AppLogo()
 
-        Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(48.dp))
 
-        AuthHeader(
-            title = "Igi Beer System",
-            subtitle = "Zaloguj do konta"
-        )
+            AuthHeader(
+                title = "Igi Beer System",
+                subtitle = "Zaloguj do konta"
+            )
 
-        Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
-        // Google Login BeerWallButton
-        SocialLoginButton(
-            text = "Kontynuuj z Google",
-            onClick = onGoogleSignInClick,
-            iconRes = Res.drawable.ic_google,
-            enabled = !isLoading
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Facebook Login BeerWallButton (disabled)
-        SocialLoginButton(
-            text = "Kontynuuj z Facebook",
-            onClick = { },
-            iconRes = Res.drawable.ic_facebook,
-            enabled = false
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Apple Login BeerWallButton (disabled)
-        SocialLoginButton(
-            text = "Kontynuuj z Apple",
-            onClick = { },
-            iconRes = Res.drawable.ic_apple,
-            enabled = false
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(),
-            color = TextSecondary.copy(alpha = 0.3f)
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Email Login Toggle
-        if (!showEmailLogin) {
+            // Google Login BeerWallButton
             SocialLoginButton(
-                text = "Kontynuuj z e-mailem",
-                onClick = { showEmailLogin = true },
-                icon = Icons.Default.Email,
+                text = "Kontynuuj z Google",
+                onClick = onGoogleSignInClick,
+                iconRes = Res.drawable.ic_google,
                 enabled = !isLoading
             )
-        } else {
-            // Email Login Form
-            BeerWallTextField(
-                value = email,
-                onValueChange = { email = it },
-                placeholder = "E-mail",
-                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                    keyboardType = KeyboardType.Email
-                ),
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading && !showPasswordStep
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Facebook Login BeerWallButton (disabled)
+            SocialLoginButton(
+                text = "Kontynuuj z Facebook",
+                onClick = { },
+                iconRes = Res.drawable.ic_facebook,
+                enabled = false
             )
 
-            if (!showPasswordStep) {
-                Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-                BeerWallButton(
-                    text = "Zaloguj",
-                    onClick = { showPasswordStep = true },
-                    enabled = email.isNotBlank() && !isLoading
-                )
-            } else {
-                Spacer(modifier = Modifier.height(16.dp))
+            // Apple Login BeerWallButton (disabled)
+            SocialLoginButton(
+                text = "Kontynuuj z Apple",
+                onClick = { },
+                iconRes = Res.drawable.ic_apple,
+                enabled = false
+            )
 
-                BeerWallTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    placeholder = "Hasło",
-                    visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                        keyboardType = KeyboardType.Password
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
+            Spacer(modifier = Modifier.height(24.dp))
+
+            HorizontalDivider(
+                modifier = Modifier.fillMaxWidth(),
+                color = TextSecondary.copy(alpha = 0.3f)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Email Login Toggle
+            if (!showEmailLogin) {
+                SocialLoginButton(
+                    text = "Kontynuuj z e-mailem",
+                    onClick = { showEmailLogin = true },
+                    icon = Icons.Default.Email,
                     enabled = !isLoading
                 )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                BeerWallButton(
-                    text = "Zaloguj",
-                    onClick = { onLoginClick(email, password) },
-                    enabled = password.isNotBlank() && !isLoading
+            } else {
+                // Email Login Form
+                BeerWallTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    placeholder = "E-mail",
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardType = KeyboardType.Email
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !isLoading && !showPasswordStep
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                if (!showPasswordStep) {
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                TextButton(
-                    onClick = { onForgotPasswordClick(email) },
-                    enabled = !isLoading,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Zapomniałeś hasła?",
-                        color = GoldPrimary,
-                        style = MaterialTheme.typography.bodyMedium
+                    BeerWallButton(
+                        text = "Zaloguj",
+                        onClick = { showPasswordStep = true },
+                        enabled = email.isNotBlank() && !isLoading
                     )
+                } else {
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    BeerWallTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        placeholder = "Hasło",
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                            keyboardType = KeyboardType.Password
+                        ),
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !isLoading
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    BeerWallButton(
+                        text = "Zaloguj",
+                        onClick = { onLoginClick(email, password) },
+                        enabled = password.isNotBlank() && !isLoading
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    TextButton(
+                        onClick = { onForgotPasswordClick(email) },
+                        enabled = !isLoading,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Zapomniałeś hasła?",
+                            color = GoldPrimary,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
 
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = "Nie masz konta? ",
-                color = TextSecondary,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.align(Alignment.CenterVertically)
-            )
-            TextButton(
-                onClick = onRegisterClick,
-                contentPadding = PaddingValues(0.dp),
-                enabled = !isLoading
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "Utwórz konto",
-                    color = GoldPrimary,
+                    text = "Nie masz konta? ",
+                    color = TextSecondary,
                     style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold
+                    modifier = Modifier.align(Alignment.CenterVertically)
                 )
+                TextButton(
+                    onClick = onRegisterClick,
+                    contentPadding = PaddingValues(0.dp),
+                    enabled = !isLoading
+                ) {
+                    Text(
+                        text = "Utwórz konto",
+                        color = GoldPrimary,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
         }
     }

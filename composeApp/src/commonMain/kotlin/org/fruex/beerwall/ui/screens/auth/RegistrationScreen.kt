@@ -36,90 +36,91 @@ fun RegistrationScreen(
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(DarkBackground)
-            .verticalScroll(rememberScrollState())
-            .padding(start = 24.dp, end = 24.dp, bottom = 24.dp, top = 80.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        AppLogo()
-
-        Spacer(modifier = Modifier.height(48.dp))
-
-        AuthHeader(
-            title = "Igi Beer System",
-            subtitle = "Utwórz konto"
-        )
-
-        Spacer(modifier = Modifier.height(40.dp))
-
-        BeerWallTextField(
-            value = email,
-            onValueChange = { email = it },
-            placeholder = "E-mail",
-            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                keyboardType = KeyboardType.Email
-            ),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        BeerWallTextField(
-            value = password,
-            onValueChange = { password = it },
-            placeholder = "Hasło",
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                keyboardType = KeyboardType.Password
-            ),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        BeerWallButton(
-            text = "Utwórz konto",
-            onClick = { onRegisterClick(email, password) },
-            enabled = email.isNotBlank() && password.isNotBlank()
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        SocialDivider()
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        BeerWallOutlinedButton(
-            text = "Google",
-            onClick = onGoogleSignInClick,
-            icon = Icons.Default.AccountCircle
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
+    AuthBackground {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(start = 24.dp, end = 24.dp, bottom = 24.dp, top = 80.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Masz już konto? ",
-                color = TextSecondary,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.align(Alignment.CenterVertically)
+            AppLogo()
+
+            Spacer(modifier = Modifier.height(48.dp))
+
+            AuthHeader(
+                title = "Igi Beer System",
+                subtitle = "Utwórz konto"
             )
-            TextButton(
-                onClick = onLoginClick,
-                contentPadding = PaddingValues(0.dp)
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            BeerWallTextField(
+                value = email,
+                onValueChange = { email = it },
+                placeholder = "E-mail",
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                    keyboardType = KeyboardType.Email
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            BeerWallTextField(
+                value = password,
+                onValueChange = { password = it },
+                placeholder = "Hasło",
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                    keyboardType = KeyboardType.Password
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            BeerWallButton(
+                text = "Utwórz konto",
+                onClick = { onRegisterClick(email, password) },
+                enabled = email.isNotBlank() && password.isNotBlank()
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            SocialDivider()
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            BeerWallOutlinedButton(
+                text = "Google",
+                onClick = onGoogleSignInClick,
+                icon = Icons.Default.AccountCircle
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "Zaloguj się",
-                    color = GoldPrimary,
+                    text = "Masz już konto? ",
+                    color = TextSecondary,
                     style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold
+                    modifier = Modifier.align(Alignment.CenterVertically)
                 )
+                TextButton(
+                    onClick = onLoginClick,
+                    contentPadding = PaddingValues(0.dp)
+                ) {
+                    Text(
+                        text = "Zaloguj się",
+                        color = GoldPrimary,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
         }
     }
