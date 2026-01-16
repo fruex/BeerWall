@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.fruex.beerwall.auth.rememberGoogleAuthProvider
 import org.fruex.beerwall.di.createAppContainer
-import org.fruex.beerwall.presentation.BeerWallViewModel
-import org.fruex.beerwall.ui.navigation.BeerWallNavHost
+import org.fruex.beerwall.presentation.AppViewModel
+import org.fruex.beerwall.ui.navigation.AppNavHost
 import org.fruex.beerwall.ui.navigation.NavigationDestination
 import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.GoldPrimary
@@ -28,7 +28,7 @@ fun App(
     onStartNfcScanning: () -> Unit = {}
 ) {
     val appContainer = createAppContainer()
-    val viewModel: BeerWallViewModel = viewModel {
+    val viewModel: AppViewModel = viewModel {
         appContainer.createBeerWallViewModel()
     }
     val uiState by viewModel.uiState.collectAsState()
@@ -66,7 +66,7 @@ fun App(
             Scaffold(
                 snackbarHost = { SnackbarHost(snackbarHostState) }
             ) { paddingValues ->
-                BeerWallNavHost(
+                AppNavHost(
                     modifier = Modifier.padding(paddingValues),
                     startDestination =
                         if (uiState.isLoggedIn)

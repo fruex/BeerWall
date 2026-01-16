@@ -18,9 +18,10 @@ junit = "4.13.2"
 kotlin = "2.3.0"
 kotlinxSerialization = "1.9.0"
 kotlinxDatetime = "0.7.1"
-kotlinxCoroutines = "1.9.0"
+kotlinxCoroutines = "1.10.2"
 coil = "3.3.0"
 ktor = "3.3.3"
+buildkonfig = "0.17.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -58,3 +59,4 @@ composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMul
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }

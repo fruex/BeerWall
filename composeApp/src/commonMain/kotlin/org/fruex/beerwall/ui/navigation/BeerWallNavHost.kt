@@ -51,7 +51,7 @@ import org.fruex.beerwall.ui.screens.profile.SupportScreen
  * @param isNfcEnabled Flaga dostępności NFC (stan).
  */
 @Composable
-fun BeerWallNavHost(
+fun AppNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     startDestination: String = NavigationDestination.Main.route,

@@ -11,7 +11,7 @@ import org.fruex.beerwall.auth.AuthTokens
 import org.fruex.beerwall.domain.usecase.*
 import org.fruex.beerwall.presentation.mapper.groupByDate
 import org.fruex.beerwall.presentation.mapper.toUi
-import org.fruex.beerwall.ui.BeerWallUiState
+import org.fruex.beerwall.ui.AppUiState
 
 /**
  * ViewModel zarządzający stanem aplikacji BeerWall.
@@ -28,7 +28,7 @@ import org.fruex.beerwall.ui.BeerWallUiState
  * @param toggleCardStatusUseCase Use case do przełączania statusu karty.
  * // TODO: Rozważyć rozbicie tego ViewModelu na mniejsze, feature-specific ViewModele (np. AuthViewModel, WalletViewModel, HistoryViewModel), ponieważ obecna klasa staje się "God Object", naruszając zasadę Single Responsibility Principle.
  */
-class BeerWallViewModel(
+class AppViewModel(
     private val getBalancesUseCase: GetBalancesUseCase,
     private val topUpBalanceUseCase: TopUpBalanceUseCase,
     private val getTransactionsUseCase: GetTransactionsUseCase,
@@ -47,8 +47,8 @@ class BeerWallViewModel(
     private val authRepository: org.fruex.beerwall.domain.repository.AuthRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(BeerWallUiState())
-    val uiState: StateFlow<BeerWallUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(AppUiState())
+    val uiState: StateFlow<AppUiState> = _uiState.asStateFlow()
 
     /**
      * Wywołane automatycznie gdy refresh token wygasł.
