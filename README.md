@@ -12,6 +12,17 @@ This is a Kotlin Multiplatform project targeting Android, iOS.
 * [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
   you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
 
+### Prerequisites
+
+This project requires the following environment setup, particularly for Android development:
+
+*   **Android SDK**: Must be installed.
+*   **Environment Variables**:
+    *   `ANDROID_HOME`: Set to your Android SDK installation directory (e.g., `$HOME/android-sdk`).
+*   **SDK Components**:
+    *   `platforms;android-36`
+    *   `build-tools;34.0.0`
+
 ### Build and Run Android Application
 
 To build and run the development version of the Android app, use the run configuration from the run widget
