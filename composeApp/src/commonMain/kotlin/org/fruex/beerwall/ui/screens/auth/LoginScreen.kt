@@ -116,29 +116,12 @@ fun LoginScreen(
 
         // Email Login Toggle
         if (!showEmailLogin) {
-            OutlinedButton(
+            SocialLoginButton(
+                text = "Kontynuuj z e-mailem",
                 onClick = { showEmailLogin = true },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = TextPrimary
-                ),
-                border = BorderStroke(1.dp, TextSecondary.copy(alpha = 0.3f)),
-                contentPadding = PaddingValues(16.dp),
+                icon = Icons.Default.Email,
                 enabled = !isLoading
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Email,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = "Kontynuuj z e-mailem",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
+            )
         } else {
             // Email Login Form
             BeerWallTextField(
@@ -252,17 +235,99 @@ fun SocialLoginButton(
         ),
         contentPadding = PaddingValues(16.dp)
     ) {
-        Icon(
-            painter = painterResource(iconRes),
-            contentDescription = null,
-            modifier = Modifier.size(20.dp),
-            tint = Color.Unspecified
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyLarge
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Icon column - fixed width, centered
+            Box(
+                modifier = Modifier.width(32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(iconRes),
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = Color.Unspecified
+                )
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            // Text column - centered
+            Box(
+                modifier = Modifier.weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+
+            // Right spacer to balance icon column
+            Spacer(modifier = Modifier.width(32.dp))
+        }
+    }
+}
+
+@Composable
+fun SocialLoginButton(
+    text: String,
+    onClick: () -> Unit,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    enabled: Boolean,
+    modifier: Modifier = Modifier
+) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
+        enabled = enabled,
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = if (enabled) Color.Transparent else CardBackground.copy(alpha = 0.3f),
+            contentColor = if (enabled) TextPrimary else TextSecondary,
+            disabledContainerColor = CardBackground.copy(alpha = 0.3f),
+            disabledContentColor = TextSecondary
+        ),
+        border = BorderStroke(
+            1.dp,
+            if (enabled) TextSecondary.copy(alpha = 0.3f) else TextSecondary.copy(alpha = 0.1f)
+        ),
+        contentPadding = PaddingValues(16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Icon column - fixed width, centered
+            Box(
+                modifier = Modifier.width(32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            // Text column - centered
+            Box(
+                modifier = Modifier.weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+
+            // Right spacer to balance icon column
+            Spacer(modifier = Modifier.width(32.dp))
+        }
     }
 }
 
