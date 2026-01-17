@@ -112,7 +112,7 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun isUserLoggedIn(): Boolean {
-        // Sprawdzamy tylko czy tokeny istnieją i nie wygasły
+        // Sprawdzamy czy tokeny istnieją
         if (tokenManager.getToken() == null || tokenManager.getRefreshToken() == null) {
             return false
         }
@@ -121,6 +121,11 @@ class AuthRepositoryImpl(
         if (tokenManager.isTokenExpired() && tokenManager.isRefreshTokenExpired()) {
             tokenManager.clearTokens()
             return false
+        }
+
+        // Jeśli access token wygasł ale refresh token jest ważny, odśwież token
+        if (tokenManager.isTokenExpired() && !tokenManager.isRefreshTokenExpired()) {
+            return refreshToken().isSuccess
         }
 
         return true
