@@ -1,5 +1,6 @@
 package org.fruex.beerwall.remote.dto.balance
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.fruex.beerwall.remote.common.ApiEnvelope
 
@@ -8,7 +9,8 @@ data class BalanceResponse(
     val premisesId: Int,
     val premisesName: String,
     val balance: Double,
-    val loyalityPoints: Int
+    @SerialName("loyalityPoints") // API has typo, mapping to correct property name
+    val loyaltyPoints: Int
 )
 
 typealias GetBalanceEnvelope = ApiEnvelope<List<BalanceResponse>>

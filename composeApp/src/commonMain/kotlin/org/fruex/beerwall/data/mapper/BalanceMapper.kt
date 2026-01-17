@@ -11,7 +11,7 @@ fun BalanceResponse.toDomain(): Balance {
         premisesId = premisesId,
         premisesName = premisesName,
         balance = balance,
-        loyalityPoints = loyalityPoints
+        loyaltyPoints = loyaltyPoints
     )
 }
 

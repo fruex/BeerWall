@@ -12,8 +12,8 @@ import org.fruex.beerwall.ui.models.DailyTransactions
 import org.fruex.beerwall.ui.models.UserCard
 import org.fruex.beerwall.ui.models.UserProfile
 import org.fruex.beerwall.ui.models.VenueBalance
-import org.fruex.beerwall.ui.screens.auth.LoginScreen
-import org.fruex.beerwall.ui.screens.auth.RegistrationScreen
+import org.fruex.beerwall.ui.screens.auth.AuthMode
+import org.fruex.beerwall.ui.screens.auth.AuthScreen
 import org.fruex.beerwall.ui.screens.balance.AddFundsScreen
 import org.fruex.beerwall.ui.screens.cards.AddCardScreen
 import org.fruex.beerwall.ui.screens.profile.AboutScreen
@@ -87,24 +87,27 @@ fun AppNavHost(
     ) {
         // Auth screens
         composable(NavigationDestination.Registration.route) {
-            RegistrationScreen(
-                onRegisterClick = { email, password ->
+            AuthScreen(
+                mode = AuthMode.REGISTER,
+                onAuthClick = { email, password ->
                     onRegisterWithEmail(email, password)
                 },
                 onGoogleSignInClick = onLoginWithGoogleClick,
-                onLoginClick = {
+                onToggleModeClick = {
                     navController.navigate(NavigationDestination.Login.route)
-                }
+                },
+                isLoading = isRefreshing
             )
         }
 
         composable(NavigationDestination.Login.route) {
-            LoginScreen(
-                onLoginClick = { email, password ->
+            AuthScreen(
+                mode = AuthMode.LOGIN,
+                onAuthClick = { email, password ->
                     onLoginWithEmail(email, password)
                 },
                 onGoogleSignInClick = onLoginWithGoogleClick,
-                onRegisterClick = {
+                onToggleModeClick = {
                     navController.navigate(NavigationDestination.Registration.route)
                 },
                 onForgotPasswordClick = { email ->
