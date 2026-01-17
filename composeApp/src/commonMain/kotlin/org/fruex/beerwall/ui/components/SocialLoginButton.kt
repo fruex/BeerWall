@@ -8,6 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import beerwall.composeapp.generated.resources.Res
+import beerwall.composeapp.generated.resources.ic_facebook
+import beerwall.composeapp.generated.resources.ic_google
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
@@ -127,4 +130,30 @@ fun SocialLoginButton(
         iconRes = null,
         icon = icon
     )
+}
+
+@org.jetbrains.compose.ui.tooling.preview.Preview
+@Composable
+fun SocialLoginButtonPreview() {
+    org.fruex.beerwall.ui.theme.BeerWallTheme {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            SocialLoginButton(
+                text = "Kontynuuj z Google",
+                onClick = {},
+                iconRes = Res.drawable.ic_google,
+                enabled = true
+            )
+            SocialLoginButton(
+                text = "Kontynuuj z Facebook",
+                onClick = {},
+                iconRes = Res.drawable.ic_facebook,
+                enabled = false
+            )
+        }
+    }
 }
