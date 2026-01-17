@@ -1,5 +1,6 @@
 package org.fruex.beerwall.data.repository
 
+import kotlinx.datetime.Clock
 import org.fruex.beerwall.LogSeverity
 import org.fruex.beerwall.auth.AuthTokens
 import org.fruex.beerwall.auth.TokenManager
@@ -32,11 +33,28 @@ class AuthRepositoryImpl(
         val firstName = payload["firstName"]
         val lastName = payload["lastName"]
 
+        val now = Clock.System.now().epochSeconds
+
+        // Heurystyka: Jeśli czas wygaśnięcia jest mały (< 1 000 000 000, czyli ok. rok 2001),
+        // traktujemy go jako czas trwania (TTL) w sekundach i dodajemy do obecnego czasu.
+        // W przeciwnym razie traktujemy go jako timestamp.
+        val actualTokenExpires = if (tokenExpires < 1_000_000_000) {
+            now + tokenExpires
+        } else {
+            tokenExpires
+        }
+
+        val actualRefreshTokenExpires = if (refreshTokenExpires < 1_000_000_000) {
+            now + refreshTokenExpires
+        } else {
+            refreshTokenExpires
+        }
+
         return AuthTokens(
             token = token,
-            tokenExpires = tokenExpires,
+            tokenExpires = actualTokenExpires,
             refreshToken = refreshToken,
-            refreshTokenExpires = refreshTokenExpires,
+            refreshTokenExpires = actualRefreshTokenExpires,
             firstName = firstName,
             lastName = lastName
         )
