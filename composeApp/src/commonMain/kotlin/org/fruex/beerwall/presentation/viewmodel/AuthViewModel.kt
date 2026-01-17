@@ -36,12 +36,9 @@ class AuthViewModel(
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
-    init {
-        checkSession()
-    }
-
     /**
      * Sprawdza sesję przy starcie aplikacji.
+     * UWAGA: Nie wywoływać w init{}, tylko po skonfigurowaniu callbacków w DI.
      */
     fun checkSession() {
         viewModelScope.launch {
