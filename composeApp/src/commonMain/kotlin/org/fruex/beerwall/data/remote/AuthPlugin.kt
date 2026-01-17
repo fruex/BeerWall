@@ -13,7 +13,10 @@ import io.ktor.util.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.fruex.beerwall.LogSeverity
+import org.fruex.beerwall.auth.AuthTokens
 import org.fruex.beerwall.auth.TokenManager
+import org.fruex.beerwall.auth.ensureTimestamp
+import org.fruex.beerwall.auth.currentTimeSeconds
 import org.fruex.beerwall.getPlatform
 import org.fruex.beerwall.log
 
@@ -30,6 +33,7 @@ class AuthPlugin private constructor(
 
     companion object : HttpClientPlugin<Configuration, AuthPlugin> {
         override val key = AttributeKey<AuthPlugin>("AuthPlugin")
+        private val refreshMutex = Mutex()
 
         override fun prepare(block: Configuration.() -> Unit): AuthPlugin {
             val config = Configuration().apply(block)
@@ -38,12 +42,12 @@ class AuthPlugin private constructor(
 
         override fun install(plugin: AuthPlugin, scope: HttpClient) {
             val platform = getPlatform()
-            val refreshMutex = Mutex()
-            var isRefreshing = false
 
             scope.plugin(HttpSend).intercept { request ->
+                val initialToken = plugin.tokenManager.getToken()
+
                 // Add token to request
-                plugin.tokenManager.getToken()?.let { token ->
+                initialToken?.let { token ->
                     request.headers[HttpHeaders.Authorization] = "Bearer $token"
                 }
 
@@ -51,24 +55,29 @@ class AuthPlugin private constructor(
 
                 // If 401, try to refresh token and retry
                 if (originalCall.response.status == HttpStatusCode.Unauthorized) {
+                    // Skip refresh if no token was present (unauthorized by design or not logged in)
+                    if (initialToken == null) {
+                        return@intercept originalCall
+                    }
+
                     platform.log("⚠️ 401 Unauthorized - attempting token refresh", "AuthPlugin", LogSeverity.WARN)
 
                     val refreshSuccess = refreshMutex.withLock {
-                        if (isRefreshing) {
-                            // Another request is already refreshing, wait and use the new token
+                        val currentToken = plugin.tokenManager.getToken()
+                        if (currentToken != null && currentToken != initialToken) {
+                            // Token already refreshed by another request
+                            platform.log("✅ Token already refreshed by another request - retrying", "AuthPlugin", LogSeverity.INFO)
                             true
+                        } else if (currentToken == null) {
+                            // Tokens were cleared by another request that failed refresh
+                            platform.log("❌ Tokens were cleared by another request - refresh failed", "AuthPlugin", LogSeverity.ERROR)
+                            false
                         } else {
-                            isRefreshing = true
-                            try {
-                                plugin.refreshToken()
-                            } finally {
-                                isRefreshing = false
-                            }
+                            plugin.refreshToken()
                         }
                     }
 
                     if (refreshSuccess) {
-                        platform.log("✅ Token refreshed - retrying request", "AuthPlugin", LogSeverity.INFO)
                         // Retry with new token
                         plugin.tokenManager.getToken()?.let { newToken ->
                             request.headers[HttpHeaders.Authorization] = "Bearer $newToken"
@@ -95,7 +104,9 @@ class AuthPlugin private constructor(
         val platform = getPlatform()
 
         if (tokenManager.isRefreshTokenExpired()) {
-            platform.log("❌ Refresh token expired", "AuthPlugin", LogSeverity.ERROR)
+            val expires = tokenManager.getRefreshTokenExpires()
+            val now = currentTimeSeconds()
+            platform.log("❌ Refresh token expired (expires: $expires, now: $now)", "AuthPlugin", LogSeverity.ERROR)
             return false
         }
 
@@ -122,15 +133,20 @@ class AuthPlugin private constructor(
 
             if (response.status == HttpStatusCode.OK) {
                 val refreshResponse: org.fruex.beerwall.remote.dto.auth.RefreshTokenResponse = response.body()
+                
+                // Decode user data from new token payload
+                val payload = org.fruex.beerwall.auth.decodeTokenPayload(refreshResponse.token)
+                val firstName = payload["firstName"]
+                val lastName = payload["lastName"]
 
                 tokenManager.saveTokens(
-                    tokens = org.fruex.beerwall.auth.AuthTokens(
+                    tokens = AuthTokens(
                         token = refreshResponse.token,
-                        tokenExpires = refreshResponse.tokenExpires,
+                        tokenExpires = ensureTimestamp(refreshResponse.tokenExpires),
                         refreshToken = refreshResponse.refreshToken,
-                        refreshTokenExpires = refreshResponse.refreshTokenExpires,
-                        firstName = null,
-                        lastName = null
+                        refreshTokenExpires = ensureTimestamp(refreshResponse.refreshTokenExpires),
+                        firstName = firstName,
+                        lastName = lastName
                     )
                 )
                 platform.log("✅ Token refreshed successfully", "AuthPlugin", LogSeverity.INFO)
