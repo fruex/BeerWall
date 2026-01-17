@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import org.fruex.beerwall.presentation.AppViewModel
 import org.fruex.beerwall.presentation.viewmodel.*
 import org.fruex.beerwall.auth.TokenManager
-import org.fruex.beerwall.data.remote.BeerWallDataSource
+import org.fruex.beerwall.data.remote.api.*
 import org.fruex.beerwall.data.repository.*
 import org.fruex.beerwall.domain.repository.*
 import org.fruex.beerwall.domain.usecase.*
@@ -24,31 +24,46 @@ abstract class AppContainer {
     // Auth Layer
     abstract val tokenManager: TokenManager
 
-    // Data Layer
-    // DataSource jest inicjalizowany bez callbacku, callback zostanie ustawiony w ViewModelu
-    private val dataSource: BeerWallDataSource by lazy {
-        BeerWallDataSource(tokenManager)
+    // Data Layer - API Clients
+    private val authApiClient: AuthApiClient by lazy {
+        AuthApiClient(tokenManager)
+    }
+
+    private val cardsApiClient: CardsApiClient by lazy {
+        CardsApiClient(tokenManager)
+    }
+
+    private val balanceApiClient: BalanceApiClient by lazy {
+        BalanceApiClient(tokenManager)
+    }
+
+    private val historyApiClient: HistoryApiClient by lazy {
+        HistoryApiClient(tokenManager)
+    }
+
+    private val supportApiClient: SupportApiClient by lazy {
+        SupportApiClient(tokenManager)
     }
 
     // Repository Layer
     private val balanceRepository: BalanceRepository by lazy {
-        BalanceRepositoryImpl(dataSource)
+        BalanceRepositoryImpl(balanceApiClient)
     }
 
     private val cardRepository: CardRepository by lazy {
-        CardRepositoryImpl(dataSource)
+        CardRepositoryImpl(cardsApiClient)
     }
 
     private val transactionRepository: TransactionRepository by lazy {
-        TransactionRepositoryImpl(dataSource)
+        TransactionRepositoryImpl(historyApiClient)
     }
 
     private val authRepository: AuthRepository by lazy {
-        AuthRepositoryImpl(dataSource, tokenManager)
+        AuthRepositoryImpl(authApiClient, tokenManager)
     }
 
     private val supportRepository: SupportRepository by lazy {
-        SupportRepositoryImpl(dataSource)
+        SupportRepositoryImpl(supportApiClient)
     }
     
     // Use Cases
@@ -158,10 +173,16 @@ abstract class AppContainer {
             profileViewModel = profileViewModel
         )
 
-        // Skonfiguruj callback dla automatycznego wylogowania
-        dataSource.onUnauthorized = {
+        // Skonfiguruj callback dla automatycznego wylogowania w każdym API klientcie
+        val onUnauthorizedCallback: suspend () -> Unit = {
             viewModel.handleSessionExpired()
         }
+
+        authApiClient.onUnauthorized = onUnauthorizedCallback
+        cardsApiClient.onUnauthorized = onUnauthorizedCallback
+        balanceApiClient.onUnauthorized = onUnauthorizedCallback
+        historyApiClient.onUnauthorized = onUnauthorizedCallback
+        supportApiClient.onUnauthorized = onUnauthorizedCallback
 
         return viewModel
     }
