@@ -6,6 +6,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import org.fruex.beerwall.LogSeverity
 import org.fruex.beerwall.auth.TokenManager
+import org.fruex.beerwall.data.remote.ApiRoutes
 import org.fruex.beerwall.data.remote.BaseApiClient
 import org.fruex.beerwall.log
 import org.fruex.beerwall.remote.dto.cards.*
@@ -23,7 +24,7 @@ class CardsApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
      */
     suspend fun getCards(): Result<List<CardResponse>> =
         safeCallWithAuth<GetCardsEnvelope, List<CardResponse>> {
-            get("$baseUrl/mobile/cards") {
+            get("$baseUrl/${ApiRoutes.Cards.CARDS}") {
                 addAuthToken()
             }.body()
         }
@@ -36,7 +37,7 @@ class CardsApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
      * @return Result pusty w przypadku sukcesu lub błąd.
      */
     suspend fun assignCard(guid: String, description: String): Result<Unit> = try {
-        val response = client.put("$baseUrl/mobile/cards/assign") {
+        val response = client.put("$baseUrl/${ApiRoutes.Cards.ASSIGN}") {
             addAuthToken()
             contentType(ContentType.Application.Json)
             setBody(AssignCardRequest(guid, description))
@@ -65,7 +66,7 @@ class CardsApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
         // Uwaga: Endpoint w kodzie to /mobile/cards, metoda PUT. Swagger mówi o /mobile/cards (PUT) dla update'u.
         // Zakładamy, że CardUpdateMobileRequest w Swaggerze odpowiada logice tutaj.
         // Jednak tutaj używamy CardActivationRequest. Sprawdzić zgodność z DTO.
-        val response = client.put("$baseUrl/mobile/cards") {
+        val response = client.put("$baseUrl/${ApiRoutes.Cards.CARDS}") {
             addAuthToken()
             contentType(ContentType.Application.Json)
             setBody(CardActivationRequest(cardId, isActive))
@@ -91,7 +92,7 @@ class CardsApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
      * @return Result pusty w przypadku sukcesu lub błąd.
      */
     suspend fun deleteCard(cardId: String): Result<Unit> = try {
-        val response = client.delete("$baseUrl/mobile/cards") {
+        val response = client.delete("$baseUrl/${ApiRoutes.Cards.CARDS}") {
             addAuthToken()
             parameter("guid", cardId)
         }
