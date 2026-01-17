@@ -60,7 +60,7 @@ fun AppNavHost(
     cards: List<UserCard> = emptyList(),
     transactionGroups: List<DailyTransactions> = emptyList(),
     userProfile: UserProfile = UserProfile("", "", ""),
-    paymentMethods: List<org.fruex.beerwall.remote.dto.operators.PaymentMethod> = emptyList(),
+    paymentMethods: List<org.fruex.beerwall.data.remote.dto.operators.PaymentMethod> = emptyList(),
     isRefreshing: Boolean = false,
     // Callbacks
     onRegisterWithEmail: (email: String, password: String) -> Unit = { _, _ -> },

@@ -2,7 +2,7 @@ package org.fruex.beerwall.fakes
 
 import org.fruex.beerwall.domain.model.Balance
 import org.fruex.beerwall.domain.repository.BalanceRepository
-import org.fruex.beerwall.remote.dto.operators.PaymentOperatorResponse
+import org.fruex.beerwall.data.remote.dto.operators.PaymentOperatorResponse
 
 class FakeBalanceRepository : BalanceRepository {
     var shouldFail = false

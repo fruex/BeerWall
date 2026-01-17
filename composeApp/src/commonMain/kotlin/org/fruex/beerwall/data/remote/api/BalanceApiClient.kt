@@ -8,9 +8,9 @@ import org.fruex.beerwall.LogSeverity
 import org.fruex.beerwall.auth.TokenManager
 import org.fruex.beerwall.data.remote.BaseApiClient
 import org.fruex.beerwall.log
-import org.fruex.beerwall.remote.dto.balance.*
-import org.fruex.beerwall.remote.dto.operators.GetPaymentOperatorsEnvelope
-import org.fruex.beerwall.remote.dto.operators.PaymentOperatorResponse
+import org.fruex.beerwall.data.remote.dto.balance.*
+import org.fruex.beerwall.data.remote.dto.operators.GetPaymentOperatorsEnvelope
+import org.fruex.beerwall.data.remote.dto.operators.PaymentOperatorResponse
 
 /**
  * Klient API do obsługi operacji finansowych (saldo, płatności).

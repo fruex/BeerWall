@@ -1,8 +1,6 @@
-package org.fruex.beerwall.remote.common
+package org.fruex.beerwall.data.remote.common
 
 import kotlinx.serialization.Serializable
-
-// TODO: Cały pakiet `remote` powinien znajdować się w `data/remote`, aby ściśle przestrzegać zasad Clean Architecture.
 
 /**
  * Generyczna koperta odpowiedzi API.
