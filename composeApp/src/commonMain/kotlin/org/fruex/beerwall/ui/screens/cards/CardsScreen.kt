@@ -93,6 +93,7 @@ fun CardsScreen(
         }
 
         item(key = "add_card_button") {
+            Spacer(modifier = Modifier.height(12.dp))
             BeerWallButton(
                 text = "Dodaj nową kartę",
                 onClick = onAddCardClick,
@@ -100,7 +101,7 @@ fun CardsScreen(
         }
 
         item(key = "nfc_info") {
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             NFCInfoCard()
         }
     }
