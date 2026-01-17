@@ -6,6 +6,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import org.fruex.beerwall.LogSeverity
 import org.fruex.beerwall.auth.TokenManager
+import org.fruex.beerwall.data.remote.ApiRoutes
 import org.fruex.beerwall.data.remote.BaseApiClient
 import org.fruex.beerwall.log
 import org.fruex.beerwall.remote.dto.auth.*
@@ -25,7 +26,7 @@ class AuthApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
     suspend fun googleSignIn(idToken: String): Result<GoogleSignInResponse> = try {
         platform.log("📤 Google SignIn Request", this, LogSeverity.INFO)
 
-        val httpResponse: HttpResponse = client.post("$baseUrl/mobile/auth/googleSignIn") {
+        val httpResponse: HttpResponse = client.post("$baseUrl/${ApiRoutes.Auth.GOOGLE_SIGN_IN}") {
             contentType(ContentType.Application.Json)
             header(HttpHeaders.Authorization, "Bearer $idToken")
         }
@@ -66,7 +67,7 @@ class AuthApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
      */
     suspend fun emailPasswordSignIn(email: String, password: String): Result<EmailPasswordSignInResponse> = try {
         platform.log("📤 Email SignIn Request", this, LogSeverity.INFO)
-        val response = client.post("$baseUrl/mobile/auth/signIn") {
+        val response = client.post("$baseUrl/${ApiRoutes.Auth.SIGN_IN}") {
             contentType(ContentType.Application.Json)
             setBody(EmailPasswordSignInRequest(email, password))
         }
@@ -96,7 +97,7 @@ class AuthApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
      */
     suspend fun register(email: String, password: String): Result<Unit> = try {
         platform.log("📤 Register Request", this, LogSeverity.INFO)
-        val response = client.post("$baseUrl/mobile/auth/signUp") {
+        val response = client.post("$baseUrl/${ApiRoutes.Auth.SIGN_UP}") {
             contentType(ContentType.Application.Json)
             setBody(RegisterRequest(email, password))
         }
@@ -122,7 +123,7 @@ class AuthApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
      */
     suspend fun forgotPassword(email: String): Result<Unit> = try {
         platform.log("📤 Forgot Password Request", this, LogSeverity.INFO)
-        val response = client.post("$baseUrl/mobile/auth/forgotPassword") {
+        val response = client.post("$baseUrl/${ApiRoutes.Auth.FORGOT_PASSWORD}") {
             contentType(ContentType.Application.Json)
             setBody(ForgotPasswordRequest(email))
         }
@@ -148,7 +149,7 @@ class AuthApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
      */
     suspend fun resetPassword(email: String, resetCode: String, newPassword: String): Result<Unit> = try {
         platform.log("📤 Reset Password Request", this, LogSeverity.INFO)
-        val response = client.post("$baseUrl/mobile/auth/resetPassword") {
+        val response = client.post("$baseUrl/${ApiRoutes.Auth.RESET_PASSWORD}") {
             contentType(ContentType.Application.Json)
             setBody(ResetPasswordRequest(email, resetCode, newPassword))
         }
@@ -172,7 +173,7 @@ class AuthApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
      */
     suspend fun refreshToken(refreshToken: String): Result<RefreshTokenResponse> =
         safeCall<RefreshTokenEnvelope, RefreshTokenResponse> {
-            post("$baseUrl/mobile/auth/refreshToken") {
+            post("$baseUrl/${ApiRoutes.Auth.REFRESH_TOKEN}") {
                 contentType(ContentType.Application.Json)
                 setBody(RefreshTokenRequest(refreshToken))
             }.body()
