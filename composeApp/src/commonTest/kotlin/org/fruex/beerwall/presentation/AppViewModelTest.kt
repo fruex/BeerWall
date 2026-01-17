@@ -3,6 +3,7 @@ package org.fruex.beerwall.presentation
 import kotlinx.coroutines.test.runTest
 import org.fruex.beerwall.domain.usecase.*
 import org.fruex.beerwall.fakes.*
+import org.fruex.beerwall.presentation.viewmodel.*
 import org.fruex.beerwall.test.BaseTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -27,23 +28,45 @@ class AppViewModelTest : BaseTest() {
         transactionRepository = FakeTransactionRepository()
         supportRepository = FakeSupportRepository()
 
-        viewModel = AppViewModel(
-            getBalancesUseCase = GetBalancesUseCase(balanceRepository),
-            topUpBalanceUseCase = TopUpBalanceUseCase(balanceRepository),
-            getTransactionsUseCase = GetTransactionsUseCase(transactionRepository),
-            toggleCardStatusUseCase = ToggleCardStatusUseCase(cardRepository),
-            assignCardUseCase = AssignCardUseCase(cardRepository),
-            deleteCardUseCase = DeleteCardUseCase(cardRepository),
-            getCardsUseCase = GetCardsUseCase(cardRepository),
-            getPaymentOperatorsUseCase = GetPaymentOperatorsUseCase(balanceRepository),
+        // Tworzenie feature ViewModeli
+        val authViewModel = AuthViewModel(
             googleSignInUseCase = GoogleSignInUseCase(authRepository),
             emailPasswordSignInUseCase = EmailPasswordSignInUseCase(authRepository),
             registerUseCase = RegisterUseCase(authRepository),
             forgotPasswordUseCase = ForgotPasswordUseCase(authRepository),
             resetPasswordUseCase = ResetPasswordUseCase(authRepository),
             checkSessionUseCase = CheckSessionUseCase(authRepository),
-            sendMessageUseCase = SendMessageUseCase(supportRepository),
             authRepository = authRepository
+        )
+
+        val balanceViewModel = BalanceViewModel(
+            getBalancesUseCase = GetBalancesUseCase(balanceRepository),
+            topUpBalanceUseCase = TopUpBalanceUseCase(balanceRepository),
+            getPaymentOperatorsUseCase = GetPaymentOperatorsUseCase(balanceRepository)
+        )
+
+        val cardsViewModel = CardsViewModel(
+            getCardsUseCase = GetCardsUseCase(cardRepository),
+            toggleCardStatusUseCase = ToggleCardStatusUseCase(cardRepository),
+            assignCardUseCase = AssignCardUseCase(cardRepository),
+            deleteCardUseCase = DeleteCardUseCase(cardRepository)
+        )
+
+        val historyViewModel = HistoryViewModel(
+            getTransactionsUseCase = GetTransactionsUseCase(transactionRepository)
+        )
+
+        val profileViewModel = ProfileViewModel(
+            sendMessageUseCase = SendMessageUseCase(supportRepository)
+        )
+
+        // Tworzenie głównego AppViewModel
+        viewModel = AppViewModel(
+            authViewModel = authViewModel,
+            balanceViewModel = balanceViewModel,
+            cardsViewModel = cardsViewModel,
+            historyViewModel = historyViewModel,
+            profileViewModel = profileViewModel
         )
     }
 
