@@ -1,0 +1,4 @@
+android:
+  cmdline_tools_url: "https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip"
+  platform_version: "android-36"
+  build_tools_version: "34.0.0"
