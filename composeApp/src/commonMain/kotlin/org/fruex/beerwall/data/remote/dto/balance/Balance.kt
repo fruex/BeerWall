@@ -1,8 +1,8 @@
-package org.fruex.beerwall.remote.dto.balance
+package org.fruex.beerwall.data.remote.dto.balance
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.fruex.beerwall.remote.common.ApiEnvelope
+import org.fruex.beerwall.data.remote.common.ApiEnvelope
 
 /**
  * DTO salda użytkownika w danym lokalu.

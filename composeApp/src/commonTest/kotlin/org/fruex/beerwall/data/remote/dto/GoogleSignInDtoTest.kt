@@ -1,7 +1,7 @@
-package org.fruex.beerwall.remote.dto
+package org.fruex.beerwall.data.remote.dto
 
 import kotlinx.serialization.json.Json
-import org.fruex.beerwall.remote.dto.auth.*
+import org.fruex.beerwall.data.remote.dto.auth.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

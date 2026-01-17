@@ -1,7 +1,7 @@
-package org.fruex.beerwall.remote.dto.history
+package org.fruex.beerwall.data.remote.dto.history
 
 import kotlinx.serialization.Serializable
-import org.fruex.beerwall.remote.common.ApiEnvelope
+import org.fruex.beerwall.data.remote.common.ApiEnvelope
 
 /**
  * DTO historii transakcji.
