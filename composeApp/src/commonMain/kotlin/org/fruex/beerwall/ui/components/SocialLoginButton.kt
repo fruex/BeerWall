@@ -11,8 +11,10 @@ import androidx.compose.ui.unit.dp
 import beerwall.composeapp.generated.resources.Res
 import beerwall.composeapp.generated.resources.ic_facebook
 import beerwall.composeapp.generated.resources.ic_google
+import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Social login button with icon and centered text.
@@ -132,10 +134,10 @@ fun SocialLoginButton(
     )
 }
 
-@org.jetbrains.compose.ui.tooling.preview.Preview
+@Preview
 @Composable
 fun SocialLoginButtonPreview() {
-    org.fruex.beerwall.ui.theme.BeerWallTheme {
+    BeerWallTheme {
         Column(
             modifier = Modifier
                 .padding(16.dp)
