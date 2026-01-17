@@ -1,7 +1,5 @@
 package org.fruex.beerwall
 
-import kotlin.reflect.KClass
-
 enum class LogSeverity {
     DEBUG, INFO, WARN, ERROR
 }
