@@ -4,7 +4,7 @@ import org.fruex.beerwall.LogSeverity
 import org.fruex.beerwall.auth.AuthTokens
 import org.fruex.beerwall.auth.TokenManager
 import org.fruex.beerwall.auth.decodeTokenPayload
-import org.fruex.beerwall.data.remote.BeerWallDataSource
+import org.fruex.beerwall.data.remote.api.AuthApiClient
 import org.fruex.beerwall.domain.repository.AuthRepository
 import org.fruex.beerwall.getPlatform
 import org.fruex.beerwall.log
@@ -12,11 +12,11 @@ import org.fruex.beerwall.log
 /**
  * Implementacja repozytorium autoryzacji.
  *
- * @property dataSource Źródło danych (API).
+ * @property authApiClient Klient API dla operacji autentykacji.
  * @property tokenManager Menedżer tokenów do przechowywania danych sesji.
  */
 class AuthRepositoryImpl(
-    private val dataSource: BeerWallDataSource,
+    private val authApiClient: AuthApiClient,
     private val tokenManager: TokenManager
 ) : AuthRepository {
     private val platform = getPlatform()
@@ -43,7 +43,7 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun googleSignIn(idToken: String): Result<AuthTokens> {
-        return dataSource.googleSignIn(idToken).mapCatching { response ->
+        return authApiClient.googleSignIn(idToken).mapCatching { response ->
             platform.log("🔐 Google Login success, saving tokens...", this, LogSeverity.INFO)
             
             val tokens = createAuthTokens(
@@ -60,7 +60,7 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun emailPasswordSignIn(email: String, password: String): Result<AuthTokens> {
-        return dataSource.emailPasswordSignIn(email, password).mapCatching { response ->
+        return authApiClient.emailPasswordSignIn(email, password).mapCatching { response ->
             platform.log("🔐 Email Login success, saving tokens...", this, LogSeverity.INFO)
             
             val tokens = createAuthTokens(
@@ -77,15 +77,15 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun register(email: String, password: String): Result<Unit> {
-        return dataSource.register(email, password)
+        return authApiClient.register(email, password)
     }
 
     override suspend fun forgotPassword(email: String): Result<Unit> {
-        return dataSource.forgotPassword(email)
+        return authApiClient.forgotPassword(email)
     }
 
     override suspend fun resetPassword(email: String, resetCode: String, newPassword: String): Result<Unit> {
-        return dataSource.resetPassword(email, resetCode, newPassword)
+        return authApiClient.resetPassword(email, resetCode, newPassword)
     }
 
     override suspend fun refreshToken(): Result<AuthTokens> {
@@ -98,7 +98,7 @@ class AuthRepositoryImpl(
             return Result.failure(Exception("Refresh token expired"))
         }
 
-        return dataSource.refreshToken(currentRefreshToken).mapCatching { response ->
+        return authApiClient.refreshToken(currentRefreshToken).mapCatching { response ->
             val tokens = createAuthTokens(
                 token = response.token,
                 tokenExpires = response.tokenExpires,

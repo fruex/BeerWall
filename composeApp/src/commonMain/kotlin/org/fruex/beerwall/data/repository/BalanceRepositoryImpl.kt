@@ -1,7 +1,7 @@
 package org.fruex.beerwall.data.repository
 
 import org.fruex.beerwall.data.mapper.toDomain
-import org.fruex.beerwall.data.remote.BeerWallDataSource
+import org.fruex.beerwall.data.remote.api.BalanceApiClient
 import org.fruex.beerwall.domain.model.Balance
 import org.fruex.beerwall.domain.repository.BalanceRepository
 import org.fruex.beerwall.remote.dto.operators.PaymentOperatorResponse
@@ -9,21 +9,21 @@ import org.fruex.beerwall.remote.dto.operators.PaymentOperatorResponse
 /**
  * Implementacja repozytorium sald.
  *
- * @property dataSource Źródło danych (API).
+ * @property balanceApiClient Klient API dla operacji na saldach.
  */
 class BalanceRepositoryImpl(
-    private val dataSource: BeerWallDataSource
+    private val balanceApiClient: BalanceApiClient
 ) : BalanceRepository {
 
     override suspend fun getBalances(): Result<List<Balance>> {
-        return dataSource.getBalance().map { it.toDomain() }
+        return balanceApiClient.getBalance().map { it.toDomain() }
     }
 
     override suspend fun topUp(premisesId: Int, paymentMethodId: Int, balance: Double): Result<Unit> {
-        return dataSource.topUp(premisesId, paymentMethodId, balance)
+        return balanceApiClient.topUp(premisesId, paymentMethodId, balance)
     }
 
     override suspend fun getPaymentOperators(): Result<List<PaymentOperatorResponse>> {
-        return dataSource.getPaymentOperators()
+        return balanceApiClient.getPaymentOperators()
     }
 }
