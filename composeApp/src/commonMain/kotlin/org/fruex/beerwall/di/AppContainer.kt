@@ -2,6 +2,7 @@ package org.fruex.beerwall.di
 
 import androidx.compose.runtime.Composable
 import org.fruex.beerwall.presentation.AppViewModel
+import org.fruex.beerwall.presentation.viewmodel.*
 import org.fruex.beerwall.auth.TokenManager
 import org.fruex.beerwall.data.remote.BeerWallDataSource
 import org.fruex.beerwall.data.repository.*
@@ -116,23 +117,45 @@ abstract class AppContainer {
      * Tworzy instancję [AppViewModel].
      */
     fun createBeerWallViewModel(): AppViewModel {
-        val viewModel = AppViewModel(
-            getBalancesUseCase = getBalancesUseCase,
-            topUpBalanceUseCase = topUpBalanceUseCase,
-            getTransactionsUseCase = getTransactionsUseCase,
-            toggleCardStatusUseCase = toggleCardStatusUseCase,
-            assignCardUseCase = assignCardUseCase,
-            deleteCardUseCase = deleteCardUseCase,
-            getCardsUseCase = getCardsUseCase,
-            getPaymentOperatorsUseCase = getPaymentOperatorsUseCase,
+        // Tworzenie feature ViewModeli
+        val authViewModel = AuthViewModel(
             googleSignInUseCase = googleSignInUseCase,
             emailPasswordSignInUseCase = emailPasswordSignInUseCase,
             registerUseCase = registerUseCase,
             forgotPasswordUseCase = forgotPasswordUseCase,
             resetPasswordUseCase = resetPasswordUseCase,
             checkSessionUseCase = checkSessionUseCase,
-            sendMessageUseCase = sendMessageUseCase,
             authRepository = authRepository
+        )
+
+        val balanceViewModel = BalanceViewModel(
+            getBalancesUseCase = getBalancesUseCase,
+            topUpBalanceUseCase = topUpBalanceUseCase,
+            getPaymentOperatorsUseCase = getPaymentOperatorsUseCase
+        )
+
+        val cardsViewModel = CardsViewModel(
+            getCardsUseCase = getCardsUseCase,
+            toggleCardStatusUseCase = toggleCardStatusUseCase,
+            assignCardUseCase = assignCardUseCase,
+            deleteCardUseCase = deleteCardUseCase
+        )
+
+        val historyViewModel = HistoryViewModel(
+            getTransactionsUseCase = getTransactionsUseCase
+        )
+
+        val profileViewModel = ProfileViewModel(
+            sendMessageUseCase = sendMessageUseCase
+        )
+
+        // Tworzenie głównego AppViewModel jako fasady
+        val viewModel = AppViewModel(
+            authViewModel = authViewModel,
+            balanceViewModel = balanceViewModel,
+            cardsViewModel = cardsViewModel,
+            historyViewModel = historyViewModel,
+            profileViewModel = profileViewModel
         )
 
         // Skonfiguruj callback dla automatycznego wylogowania
