@@ -61,7 +61,6 @@ class AppViewModel(
             authViewModel.uiState
                 .map { it.isLoggedIn }
                 .distinctUntilChanged()
-                .drop(1) // Pomijamy pierwszą wartość
                 .collect { isLoggedIn ->
                     if (isLoggedIn) {
                         refreshAllData()
