@@ -11,13 +11,16 @@ import org.fruex.beerwall.log
 import org.fruex.beerwall.data.remote.dto.auth.*
 
 /**
- * API client for authentication operations.
- * Handles user sign-in, registration, password management, and token refresh.
+ * Klient API do obsługi operacji uwierzytelniania.
+ * Obsługuje logowanie użytkownika, rejestrację, zarządzanie hasłami oraz odświeżanie tokenu.
  */
 class AuthApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
 
     /**
-     * Authenticates user with Google ID token.
+     * Uwierzytelnia użytkownika przy użyciu tokenu Google ID.
+     *
+     * @param idToken Token ID otrzymany z Google Sign-In.
+     * @return Result zawierający [GoogleSignInResponse] lub błąd.
      */
     suspend fun googleSignIn(idToken: String): Result<GoogleSignInResponse> = try {
         platform.log("📤 Google SignIn Request", this, LogSeverity.INFO)
@@ -55,7 +58,11 @@ class AuthApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
     }
 
     /**
-     * Authenticates user with email and password.
+     * Uwierzytelnia użytkownika przy użyciu adresu email i hasła.
+     *
+     * @param email Adres email użytkownika.
+     * @param password Hasło użytkownika.
+     * @return Result zawierający [EmailPasswordSignInResponse] lub błąd.
      */
     suspend fun emailPasswordSignIn(email: String, password: String): Result<EmailPasswordSignInResponse> = try {
         platform.log("📤 Email SignIn Request", this, LogSeverity.INFO)
@@ -81,7 +88,11 @@ class AuthApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
     }
 
     /**
-     * Registers new user account.
+     * Rejestruje nowe konto użytkownika.
+     *
+     * @param email Adres email użytkownika.
+     * @param password Hasło użytkownika.
+     * @return Result pusty w przypadku sukcesu lub błąd.
      */
     suspend fun register(email: String, password: String): Result<Unit> = try {
         platform.log("📤 Register Request", this, LogSeverity.INFO)
@@ -104,7 +115,10 @@ class AuthApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
     }
 
     /**
-     * Initiates password reset flow.
+     * Inicjuje proces resetowania hasła (wysłanie kodu resetującego).
+     *
+     * @param email Adres email użytkownika.
+     * @return Result pusty w przypadku sukcesu lub błąd.
      */
     suspend fun forgotPassword(email: String): Result<Unit> = try {
         platform.log("📤 Forgot Password Request", this, LogSeverity.INFO)
@@ -125,7 +139,12 @@ class AuthApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
     }
 
     /**
-     * Resets password with reset code.
+     * Resetuje hasło przy użyciu kodu resetującego.
+     *
+     * @param email Adres email użytkownika.
+     * @param resetCode Kod resetujący otrzymany w wiadomości email.
+     * @param newPassword Nowe hasło użytkownika.
+     * @return Result pusty w przypadku sukcesu lub błąd.
      */
     suspend fun resetPassword(email: String, resetCode: String, newPassword: String): Result<Unit> = try {
         platform.log("📤 Reset Password Request", this, LogSeverity.INFO)
@@ -146,7 +165,10 @@ class AuthApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
     }
 
     /**
-     * Refreshes access token using refresh token.
+     * Odświeża token dostępu przy użyciu tokenu odświeżania.
+     *
+     * @param refreshToken Token odświeżania.
+     * @return Result zawierający [RefreshTokenResponse] lub błąd.
      */
     suspend fun refreshToken(refreshToken: String): Result<RefreshTokenResponse> =
         safeCall<RefreshTokenEnvelope, RefreshTokenResponse> {

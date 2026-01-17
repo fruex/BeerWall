@@ -132,7 +132,7 @@ abstract class AppContainer {
      * Tworzy instancję [AppViewModel].
      */
     fun createBeerWallViewModel(): AppViewModel {
-        // Tworzenie feature ViewModeli
+        // Tworzenie feature ViewModeli (bez checkSession w init)
         val authViewModel = AuthViewModel(
             googleSignInUseCase = googleSignInUseCase,
             emailPasswordSignInUseCase = emailPasswordSignInUseCase,
@@ -173,7 +173,7 @@ abstract class AppContainer {
             profileViewModel = profileViewModel
         )
 
-        // Skonfiguruj callback dla automatycznego wylogowania w każdym API klientcie
+        // WAŻNE: Skonfiguruj callback PRZED jakimkolwiek użyciem API
         val onUnauthorizedCallback: suspend () -> Unit = {
             viewModel.handleSessionExpired()
         }
@@ -183,6 +183,9 @@ abstract class AppContainer {
         balanceApiClient.onUnauthorized = onUnauthorizedCallback
         historyApiClient.onUnauthorized = onUnauthorizedCallback
         supportApiClient.onUnauthorized = onUnauthorizedCallback
+
+        // Teraz możemy bezpiecznie sprawdzić sesję
+        authViewModel.checkSession()
 
         return viewModel
     }

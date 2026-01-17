@@ -3,6 +3,7 @@ package org.fruex.beerwall.data.repository
 import org.fruex.beerwall.LogSeverity
 import org.fruex.beerwall.auth.AuthTokens
 import org.fruex.beerwall.auth.TokenManager
+import org.fruex.beerwall.auth.ensureTimestamp
 import org.fruex.beerwall.auth.decodeTokenPayload
 import org.fruex.beerwall.data.remote.api.AuthApiClient
 import org.fruex.beerwall.domain.repository.AuthRepository
@@ -34,9 +35,9 @@ class AuthRepositoryImpl(
 
         return AuthTokens(
             token = token,
-            tokenExpires = tokenExpires,
+            tokenExpires = ensureTimestamp(tokenExpires),
             refreshToken = refreshToken,
-            refreshTokenExpires = refreshTokenExpires,
+            refreshTokenExpires = ensureTimestamp(refreshTokenExpires),
             firstName = firstName,
             lastName = lastName
         )
@@ -112,7 +113,7 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun isUserLoggedIn(): Boolean {
-        // Sprawdzamy tylko czy tokeny istnieją i nie wygasły
+        // Sprawdzamy czy tokeny istnieją
         if (tokenManager.getToken() == null || tokenManager.getRefreshToken() == null) {
             return false
         }
@@ -121,6 +122,11 @@ class AuthRepositoryImpl(
         if (tokenManager.isTokenExpired() && tokenManager.isRefreshTokenExpired()) {
             tokenManager.clearTokens()
             return false
+        }
+
+        // Jeśli access token wygasł ale refresh token jest ważny, odśwież token
+        if (tokenManager.isTokenExpired() && !tokenManager.isRefreshTokenExpired()) {
+            return refreshToken().isSuccess
         }
 
         return true

@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.GoldDark
+import org.fruex.beerwall.ui.theme.GoldPrimary
 import org.fruex.beerwall.ui.theme.InputBackground
 import org.fruex.beerwall.ui.theme.TextPrimary
 import org.fruex.beerwall.ui.theme.TextSecondary
@@ -100,7 +101,7 @@ fun BeerWallOutlinedButton(
             contentColor = TextPrimary,
         ),
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, TextSecondary.copy(alpha = 0.2f))
+        border = BorderStroke(2.dp, GoldPrimary)
     ) {
         if (icon != null) {
             Icon(

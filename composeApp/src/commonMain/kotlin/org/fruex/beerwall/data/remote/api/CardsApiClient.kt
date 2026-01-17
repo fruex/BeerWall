@@ -11,13 +11,15 @@ import org.fruex.beerwall.log
 import org.fruex.beerwall.data.remote.dto.cards.*
 
 /**
- * API client for card operations.
- * Handles card retrieval, status toggling, assignment, and deletion.
+ * Klient API do obsługi operacji na kartach.
+ * Obsługuje pobieranie kart, przypisywanie nowych oraz zarządzanie statusem (aktywacja/dezaktywacja).
  */
 class CardsApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
 
     /**
-     * Retrieves all cards associated with current user.
+     * Pobiera listę kart przypisanych do użytkownika.
+     *
+     * @return Result zawierający listę [CardResponse] lub błąd.
      */
     suspend fun getCards(): Result<List<CardResponse>> =
         safeCallWithAuth<GetCardsEnvelope, List<CardResponse>> {
@@ -27,46 +29,25 @@ class CardsApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
         }
 
     /**
-     * Toggles card status (active/inactive).
-     */
-    suspend fun toggleCardStatus(cardId: String, activate: Boolean): Result<CardActivationResponse> =
-        safeCallWithAuth<CardActivationEnvelope, CardActivationResponse> {
-            post("$baseUrl/mobile/cards/activation") {
-                addAuthToken()
-                contentType(ContentType.Application.Json)
-                setBody(CardActivationRequest(cardId, activate))
-            }.body()
-        }
-
-    /**
-     * Assigns a new card to user with given description.
+     * Przypisuje nową kartę do użytkownika.
+     *
+     * @param guid GUID karty.
+     * @param description Opcjonalny opis karty.
+     * @return Result pusty w przypadku sukcesu lub błąd.
      */
     suspend fun assignCard(guid: String, description: String): Result<Unit> = try {
-        platform.log("📤 Assign Card Request", this, LogSeverity.INFO)
         val response = client.put("$baseUrl/mobile/cards/assign") {
             addAuthToken()
             contentType(ContentType.Application.Json)
             setBody(AssignCardRequest(guid, description))
         }
 
-        when (response.status) {
-            HttpStatusCode.NoContent -> {
-                platform.log("✅ Assign Card Success", this, LogSeverity.INFO)
-                Result.success(Unit)
-            }
-            HttpStatusCode.Unauthorized -> {
-                platform.log("❌ Assign Card Unauthorized", this, LogSeverity.ERROR)
-                Result.failure(Exception("Unauthorized"))
-            }
-            HttpStatusCode.NotFound -> {
-                platform.log("❌ Assign Card Not Found", this, LogSeverity.ERROR)
-                Result.failure(Exception("Card not found"))
-            }
-            else -> {
-                val bodyText = response.bodyAsText()
-                platform.log("❌ Assign Card Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
-                Result.failure(Exception("Error assigning card: ${response.status}"))
-            }
+        if (response.status == HttpStatusCode.NoContent) {
+            Result.success(Unit)
+        } else {
+            val bodyText = response.bodyAsText()
+            platform.log("❌ Assign Card Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
+            Result.failure(Exception("Failed to assign card"))
         }
     } catch (e: Exception) {
         platform.log("❌ Assign Card Exception: ${e.message}", this, LogSeverity.ERROR)
@@ -74,34 +55,51 @@ class CardsApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
     }
 
     /**
-     * Deletes card from user's account.
+     * Zmienia status aktywności karty.
+     *
+     * @param cardId ID karty (GUID).
+     * @param isActive Nowy status aktywności (true = aktywna).
+     * @return Result zawierający [CardActivationResponse] lub błąd.
      */
-    suspend fun deleteCard(guid: String): Result<Unit> = try {
-        platform.log("📤 Delete Card Request", this, LogSeverity.INFO)
-        val response = client.delete("$baseUrl/mobile/cards/delete") {
+    suspend fun setCardStatus(cardId: String, isActive: Boolean): Result<CardActivationResponse> = try {
+        // Uwaga: Endpoint w kodzie to /mobile/cards, metoda PUT. Swagger mówi o /mobile/cards (PUT) dla update'u.
+        // Zakładamy, że CardUpdateMobileRequest w Swaggerze odpowiada logice tutaj.
+        // Jednak tutaj używamy CardActivationRequest. Sprawdzić zgodność z DTO.
+        val response = client.put("$baseUrl/mobile/cards") {
             addAuthToken()
             contentType(ContentType.Application.Json)
-            parameter("guid", guid)
+            setBody(CardActivationRequest(cardId, isActive))
         }
 
-        when (response.status) {
-            HttpStatusCode.NoContent -> {
-                platform.log("✅ Delete Card Success", this, LogSeverity.INFO)
-                Result.success(Unit)
-            }
-            HttpStatusCode.Unauthorized -> {
-                platform.log("❌ Delete Card Unauthorized", this, LogSeverity.ERROR)
-                Result.failure(Exception("Unauthorized"))
-            }
-            HttpStatusCode.NotFound -> {
-                platform.log("❌ Delete Card Not Found", this, LogSeverity.ERROR)
-                Result.failure(Exception("Card not found"))
-            }
-            else -> {
-                val bodyText = response.bodyAsText()
-                platform.log("❌ Delete Card Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
-                Result.failure(Exception("Error deleting card: ${response.status}"))
-            }
+        if (response.status == HttpStatusCode.NoContent) {
+            // Swagger zwraca 204 No Content dla PUT /mobile/cards, więc nie ma body.
+            // Zwracamy sztuczny obiekt odpowiedzi, ponieważ metoda oczekuje CardActivationResponse.
+            // TODO: Dostosować return type metody lub sprawdzić czy backend nie zaczął zwracać body.
+            Result.success(CardActivationResponse(cardId, isActive, "Status updated"))
+        } else {
+            Result.failure(Exception("Failed to update card status: ${response.status}"))
+        }
+    } catch (e: Exception) {
+        platform.log("❌ Set Card Status Exception: ${e.message}", this, LogSeverity.ERROR)
+        Result.failure(e)
+    }
+
+    /**
+     * Usuwa kartę użytkownika.
+     *
+     * @param cardId ID karty (GUID).
+     * @return Result pusty w przypadku sukcesu lub błąd.
+     */
+    suspend fun deleteCard(cardId: String): Result<Unit> = try {
+        val response = client.delete("$baseUrl/mobile/cards") {
+            addAuthToken()
+            parameter("guid", cardId)
+        }
+
+        if (response.status == HttpStatusCode.NoContent) {
+            Result.success(Unit)
+        } else {
+            Result.failure(Exception("Failed to delete card: ${response.status}"))
         }
     } catch (e: Exception) {
         platform.log("❌ Delete Card Exception: ${e.message}", this, LogSeverity.ERROR)

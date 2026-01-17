@@ -13,13 +13,15 @@ import org.fruex.beerwall.data.remote.dto.operators.GetPaymentOperatorsEnvelope
 import org.fruex.beerwall.data.remote.dto.operators.PaymentOperatorResponse
 
 /**
- * API client for balance and payment operations.
- * Handles balance retrieval, top-ups, and payment method queries.
+ * Klient API do obsługi operacji finansowych (saldo, płatności).
+ * Obsługuje pobieranie salda, doładowania konta oraz pobieranie metod płatności.
  */
 class BalanceApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
 
     /**
-     * Retrieves all balances for current user.
+     * Pobiera salda użytkownika we wszystkich lokalach.
+     *
+     * @return Result zawierający listę [BalanceResponse] lub błąd.
      */
     suspend fun getBalance(): Result<List<BalanceResponse>> =
         safeCallWithAuth<GetBalanceEnvelope, List<BalanceResponse>> {
@@ -29,7 +31,12 @@ class BalanceApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager)
         }
 
     /**
-     * Tops up balance for specified premises using payment method.
+     * Doładowuje konto w wybranym lokalu przy użyciu określonej metody płatności.
+     *
+     * @param premisesId Identyfikator lokalu.
+     * @param paymentMethodId Identyfikator metody płatności.
+     * @param balance Kwota doładowania.
+     * @return Result pusty w przypadku sukcesu lub błąd.
      */
     suspend fun topUp(
         premisesId: Int,
@@ -64,11 +71,13 @@ class BalanceApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager)
     }
 
     /**
-     * Retrieves available payment operators/methods.
+     * Pobiera dostępne metody/operatorów płatności.
+     *
+     * @return Result zawierający listę [PaymentOperatorResponse] lub błąd.
      */
     suspend fun getPaymentOperators(): Result<List<PaymentOperatorResponse>> =
         safeCallWithAuth<GetPaymentOperatorsEnvelope, List<PaymentOperatorResponse>> {
-            get("$baseUrl/mobile/users/paymentOperators") {
+            get("$baseUrl/mobile/payments/operators") {
                 addAuthToken()
             }.body()
         }

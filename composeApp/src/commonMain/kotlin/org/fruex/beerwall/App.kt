@@ -43,17 +43,6 @@ fun App(
         }
     }
 
-    LaunchedEffect(Unit) {
-        // Sprawdź czy użytkownik ma zapisany token .NET
-        viewModel.checkSession()
-    }
-
-    LaunchedEffect(uiState.isLoggedIn) {
-        if (uiState.isLoggedIn) {
-            viewModel.refreshAllData()
-        }
-    }
-
     BeerWallTheme {
         if (uiState.isCheckingSession) {
             Box(

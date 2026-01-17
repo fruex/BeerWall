@@ -61,6 +61,8 @@ private val Context.tokenDataStore: DataStore<TokenSession> by dataStore(
     serializer = TokenSerializer
 )
 
+actual fun currentTimeSeconds(): Long = System.currentTimeMillis() / 1000
+
 actual class TokenManagerImpl(private val context: Context) : TokenManager {
     private val platform = getPlatform()
     
@@ -97,24 +99,24 @@ actual class TokenManagerImpl(private val context: Context) : TokenManager {
     actual override suspend fun isTokenExpired(): Boolean = withContext(Dispatchers.IO) {
         try {
             val session = context.tokenDataStore.data.first()
-            val tokens = session.tokens ?: return@withContext true
+            val tokens = session.tokens ?: return@withContext false // Missing token is not "expired"
             val currentTime = System.currentTimeMillis() / 1000
             currentTime >= tokens.tokenExpires
         } catch (e: Exception) {
             platform.log("Error checking token expiration: ${e.message}", this, LogSeverity.ERROR)
-            true
+            false
         }
     }
 
     actual override suspend fun isRefreshTokenExpired(): Boolean = withContext(Dispatchers.IO) {
         try {
             val session = context.tokenDataStore.data.first()
-            val tokens = session.tokens ?: return@withContext true
+            val tokens = session.tokens ?: return@withContext false // Missing token is not "expired"
             val currentTime = System.currentTimeMillis() / 1000
             currentTime >= tokens.refreshTokenExpires
         } catch (e: Exception) {
             platform.log("Error checking refresh token expiration: ${e.message}", this, LogSeverity.ERROR)
-            true
+            false
         }
     }
 

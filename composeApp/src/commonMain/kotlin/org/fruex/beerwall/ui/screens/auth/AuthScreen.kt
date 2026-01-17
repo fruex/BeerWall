@@ -75,7 +75,6 @@ fun AuthScreen(
         Spacer(modifier = Modifier.height(48.dp))
 
         AuthHeader(
-            title = "Igi Beer System",
             subtitle = if (isLogin) "Zaloguj do konta" else "Utwórz konto"
         )
 
