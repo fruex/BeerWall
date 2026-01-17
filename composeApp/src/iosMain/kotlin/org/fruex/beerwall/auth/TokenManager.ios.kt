@@ -3,6 +3,8 @@ package org.fruex.beerwall.auth
 import platform.Foundation.NSDate
 import platform.Foundation.timeIntervalSince1970
 
+actual fun currentTimeSeconds(): Long = NSDate().timeIntervalSince1970.toLong()
+
 actual class TokenManagerImpl : TokenManager {
     private var tokens: AuthTokens? = null
     
@@ -22,13 +24,13 @@ actual class TokenManagerImpl : TokenManager {
     }
 
     actual override suspend fun isTokenExpired(): Boolean {
-        val currentTokens = tokens ?: return true
+        val currentTokens = tokens ?: return false
         val currentTime = NSDate().timeIntervalSince1970.toLong()
         return currentTime >= currentTokens.tokenExpires
     }
 
     actual override suspend fun isRefreshTokenExpired(): Boolean {
-        val currentTokens = tokens ?: return true
+        val currentTokens = tokens ?: return false
         val currentTime = NSDate().timeIntervalSince1970.toLong()
         return currentTime >= currentTokens.refreshTokenExpires
     }

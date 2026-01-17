@@ -1,8 +1,11 @@
 package org.fruex.beerwall.auth
 
 import kotlinx.serialization.Serializable
+import kotlinx.datetime.Clock
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
+import org.fruex.beerwall.getPlatform
+import org.fruex.beerwall.LogSeverity
 
 /**
  * Model tokenów autoryzacyjnych aplikacji.
@@ -55,6 +58,34 @@ expect class TokenManagerImpl : TokenManager {
     override suspend fun getRefreshTokenExpires(): Long?
     override suspend fun clearTokens()
     override suspend fun getUserName(): String?
+}
+
+/**
+ * Zwraca obecny czas w sekundach od początku epoki Unix.
+ */
+expect fun currentTimeSeconds(): Long
+
+/**
+ * Funkcja pomocnicza do upewnienia się, że czas wygaśnięcia jest absolutnym znacznikiem czasu.
+ * Jeśli wartość jest mniejsza niż 1 miliard, traktujemy ją jako interwał w sekundach i dodajemy obecny czas.
+ */
+fun ensureTimestamp(value: Long): Long {
+    val result = if (value < 1000000000L) {
+        currentTimeSeconds() + value
+    } else {
+        value
+    }
+    
+    // Loguj tylko jeśli wartość jest podejrzanie mała (np. 0) lub interwał
+    if (value < 1000000000L) {
+        getPlatform().log(
+            "ensureTimestamp: input=$value, now=${currentTimeSeconds()}, result=$result",
+            "TokenManager",
+            LogSeverity.DEBUG
+        )
+    }
+    
+    return result
 }
 
 /**
