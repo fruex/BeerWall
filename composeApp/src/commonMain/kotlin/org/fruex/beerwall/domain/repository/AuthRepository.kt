@@ -1,12 +1,25 @@
 package org.fruex.beerwall.domain.repository
 
+import kotlinx.coroutines.flow.StateFlow
 import org.fruex.beerwall.auth.AuthTokens
+import org.fruex.beerwall.ui.models.UserProfile
 // TODO: `AuthTokens` pochodzi z pakietu `auth`, który może nie być częścią warstwy domeny. Należy rozważyć przeniesienie modelu tokenów do `domain/model`.
 
 /**
  * Interfejs repozytorium do obsługi uwierzytelniania i zarządzania sesją użytkownika.
  */
 interface AuthRepository {
+    /**
+     * Obserwowalny stan zalogowania użytkownika.
+     * Ułatwia synchronizację stanu między wieloma instancjami ViewModeli.
+     */
+    val isLoggedIn: StateFlow<Boolean>
+
+    /**
+     * Obserwowalny profil użytkownika.
+     */
+    val userProfile: StateFlow<UserProfile>
+
     /**
      * Loguje użytkownika przy użyciu tokena Google.
      *

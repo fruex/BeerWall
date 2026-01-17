@@ -10,15 +10,18 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import org.fruex.beerwall.auth.rememberGoogleAuthProvider
-import org.fruex.beerwall.di.createAppContainer
-import org.fruex.beerwall.presentation.AppViewModel
+import org.fruex.beerwall.auth.SessionManager
+import org.fruex.beerwall.presentation.viewmodel.AuthViewModel
+import org.fruex.beerwall.presentation.viewmodel.BalanceViewModel
+import org.fruex.beerwall.presentation.viewmodel.CardsViewModel
+import org.fruex.beerwall.presentation.viewmodel.HistoryViewModel
 import org.fruex.beerwall.ui.navigation.AppNavHost
 import org.fruex.beerwall.ui.navigation.NavigationDestination
 import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.GoldPrimary
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 @Preview
@@ -27,21 +30,42 @@ fun App(
     isNfcEnabled: Boolean = true,
     onStartNfcScanningClick: () -> Unit = {}
 ) {
-    val appContainer = createAppContainer()
-    val viewModel: AppViewModel = viewModel {
-        appContainer.createBeerWallViewModel()
-    }
-    val uiState by viewModel.uiState.collectAsState()
+    // In Koin 4.0, we rely on KoinContext usually set up at the app entry point.
+    // If not, we could wrap this in KoinContext { ... }
 
-    val googleAuthProvider = rememberGoogleAuthProvider()
+    val authViewModel = koinViewModel<AuthViewModel>()
+    val sessionManager = koinInject<SessionManager>() // Global session manager
+
+    val uiState by authViewModel.uiState.collectAsState()
+    val isSessionExpired by sessionManager.isSessionExpired.collectAsState()
+
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // Initial session check
+    LaunchedEffect(Unit) {
+        authViewModel.checkSession()
+    }
+
+    // Handle session expiration
+    val googleAuthProvider = org.fruex.beerwall.auth.rememberGoogleAuthProvider()
+
+    LaunchedEffect(isSessionExpired) {
+        if (isSessionExpired) {
+            authViewModel.handleLogout(googleAuthProvider)
+            sessionManager.resetSession()
+            snackbarHostState.showSnackbar("Sesja wygasła. Zaloguj się ponownie.")
+        }
+    }
 
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let { message ->
             snackbarHostState.showSnackbar(message)
-            viewModel.onClearError()
+            authViewModel.onClearError()
         }
     }
+
+    // Global error handling from other viewmodels can be aggregated here via a MessageBus or similar,
+    // or handled locally in screens. For now, we focus on Auth errors.
 
     BeerWallTheme {
         if (uiState.isCheckingSession) {
@@ -61,34 +85,9 @@ fun App(
                         if (uiState.isLoggedIn)
                             NavigationDestination.Main.route
                         else NavigationDestination.Login.route,
-                    balances = uiState.balances,
-                    cards = uiState.cards,
-                    transactionGroups = uiState.transactionGroups,
-                    userProfile = uiState.userProfile,
-                    paymentMethods = uiState.paymentMethods,
-                    isRefreshing = uiState.isRefreshing,
                     scannedCardId = scannedCardId,
                     isNfcEnabled = isNfcEnabled,
-                    onStartNfcScanningClick = onStartNfcScanningClick,
-                    onRefreshHistoryClick = viewModel::refreshHistory,
-                    onRefreshBalanceClick = viewModel::refreshBalance,
-                    onRegisterWithEmail = viewModel::handleRegister,
-                    onLoginWithEmail = viewModel::handleEmailPasswordSignIn,
-                    onLoginWithGoogleClick = {
-                        viewModel.handleGoogleSignIn(googleAuthProvider)
-                    },
-                    onAddFundsClick = viewModel::onAddFunds,
-                    onToggleCardStatusClick = viewModel::onToggleCardStatus,
-                    onDeleteCardClick = viewModel::onDeleteCard,
-                    onSaveCardClick = viewModel::onSaveCard,
-                    onForgotPassword = viewModel::handleForgotPassword,
-                    onResetPassword = { email, resetCode, newPassword ->
-                        viewModel.handleResetPassword(email, resetCode, newPassword)
-                    },
-                    onSendMessage = viewModel::onSendMessage,
-                    onLogoutClick = {
-                        viewModel.handleLogout(googleAuthProvider)
-                    }
+                    onStartNfcScanningClick = onStartNfcScanningClick
                 )
             }
         }

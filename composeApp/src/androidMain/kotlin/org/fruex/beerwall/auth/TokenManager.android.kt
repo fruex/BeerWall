@@ -14,6 +14,7 @@ import org.fruex.beerwall.getPlatform
 import org.fruex.beerwall.log
 import java.io.InputStream
 import java.io.OutputStream
+import org.koin.java.KoinJavaComponent.getKoin
 
 @kotlinx.serialization.Serializable
 private data class TokenSession(val tokens: AuthTokens? = null)
@@ -63,7 +64,8 @@ private val Context.tokenDataStore: DataStore<TokenSession> by dataStore(
 
 actual fun currentTimeSeconds(): Long = System.currentTimeMillis() / 1000
 
-actual class TokenManagerImpl(private val context: Context) : TokenManager {
+actual class TokenManagerImpl actual constructor() : TokenManager {
+    private val context: Context = getKoin().get()
     private val platform = getPlatform()
     
     actual override suspend fun saveTokens(tokens: AuthTokens) {

@@ -36,22 +36,37 @@ class AuthViewModel(
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
+    init {
+        // Obserwuj zmiany stanu z repozytorium
+        viewModelScope.launch {
+            authRepository.isLoggedIn.collect { isLoggedIn ->
+                _uiState.update {
+                    it.copy(
+                        isLoggedIn = isLoggedIn,
+                        isCheckingSession = false
+                    )
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            authRepository.userProfile.collect { profile ->
+                _uiState.update {
+                    it.copy(userProfile = profile)
+                }
+            }
+        }
+    }
+
     /**
      * Sprawdza sesję przy starcie aplikacji.
      * UWAGA: Nie wywoływać w init{}, tylko po skonfigurowaniu callbacków w DI.
      */
     fun checkSession() {
+        // Pozostawione dla kompatybilności i ewentualnego wymuszenia sprawdzenia
         viewModelScope.launch {
             try {
                 checkSessionUseCase()
-                    .onSuccess { isLoggedIn ->
-                        _uiState.update {
-                            it.copy(
-                                isLoggedIn = isLoggedIn,
-                                isCheckingSession = false
-                            )
-                        }
-                    }
                     .onFailure {
                         _uiState.update { it.copy(isCheckingSession = false) }
                     }
@@ -191,27 +206,7 @@ class AuthViewModel(
     }
 
     private fun onLoginSuccess(tokens: AuthTokens) {
-        updateUserProfile(tokens)
-        _uiState.update { it.copy(isLoggedIn = true, isCheckingSession = false) }
-    }
-
-    private fun updateUserProfile(tokens: AuthTokens) {
-        val displayName = if (tokens.firstName != null || tokens.lastName != null)
-            "${tokens.firstName ?: ""} ${tokens.lastName ?: ""}".trim()
-        else null
-
-        _uiState.update { currentState ->
-            currentState.copy(
-                userProfile = currentState.userProfile.copy(
-                    name = displayName ?: currentState.userProfile.name,
-                    initials = getUserInitials(displayName, currentState.userProfile.initials)
-                )
-            )
-        }
-    }
-
-    private fun getUserInitials(displayName: String?, fallback: String): String {
-        return displayName?.split(" ")?.mapNotNull { it.firstOrNull() }?.joinToString("") ?: fallback
+        // State is updated via repository observation
     }
 }
 

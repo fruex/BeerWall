@@ -1,5 +1,11 @@
 package org.fruex.beerwall.data.repository
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import org.fruex.beerwall.LogSeverity
 import org.fruex.beerwall.auth.AuthTokens
 import org.fruex.beerwall.auth.TokenManager
@@ -9,6 +15,7 @@ import org.fruex.beerwall.data.remote.api.AuthApiClient
 import org.fruex.beerwall.domain.repository.AuthRepository
 import org.fruex.beerwall.getPlatform
 import org.fruex.beerwall.log
+import org.fruex.beerwall.ui.models.UserProfile
 
 /**
  * Implementacja repozytorium autoryzacji.
@@ -21,6 +28,40 @@ class AuthRepositoryImpl(
     private val tokenManager: TokenManager
 ) : AuthRepository {
     private val platform = getPlatform()
+    private val scope = CoroutineScope(Dispatchers.Main)
+
+    private val _isLoggedIn = MutableStateFlow(false)
+    override val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
+
+    private val _userProfile = MutableStateFlow(UserProfile("", "", "?"))
+    override val userProfile: StateFlow<UserProfile> = _userProfile.asStateFlow()
+
+    init {
+        // Initial check
+        scope.launch {
+            val loggedIn = isUserLoggedIn()
+            _isLoggedIn.value = loggedIn
+            if (loggedIn) {
+                updateProfileFromToken()
+            }
+        }
+    }
+
+    private suspend fun updateProfileFromToken() {
+        val name = tokenManager.getUserName()
+        if (name != null) {
+            val initials = name.split(" ")
+                .mapNotNull { it.firstOrNull() }
+                .take(2)
+                .joinToString("")
+
+            _userProfile.value = UserProfile(
+                name = name,
+                email = "", // Token usually doesn't have email in this simplified flow
+                initials = initials
+            )
+        }
+    }
 
     private fun createAuthTokens(
         token: String,
@@ -56,6 +97,11 @@ class AuthRepositoryImpl(
             
             tokenManager.saveTokens(tokens)
             platform.log("✅ Tokens saved", this, LogSeverity.DEBUG)
+
+            // Update state
+            _isLoggedIn.value = true
+            updateProfileFromToken()
+
             tokens
         }
     }
@@ -73,6 +119,11 @@ class AuthRepositoryImpl(
             
             tokenManager.saveTokens(tokens)
             platform.log("✅ Tokens saved", this, LogSeverity.DEBUG)
+
+            // Update state
+            _isLoggedIn.value = true
+            updateProfileFromToken()
+
             tokens
         }
     }
@@ -134,5 +185,7 @@ class AuthRepositoryImpl(
 
     override suspend fun logout() {
         tokenManager.clearTokens()
+        _isLoggedIn.value = false
+        _userProfile.value = UserProfile("", "", "?")
     }
 }

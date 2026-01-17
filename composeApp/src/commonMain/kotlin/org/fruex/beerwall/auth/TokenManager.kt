@@ -49,6 +49,7 @@ interface TokenManager {
  * Oczekiwana implementacja platformowa menedżera tokenów.
  */
 expect class TokenManagerImpl : TokenManager {
+    constructor()
     override suspend fun saveTokens(tokens: AuthTokens)
     override suspend fun getToken(): String?
     override suspend fun getRefreshToken(): String?
