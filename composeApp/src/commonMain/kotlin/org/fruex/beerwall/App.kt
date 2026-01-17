@@ -25,7 +25,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun App(
     scannedCardId: String? = null,
     isNfcEnabled: Boolean = true,
-    onStartNfcScanning: () -> Unit = {}
+    onStartNfcScanningClick: () -> Unit = {}
 ) {
     val appContainer = createAppContainer()
     val viewModel: AppViewModel = viewModel {
@@ -80,24 +80,24 @@ fun App(
                     isRefreshing = uiState.isRefreshing,
                     scannedCardId = scannedCardId,
                     isNfcEnabled = isNfcEnabled,
-                    onStartNfcScanning = onStartNfcScanning,
-                    onRefreshHistory = viewModel::refreshHistory,
-                    onRefreshBalance = viewModel::refreshBalance,
+                    onStartNfcScanningClick = onStartNfcScanningClick,
+                    onRefreshHistoryClick = viewModel::refreshHistory,
+                    onRefreshBalanceClick = viewModel::refreshBalance,
                     onRegisterWithEmail = viewModel::handleRegister,
                     onLoginWithEmail = viewModel::handleEmailPasswordSignIn,
-                    onLoginWithGoogle = {
+                    onLoginWithGoogleClick = {
                         viewModel.handleGoogleSignIn(googleAuthProvider)
                     },
-                    onAddFunds = viewModel::onAddFunds,
-                    onToggleCardStatus = viewModel::onToggleCardStatus,
-                    onDeleteCard = viewModel::onDeleteCard,
-                    onSaveCard = viewModel::onSaveCard,
+                    onAddFundsClick = viewModel::onAddFunds,
+                    onToggleCardStatusClick = viewModel::onToggleCardStatus,
+                    onDeleteCardClick = viewModel::onDeleteCard,
+                    onSaveCardClick = viewModel::onSaveCard,
                     onForgotPassword = viewModel::handleForgotPassword,
                     onResetPassword = { email, resetCode, newPassword ->
                         viewModel.handleResetPassword(email, resetCode, newPassword)
                     },
                     onSendMessage = viewModel::onSendMessage,
-                    onLogout = {
+                    onLogoutClick = {
                         viewModel.handleLogout(googleAuthProvider)
                     }
                 )
