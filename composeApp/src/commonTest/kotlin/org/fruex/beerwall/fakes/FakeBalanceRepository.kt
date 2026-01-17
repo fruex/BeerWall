@@ -13,7 +13,7 @@ class FakeBalanceRepository : BalanceRepository {
             premisesId = 1,
             premisesName = "Pub Testowy",
             balance = 50.0,
-            loyalityPoints = 100
+            loyaltyPoints = 100
         )
     )
 

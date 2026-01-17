@@ -40,7 +40,7 @@ fun AddFundsScreen(
         mutableStateOf(availablePaymentMethods.firstOrNull())
     }
 
-    val predefinedAmounts = listOf("10", "20", "50", "100", "Inna")
+    val predefinedAmounts = listOf("10", "20", "50", "100", "200", "Inna")
     val finalAmount = if (selectedAmount == "Inna") customAmount else selectedAmount
     val isBlikCodeValid = blikCode.length == 6 && blikCode.all { it.isDigit() }
 
@@ -382,13 +382,6 @@ fun AddFundsScreenPreview() {
                     name = "BLIK",
                     description = "Szybka płatność kodem",
                     image = "https://example.com/blik.png",
-                    status = "ACTIVE"
-                ),
-                PaymentMethod(
-                    paymentMethodId = 2,
-                    name = "Karta płatnicza",
-                    description = "Visa / Mastercard",
-                    image = "https://example.com/card.png",
                     status = "ACTIVE"
                 )
             ),

@@ -8,7 +8,7 @@ fun Balance.toUi(): VenueBalance {
         premisesId = premisesId,
         premisesName = premisesName,
         balance = balance,
-        loyalityPoints = loyalityPoints
+        loyaltyPoints = loyaltyPoints
     )
 }
 

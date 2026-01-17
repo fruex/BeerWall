@@ -8,7 +8,7 @@ data class VenueBalance(
     val premisesId: Int,
     val premisesName: String,
     val balance: Double,
-    val loyalityPoints: Int
+    val loyaltyPoints: Int
 )
 
 // Card models

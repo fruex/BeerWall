@@ -6,11 +6,11 @@ package org.fruex.beerwall.domain.model
  * @property premisesId Unikalny identyfikator lokalu.
  * @property premisesName Nazwa lokalu.
  * @property balance Aktualne saldo środków dostępnych w lokalu.
- * @property loyalityPoints Ilość zgromadzonych punktów lojalnościowych.
+ * @property loyaltyPoints Ilość zgromadzonych punktów lojalnościowych.
  */
 data class Balance(
     val premisesId: Int,
     val premisesName: String,
     val balance: Double,
-    val loyalityPoints: Int
+    val loyaltyPoints: Int
 )

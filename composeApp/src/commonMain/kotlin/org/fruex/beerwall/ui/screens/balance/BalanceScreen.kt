@@ -78,7 +78,7 @@ fun BalanceScreen(
                 BalanceCard(
                     venueName = venueBalance.premisesName,
                     balance = venueBalance.balance,
-                    loyaltyPoints = venueBalance.loyalityPoints,
+                    loyaltyPoints = venueBalance.loyaltyPoints,
                     onAddFundsClick = { onAddFundsClick(venueBalance.premisesId) }
                 )
             }
@@ -210,13 +210,13 @@ fun BalanceScreenPreview() {
                     premisesId = 1,
                     premisesName = "Pub Centrum",
                     balance = 45.50,
-                    loyalityPoints = 120
+                    loyaltyPoints = 120
                 ),
                 VenueBalance(
                     premisesId = 2,
                     premisesName = "Bar przy Rynku",
                     balance = 12.00,
-                    loyalityPoints = 50
+                    loyaltyPoints = 50
                 )
             ),
             onAddFundsClick = {},
