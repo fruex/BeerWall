@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
             App(
                 scannedCardId = cardId,
                 isNfcEnabled = isNfcEnabled,
-                onStartNfcScanning = { 
+                onStartNfcScanningClick = { 
                     cardId = null
                     checkNfcStatus()
                 }

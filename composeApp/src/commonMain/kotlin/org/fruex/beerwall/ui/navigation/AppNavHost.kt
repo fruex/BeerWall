@@ -124,15 +124,15 @@ fun AppNavHost(
                 onAddLocationClick = {
                     navController.navigate(NavigationDestination.AddFunds.route)
                 },
-                onRefreshBalance = onRefreshBalanceClick,
+                onRefreshBalanceClick = onRefreshBalanceClick,
                 cards = cards,
                 onAddCardClick = {
                     navController.navigate(NavigationDestination.AddCard.route)
                 },
-                onToggleCardStatus = onToggleCardStatusClick,
-                onDeleteCard = onDeleteCardClick,
+                onToggleCardStatusClick = onToggleCardStatusClick,
+                onDeleteCardClick = onDeleteCardClick,
                 transactionGroups = transactionGroups,
-                onRefreshHistory = onRefreshHistoryClick,
+                onRefreshHistoryClick = onRefreshHistoryClick,
                 isRefreshing = isRefreshing,
                 userProfile = userProfile,
                 onLogoutClick = {
