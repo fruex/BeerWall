@@ -7,10 +7,10 @@ import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Wallet
-import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Wallet
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -37,7 +37,7 @@ sealed class BottomNavItem(
         route = "balance",
         label = "Saldo",
         selectedIcon = Icons.Filled.Wallet,
-        unselectedIcon = Icons.Outlined.AccountBalanceWallet
+        unselectedIcon = Icons.Outlined.Wallet
     )
 
     data object Cards : BottomNavItem(
