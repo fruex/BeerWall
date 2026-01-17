@@ -9,7 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -69,11 +69,27 @@ fun CardsScreen(
             items = cards,
             key = { it.id }
         ) { card ->
+            var showCardDetails by remember { mutableStateOf(false) }
+
             CardItemView(
                 card = card,
-                onToggleStatus = { onToggleCardStatus(card.id) },
-                onDelete = { onDeleteCard(card.id) }
+                onClick = { showCardDetails = true }
             )
+
+            if (showCardDetails) {
+                CardDetailsDialog(
+                    card = card,
+                    onDismiss = { showCardDetails = false },
+                    onToggleStatus = {
+                        onToggleCardStatus(card.id)
+                        showCardDetails = false
+                    },
+                    onDelete = {
+                        onDeleteCard(card.id)
+                        showCardDetails = false
+                    }
+                )
+            }
         }
 
         item(key = "add_card_button") {
@@ -93,8 +109,7 @@ fun CardsScreen(
 @Composable
 fun CardItemView(
     card: UserCard,
-    onToggleStatus: () -> Unit,
-    onDelete: () -> Unit,
+    onClick: () -> Unit,
 ) {
     // Determine card style based on type
     val cardBackground = if (card.isPhysical) {
@@ -122,7 +137,8 @@ fun CardItemView(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = cardBackground
-        )
+        ),
+        onClick = onClick
     ) {
         Row(
             modifier = Modifier
@@ -197,45 +213,199 @@ fun CardItemView(
                 }
             }
 
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Icon(
+                imageVector = Icons.Default.ChevronRight,
+                contentDescription = "Zobacz szczegóły",
+                tint = TextSecondary,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun CardDetailsDialog(
+    card: UserCard,
+    onDismiss: () -> Unit,
+    onToggleStatus: () -> Unit,
+    onDelete: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                imageVector = Icons.Default.CreditCard,
+                contentDescription = null,
+                tint = GoldPrimary,
+                modifier = Modifier.size(32.dp)
+            )
+        },
+        title = {
+            Text(
+                text = card.name,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold
+            )
+        },
+        text = {
             Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.End
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                if (card.isPhysical) {
-                    IconButton(
-                        onClick = onDelete,
-                        modifier = Modifier.size(40.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Usuń kartę",
-                            tint = TextSecondary
-                        )
-                    }
-                }
-                TextButton(
-                    onClick = onToggleStatus,
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                // Card ID
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Text(
+                        text = "ID karty",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                    Text(
+                        text = card.id,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                // Card Type
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Typ",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                    Text(
+                        text = if (card.isPhysical) "Karta fizyczna" else "Karta wirtualna",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                // Card Status
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Status",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = if (card.isActive) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                            imageVector = if (card.isActive) Icons.Default.CheckCircle else Icons.Default.Cancel,
                             contentDescription = null,
-                            tint = GoldPrimary,
-                            modifier = Modifier.size(18.dp)
+                            tint = if (card.isActive) Success else TextSecondary,
+                            modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            text = if (card.isActive) "Wyłącz" else "Włącz",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = GoldPrimary
+                            text = if (card.isActive) "Aktywna" else "Nieaktywna",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium,
+                            color = if (card.isActive) Success else TextSecondary
                         )
                     }
                 }
+
+                HorizontalDivider(color = TextSecondary.copy(alpha = 0.2f))
+
+                // Actions
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // Toggle Status Button
+                    BeerWallButton(
+                        text = if (card.isActive) "Wyłącz kartę" else "Włącz kartę",
+                        onClick = onToggleStatus,
+                        icon = if (card.isActive) Icons.Default.VisibilityOff else Icons.Default.Visibility
+                    )
+
+                    // Delete Button (only for physical cards)
+                    if (card.isPhysical) {
+                        OutlinedButton(
+                            onClick = onDelete,
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = TextSecondary
+                            ),
+                            border = androidx.compose.foundation.BorderStroke(
+                                1.dp,
+                                TextSecondary.copy(alpha = 0.3f)
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Usuń kartę",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+                }
             }
-        }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Zamknij", color = GoldPrimary)
+            }
+        },
+        containerColor = CardBackground,
+        iconContentColor = GoldPrimary,
+        titleContentColor = TextPrimary,
+        textContentColor = TextPrimary
+    )
+}
+
+@Preview
+@Composable
+fun CardDetailsDialogPhysicalPreview() {
+    BeerWallTheme {
+        CardDetailsDialog(
+            card = UserCard(
+                id = "1234567890",
+                name = "Moja karta fizyczna",
+                isActive = true,
+                isPhysical = true
+            ),
+            onDismiss = {},
+            onToggleStatus = {},
+            onDelete = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+fun CardDetailsDialogVirtualPreview() {
+    BeerWallTheme {
+        CardDetailsDialog(
+            card = UserCard(
+                id = "0987654321",
+                name = "Karta wirtualna",
+                isActive = false,
+                isPhysical = false
+            ),
+            onDismiss = {},
+            onToggleStatus = {},
+            onDelete = {}
+        )
     }
 }
 
@@ -244,7 +414,7 @@ fun NFCInfoCard() {
     BeerWallInfoCard(
         icon = Icons.Default.Nfc,
         title = "Karty NFC",
-        description = "Twoje fizyczne karty są połączone z Twoim kontem. Po prostu dotknij dowolnej karty przy kranie Beer Wall, aby nalać i zapłacić.",
+        description = "Twoje fizyczne karty są połączone z Twoim kontem. Po prostu użyj dowolnej fizycznej karty przy kranie Beer Wall, aby nalać i zapłacić.",
         iconBackground = GoldPrimary.copy(alpha = 0.2f)
     )
 }
