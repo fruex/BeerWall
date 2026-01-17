@@ -10,9 +10,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class BeerWallViewModelTest : BaseTest() {
+class AppViewModelTest : BaseTest() {
 
-    private lateinit var viewModel: BeerWallViewModel
+    private lateinit var viewModel: AppViewModel
     private lateinit var authRepository: FakeAuthRepository
     private lateinit var balanceRepository: FakeBalanceRepository
     private lateinit var cardRepository: FakeCardRepository
@@ -27,7 +27,7 @@ class BeerWallViewModelTest : BaseTest() {
         transactionRepository = FakeTransactionRepository()
         supportRepository = FakeSupportRepository()
 
-        viewModel = BeerWallViewModel(
+        viewModel = AppViewModel(
             getBalancesUseCase = GetBalancesUseCase(balanceRepository),
             topUpBalanceUseCase = TopUpBalanceUseCase(balanceRepository),
             getTransactionsUseCase = GetTransactionsUseCase(transactionRepository),
