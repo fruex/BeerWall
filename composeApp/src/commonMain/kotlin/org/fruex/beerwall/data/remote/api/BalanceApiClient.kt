@@ -68,7 +68,7 @@ class BalanceApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager)
      */
     suspend fun getPaymentOperators(): Result<List<PaymentOperatorResponse>> =
         safeCallWithAuth<GetPaymentOperatorsEnvelope, List<PaymentOperatorResponse>> {
-            get("$baseUrl/mobile/users/paymentOperators") {
+            get("$baseUrl/mobile/users/payment/operators") {
                 addAuthToken()
             }.body()
         }

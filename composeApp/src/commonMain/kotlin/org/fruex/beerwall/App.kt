@@ -48,12 +48,6 @@ fun App(
         viewModel.checkSession()
     }
 
-    LaunchedEffect(uiState.isLoggedIn) {
-        if (uiState.isLoggedIn) {
-            viewModel.refreshAllData()
-        }
-    }
-
     BeerWallTheme {
         if (uiState.isCheckingSession) {
             Box(

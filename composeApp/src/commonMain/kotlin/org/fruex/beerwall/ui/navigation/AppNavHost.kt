@@ -94,7 +94,10 @@ fun AppNavHost(
                 },
                 onGoogleSignInClick = onLoginWithGoogleClick,
                 onToggleModeClick = {
-                    navController.navigate(NavigationDestination.Login.route)
+                    navController.navigate(NavigationDestination.Login.route) {
+                        popUpTo(NavigationDestination.Registration.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 },
                 isLoading = isRefreshing
             )
@@ -108,7 +111,10 @@ fun AppNavHost(
                 },
                 onGoogleSignInClick = onLoginWithGoogleClick,
                 onToggleModeClick = {
-                    navController.navigate(NavigationDestination.Registration.route)
+                    navController.navigate(NavigationDestination.Registration.route) {
+                        popUpTo(NavigationDestination.Login.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 },
                 onForgotPasswordClick = { email ->
                     onForgotPassword(email)
@@ -122,15 +128,21 @@ fun AppNavHost(
             MainScreen(
                 balances = balances,
                 onAddFundsClick = { premisesId ->
-                    navController.navigate("${NavigationDestination.AddFunds.route}/$premisesId")
+                    navController.navigate("${NavigationDestination.AddFunds.route}/$premisesId") {
+                        launchSingleTop = true
+                    }
                 },
                 onAddLocationClick = {
-                    navController.navigate(NavigationDestination.AddFunds.route)
+                    navController.navigate(NavigationDestination.AddFunds.route) {
+                        launchSingleTop = true
+                    }
                 },
                 onRefreshBalanceClick = onRefreshBalanceClick,
                 cards = cards,
                 onAddCardClick = {
-                    navController.navigate(NavigationDestination.AddCard.route)
+                    navController.navigate(NavigationDestination.AddCard.route) {
+                        launchSingleTop = true
+                    }
                 },
                 onToggleCardStatusClick = onToggleCardStatusClick,
                 onDeleteCardClick = onDeleteCardClick,
@@ -145,13 +157,19 @@ fun AppNavHost(
                     }
                 },
                 onChangePasswordClick = {
-                    navController.navigate(NavigationDestination.ChangePassword.route)
+                    navController.navigate(NavigationDestination.ChangePassword.route) {
+                        launchSingleTop = true
+                    }
                 },
                 onSupportClick = {
-                    navController.navigate(NavigationDestination.Support.route)
+                    navController.navigate(NavigationDestination.Support.route) {
+                        launchSingleTop = true
+                    }
                 },
                 onAboutClick = {
-                    navController.navigate(NavigationDestination.About.route)
+                    navController.navigate(NavigationDestination.About.route) {
+                        launchSingleTop = true
+                    }
                 }
             )
         }
