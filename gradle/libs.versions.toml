@@ -22,6 +22,7 @@ kotlinxCoroutines = "1.10.2"
 coil = "3.3.0"
 ktor = "3.3.3"
 buildkonfig = "0.17.1"
+logbackAndroid = "3.0.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -51,6 +52,7 @@ ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "kto
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+logback-android = { module = "com.github.tony19:logback-android", version.ref = "logbackAndroid" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

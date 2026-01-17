@@ -36,6 +36,7 @@ kotlin {
             implementation(libs.datastore)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.logback.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
