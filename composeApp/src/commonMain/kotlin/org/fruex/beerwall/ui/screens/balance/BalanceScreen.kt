@@ -84,7 +84,6 @@ fun BalanceScreen(
             }
 
             item(key = "info_card") {
-                Spacer(modifier = Modifier.height(12.dp))
                 InfoCard()
             }
         }
