@@ -4,14 +4,17 @@ import org.fruex.beerwall.auth.TokenManager
 import org.fruex.beerwall.data.remote.BaseApiClient
 
 /**
- * API client for support operations.
- * Handles user support message submissions.
+ * Klient API do obsługi wsparcia użytkownika.
+ * Obsługuje wysyłanie wiadomości do supportu.
  */
 class SupportApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
 
     /**
-     * Sends support message from user.
-     * Currently a mock implementation - simulates sending message with delay.
+     * Wysyła wiadomość od użytkownika do supportu.
+     * Obecnie jest to implementacja mockowa - symuluje wysyłanie z opóźnieniem.
+     *
+     * @param message Treść wiadomości.
+     * @return Result pusty w przypadku sukcesu.
      */
     suspend fun sendMessage(message: String): Result<Unit> {
         // MOCK: Symulacja wysyłania wiadomości

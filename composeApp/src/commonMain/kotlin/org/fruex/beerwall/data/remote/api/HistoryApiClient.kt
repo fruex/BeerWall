@@ -2,20 +2,21 @@ package org.fruex.beerwall.data.remote.api
 
 import io.ktor.client.call.*
 import io.ktor.client.request.*
-import org.fruex.beerwall.LogSeverity
 import org.fruex.beerwall.auth.TokenManager
 import org.fruex.beerwall.data.remote.BaseApiClient
-import org.fruex.beerwall.log
-import org.fruex.beerwall.remote.dto.history.*
+import org.fruex.beerwall.remote.dto.history.GetHistoryEnvelope
+import org.fruex.beerwall.remote.dto.history.TransactionResponse
 
 /**
- * API client for transaction history operations.
- * Handles retrieval of transaction records.
+ * Klient API do obsługi operacji historii.
+ * Obsługuje pobieranie historii transakcji użytkownika.
  */
 class HistoryApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
 
     /**
-     * Retrieves transaction history for current user.
+     * Pobiera historię transakcji dla obecnego użytkownika.
+     *
+     * @return Result zawierający listę [TransactionResponse] lub błąd.
      */
     suspend fun getHistory(): Result<List<TransactionResponse>> =
         safeCallWithAuth<GetHistoryEnvelope, List<TransactionResponse>> {
