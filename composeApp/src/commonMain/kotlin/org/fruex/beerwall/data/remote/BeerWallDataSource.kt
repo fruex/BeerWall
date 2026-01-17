@@ -153,6 +153,15 @@ class BeerWallDataSource(
         Result.failure(e)
     }
 
+    // ============================================================================
+    // AUTHENTICATION API - Methods for user authentication and session management
+    // ============================================================================
+
+    /**
+     * Authenticates user with Google ID token.
+     * @param idToken Google ID token from OAuth flow
+     * @return GoogleSignInResponse with JWT tokens on success
+     */
     suspend fun googleSignIn(idToken: String): Result<GoogleSignInResponse> = try {
         platform.log("📤 Google SignIn Request to .NET Backend", this, LogSeverity.INFO)
         platform.log("  🔑 ID Token (first 50 chars): ${idToken.take(50)}...", this, LogSeverity.DEBUG)
@@ -215,6 +224,12 @@ class BeerWallDataSource(
         Result.failure(e)
     }
 
+    /**
+     * Authenticates user with email and password.
+     * @param email User email
+     * @param password User password
+     * @return EmailPasswordSignInResponse with JWT tokens on success
+     */
     suspend fun emailPasswordSignIn(email: String, password: String): Result<EmailPasswordSignInResponse> = try {
         platform.log("📤 Email SignIn Request", this, LogSeverity.INFO)
         val response = client.post("${BuildKonfig.BASE_URL}/mobile/auth/signIn") {
@@ -243,6 +258,12 @@ class BeerWallDataSource(
         Result.failure(e)
     }
 
+    /**
+     * Registers new user account.
+     * @param email User email
+     * @param password User password
+     * @return Unit on success
+     */
     suspend fun register(email: String, password: String): Result<Unit> = try {
         platform.log("📤 Register Request", this, LogSeverity.INFO)
         val response = client.post("${BuildKonfig.BASE_URL}/mobile/auth/register") {
@@ -327,6 +348,11 @@ class BeerWallDataSource(
         Result.failure(e)
     }
 
+    /**
+     * Refreshes access token using refresh token.
+     * @param refreshToken Valid refresh token
+     * @return RefreshTokenResponse with new JWT tokens
+     */
     suspend fun refreshToken(refreshToken: String): Result<RefreshTokenResponse> =
         safeCall<RefreshTokenEnvelope, RefreshTokenResponse> {
             post("${BuildKonfig.BASE_URL}/mobile/auth/refreshToken") {
@@ -335,6 +361,14 @@ class BeerWallDataSource(
             }.body()
         }
 
+    // ============================================================================
+    // CARDS API - Methods for managing user NFC cards
+    // ============================================================================
+
+    /**
+     * Retrieves all cards associated with current user.
+     * @return List of CardResponse objects
+     */
     suspend fun getCards(): Result<List<CardResponse>> =
         safeCallWithAuth<GetCardsEnvelope, List<CardResponse>> {
             get("${BuildKonfig.BASE_URL}/mobile/cards") {
@@ -416,6 +450,14 @@ class BeerWallDataSource(
         Result.failure(e)
     }
 
+    // ============================================================================
+    // BALANCE & PAYMENTS API - Methods for balance and payment operations
+    // ============================================================================
+
+    /**
+     * Retrieves available payment operators.
+     * @return List of PaymentOperatorResponse with payment methods
+     */
     suspend fun getPaymentOperators(): Result<List<PaymentOperatorResponse>> =
         safeCallWithAuth<GetPaymentOperatorsEnvelope, List<PaymentOperatorResponse>> {
             get("${BuildKonfig.BASE_URL}/mobile/payments/operators") {
@@ -452,6 +494,10 @@ class BeerWallDataSource(
         Result.failure(e)
     }
 
+    /**
+     * Retrieves user balance for all venues.
+     * @return List of BalanceResponse with balance for each venue
+     */
     suspend fun getBalance(): Result<List<BalanceResponse>> =
         safeCallWithAuth<GetBalanceEnvelope, List<BalanceResponse>> {
             get("${BuildKonfig.BASE_URL}/mobile/users/balance") {
@@ -459,6 +505,14 @@ class BeerWallDataSource(
             }.body()
         }
 
+    // ============================================================================
+    // HISTORY API - Methods for transaction history
+    // ============================================================================
+
+    /**
+     * Retrieves transaction history for current user.
+     * @return List of TransactionResponse
+     */
     suspend fun getHistory(): Result<List<TransactionResponse>> =
         safeCallWithAuth<GetHistoryEnvelope, List<TransactionResponse>> {
             get("${BuildKonfig.BASE_URL}/mobile/users/history") {
@@ -466,6 +520,15 @@ class BeerWallDataSource(
             }.body()
         }
 
+    // ============================================================================
+    // SUPPORT API - Methods for customer support
+    // ============================================================================
+
+    /**
+     * Sends support message from user.
+     * @param message User's support message
+     * @return Unit on success
+     */
     suspend fun sendMessage(message: String): Result<Unit> {
         // MOCK: Symulacja wysyłania wiadomości
         kotlinx.coroutines.delay(1000)
