@@ -1,5 +1,6 @@
 package org.fruex.beerwall.presentation
 
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.fruex.beerwall.domain.usecase.*
 import org.fruex.beerwall.fakes.*
@@ -84,13 +85,14 @@ class AppViewModelTest : BaseTest() {
         val email = "test@example.com"
         val password = "password"
 
+        // Start collecting the StateFlow to activate the combine operator
+        val collectJob = backgroundScope.launch {
+            viewModel.uiState.collect { }
+        }
+
         // When
         viewModel.handleEmailPasswordSignIn(email, password)
         testDispatcher.scheduler.advanceUntilIdle()
-
-        // Wait for combine flow to emit
-        testDispatcher.scheduler.advanceTimeBy(100)
-        testDispatcher.scheduler.runCurrent()
 
         // Then
         val state = viewModel.uiState.value
@@ -101,6 +103,8 @@ class AppViewModelTest : BaseTest() {
         assertEquals(1, state.balances.size)
         assertEquals(2, state.cards.size)
         assertEquals("Pub Testowy", state.balances[0].premisesName)
+
+        collectJob.cancel()
     }
 
     @Test
@@ -109,27 +113,33 @@ class AppViewModelTest : BaseTest() {
         authRepository.shouldFail = true
         authRepository.failureMessage = "Wrong password"
 
+        // Start collecting the StateFlow to activate the combine operator
+        val collectJob = backgroundScope.launch {
+            viewModel.uiState.collect { }
+        }
+
         // When
         viewModel.handleEmailPasswordSignIn("a", "b")
         testDispatcher.scheduler.advanceUntilIdle()
-
-        // Wait for combine flow to emit
-        testDispatcher.scheduler.advanceTimeBy(100)
-        testDispatcher.scheduler.runCurrent()
 
         // Then
         val state = viewModel.uiState.value
         assertFalse(state.isLoggedIn)
         assertEquals("Wrong password", state.errorMessage)
+
+        collectJob.cancel()
     }
 
     @Test
     fun `toggle card status should update card in list`() = runTest {
+        // Start collecting the StateFlow to activate the combine operator
+        val collectJob = backgroundScope.launch {
+            viewModel.uiState.collect { }
+        }
+
         // Given - Logged in state with cards
         viewModel.handleEmailPasswordSignIn("test", "pass")
         testDispatcher.scheduler.advanceUntilIdle()
-        testDispatcher.scheduler.advanceTimeBy(100)
-        testDispatcher.scheduler.runCurrent()
 
         val cards = viewModel.uiState.value.cards
         assertTrue(cards.isNotEmpty(), "Cards should be loaded after login")
@@ -140,11 +150,11 @@ class AppViewModelTest : BaseTest() {
         // When
         viewModel.onToggleCardStatus("card-1")
         testDispatcher.scheduler.advanceUntilIdle()
-        testDispatcher.scheduler.advanceTimeBy(100)
-        testDispatcher.scheduler.runCurrent()
 
         // Then
         val updatedCard = viewModel.uiState.value.cards.first { it.id == "card-1" }
         assertFalse(updatedCard.isActive)
+
+        collectJob.cancel()
     }
 }
