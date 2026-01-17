@@ -88,17 +88,17 @@ fun MainScreen(
     balances: List<VenueBalance> = emptyList(),
     onAddFundsClick: (premisesId: Int) -> Unit = {},
     onAddLocationClick: () -> Unit = {},
-    onRefreshBalance: () -> Unit = {},
+    onRefreshBalanceClick: () -> Unit = {},
 
     // Cards callbacks
     cards: List<UserCard> = emptyList(),
     onAddCardClick: () -> Unit = {},
-    onToggleCardStatus: (String) -> Unit = {},
-    onDeleteCard: (String) -> Unit = {},
+    onToggleCardStatusClick: (String) -> Unit = {},
+    onDeleteCardClick: (String) -> Unit = {},
 
     // History data
     transactionGroups: List<DailyTransactions> = emptyList(),
-    onRefreshHistory: () -> Unit = {},
+    onRefreshHistoryClick: () -> Unit = {},
 
     // Global state
     isRefreshing: Boolean = false,
@@ -123,8 +123,8 @@ fun MainScreen(
 
     LaunchedEffect(selectedTab) {
         when (selectedTab) {
-            BottomNavItem.Balance.route -> onRefreshBalance()
-            BottomNavItem.History.route -> onRefreshHistory()
+            BottomNavItem.Balance.route -> onRefreshBalanceClick()
+            BottomNavItem.History.route -> onRefreshHistoryClick()
         }
     }
 
@@ -167,7 +167,7 @@ fun MainScreen(
                     BalanceScreen(
                         balances = balances,
                         isRefreshing = isRefreshing,
-                        onRefresh = onRefreshBalance,
+                        onRefresh = onRefreshBalanceClick,
                         onAddFundsClick = onAddFundsClick,
                         onAddLocationClick = onAddLocationClick
                     )
@@ -176,15 +176,15 @@ fun MainScreen(
                     CardsScreen(
                         cards = cards,
                         onAddCardClick = onAddCardClick,
-                        onToggleCardStatus = onToggleCardStatus,
-                        onDeleteCard = onDeleteCard
+                        onToggleCardStatus = onToggleCardStatusClick,
+                        onDeleteCard = onDeleteCardClick
                     )
                 }
                 BottomNavItem.History.route -> {
                     HistoryScreen(
                         transactionGroups = transactionGroups,
                         isRefreshing = isRefreshing,
-                        onRefresh = onRefreshHistory
+                        onRefresh = onRefreshHistoryClick
                     )
                 }
                 BottomNavItem.Profile.route -> {

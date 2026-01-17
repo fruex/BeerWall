@@ -36,15 +36,15 @@ import org.fruex.beerwall.ui.screens.profile.SupportScreen
  * @param isRefreshing Flaga odświeżania (stan).
  * @param onRegisterWithEmail Callback rejestracji.
  * @param onLoginWithEmail Callback logowania email/hasło.
- * @param onLoginWithGoogle Callback logowania Google.
- * @param onLogout Callback wylogowania.
- * @param onAddFunds Callback doładowania konta.
- * @param onToggleCardStatus Callback zmiany statusu karty.
- * @param onDeleteCard Callback usuwania karty.
- * @param onSaveCard Callback zapisywania karty.
- * @param onStartNfcScanning Callback startu skanowania NFC.
- * @param onRefreshHistory Callback odświeżania historii.
- * @param onRefreshBalance Callback odświeżania salda.
+ * @param onLoginWithGoogleClick Callback logowania Google.
+ * @param onLogoutClick Callback wylogowania.
+ * @param onAddFundsClick Callback doładowania konta.
+ * @param onToggleCardStatusClick Callback zmiany statusu karty.
+ * @param onDeleteCardClick Callback usuwania karty.
+ * @param onSaveCardClick Callback zapisywania karty.
+ * @param onStartNfcScanningClick Callback startu skanowania NFC.
+ * @param onRefreshHistoryClick Callback odświeżania historii.
+ * @param onRefreshBalanceClick Callback odświeżania salda.
  * @param onForgotPassword Callback przypomnienia hasła.
  * @param onResetPassword Callback resetu hasła.
  * @param scannedCardId Zeskanowane ID karty (stan).
@@ -65,15 +65,15 @@ fun AppNavHost(
     // Callbacks
     onRegisterWithEmail: (email: String, password: String) -> Unit = { _, _ -> },
     onLoginWithEmail: (email: String, password: String) -> Unit = { _, _ -> },
-    onLoginWithGoogle: () -> Unit = {},
-    onLogout: () -> Unit = {},
-    onAddFunds: (premisesId: Int, paymentMethodId: Int, balance: Double) -> Unit = { _, _, _ -> },
-    onToggleCardStatus: (String) -> Unit = {},
-    onDeleteCard: (String) -> Unit = {},
-    onSaveCard: (name: String, cardId: String) -> Unit = { _, _ -> },
-    onStartNfcScanning: () -> Unit = {},
-    onRefreshHistory: () -> Unit = {},
-    onRefreshBalance: () -> Unit = {},
+    onLoginWithGoogleClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {},
+    onAddFundsClick: (premisesId: Int, paymentMethodId: Int, balance: Double) -> Unit = { _, _, _ -> },
+    onToggleCardStatusClick: (String) -> Unit = {},
+    onDeleteCardClick: (String) -> Unit = {},
+    onSaveCardClick: (name: String, cardId: String) -> Unit = { _, _ -> },
+    onStartNfcScanningClick: () -> Unit = {},
+    onRefreshHistoryClick: () -> Unit = {},
+    onRefreshBalanceClick: () -> Unit = {},
     onForgotPassword: (email: String) -> Unit = {},
     onResetPassword: (String, String, String) -> Unit = { _, _, _ -> },
     onSendMessage: (message: String) -> Unit = {},
@@ -91,7 +91,7 @@ fun AppNavHost(
                 onRegisterClick = { email, password ->
                     onRegisterWithEmail(email, password)
                 },
-                onGoogleSignInClick = onLoginWithGoogle,
+                onGoogleSignInClick = onLoginWithGoogleClick,
                 onLoginClick = {
                     navController.navigate(NavigationDestination.Login.route)
                 }
@@ -103,7 +103,7 @@ fun AppNavHost(
                 onLoginClick = { email, password ->
                     onLoginWithEmail(email, password)
                 },
-                onGoogleSignInClick = onLoginWithGoogle,
+                onGoogleSignInClick = onLoginWithGoogleClick,
                 onRegisterClick = {
                     navController.navigate(NavigationDestination.Registration.route)
                 },
@@ -124,19 +124,19 @@ fun AppNavHost(
                 onAddLocationClick = {
                     navController.navigate(NavigationDestination.AddFunds.route)
                 },
-                onRefreshBalance = onRefreshBalance,
+                onRefreshBalance = onRefreshBalanceClick,
                 cards = cards,
                 onAddCardClick = {
                     navController.navigate(NavigationDestination.AddCard.route)
                 },
-                onToggleCardStatus = onToggleCardStatus,
-                onDeleteCard = onDeleteCard,
+                onToggleCardStatus = onToggleCardStatusClick,
+                onDeleteCard = onDeleteCardClick,
                 transactionGroups = transactionGroups,
-                onRefreshHistory = onRefreshHistory,
+                onRefreshHistory = onRefreshHistoryClick,
                 isRefreshing = isRefreshing,
                 userProfile = userProfile,
                 onLogoutClick = {
-                    onLogout()
+                    onLogoutClick()
                     navController.navigate(NavigationDestination.Login.route) {
                         popUpTo(NavigationDestination.Main.route) { inclusive = true }
                     }
@@ -160,7 +160,7 @@ fun AppNavHost(
                 onBackClick = { navController.popBackStack() },
                 onAddFunds = { paymentMethodId, balance ->
                     // Domyślny lokal jeśli nie został wybrany
-                    onAddFunds(balances.firstOrNull()?.premisesId ?: 0, paymentMethodId, balance)
+                    onAddFundsClick(balances.firstOrNull()?.premisesId ?: 0, paymentMethodId, balance)
                     navController.popBackStack()
                 }
             )
@@ -177,7 +177,7 @@ fun AppNavHost(
                 availablePaymentMethods = paymentMethods,
                 onBackClick = { navController.popBackStack() },
                 onAddFunds = { paymentMethodId, balance ->
-                    onAddFunds(venueId, paymentMethodId, balance)
+                    onAddFundsClick(venueId, paymentMethodId, balance)
                     navController.popBackStack()
                 },
                 premisesName = venue?.premisesName
@@ -190,10 +190,10 @@ fun AppNavHost(
                 scannedCardId = scannedCardId,
                 isNfcEnabled = isNfcEnabled,
                 onBackClick = { navController.popBackStack() },
-                onStartScanning = onStartNfcScanning,
+                onStartScanning = onStartNfcScanningClick,
                 onCardNameChanged = {},
                 onSaveCard = { name, cardId ->
-                    onSaveCard(name, cardId)
+                    onSaveCardClick(name, cardId)
                     navController.popBackStack()
                 }
             )
