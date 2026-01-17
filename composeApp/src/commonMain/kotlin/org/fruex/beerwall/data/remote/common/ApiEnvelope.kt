@@ -1,4 +1,4 @@
-package org.fruex.beerwall.remote.common
+package org.fruex.beerwall.data.remote.common
 
 import kotlinx.serialization.Serializable
 

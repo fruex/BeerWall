@@ -1,7 +1,7 @@
 package org.fruex.beerwall.domain.usecase
 
 import org.fruex.beerwall.domain.repository.BalanceRepository
-import org.fruex.beerwall.remote.dto.operators.PaymentOperatorResponse
+import org.fruex.beerwall.data.remote.dto.operators.PaymentOperatorResponse
 // TODO: UseCase zwraca DTO (`PaymentOperatorResponse`) z warstwy remote. Należy to zmienić, aby zwracał model domenowy.
 
 /**
