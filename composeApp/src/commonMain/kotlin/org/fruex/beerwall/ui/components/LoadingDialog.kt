@@ -13,9 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.CardBackground
 import org.fruex.beerwall.ui.theme.GoldPrimary
 import org.fruex.beerwall.ui.theme.TextPrimary
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun LoadingDialog(
@@ -43,6 +45,17 @@ fun LoadingDialog(
             },
             containerColor = CardBackground,
             shape = RoundedCornerShape(16.dp)
+        )
+    }
+}
+
+@Preview
+@Composable
+fun LoadingDialogPreview() {
+    BeerWallTheme {
+        LoadingDialog(
+            isVisible = true,
+            title = "Logowanie..."
         )
     }
 }
