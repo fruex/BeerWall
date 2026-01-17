@@ -17,8 +17,10 @@ import org.fruex.beerwall.remote.dto.auth.RefreshTokenRequest
 import org.fruex.beerwall.remote.dto.auth.RefreshTokenResponse
 
 /**
- * Base class for all API clients.
- * Provides common functionality for HTTP requests, token management, and error handling.
+ * Klasa bazowa dla wszystkich klientów API.
+ * Dostarcza wspólną funkcjonalność dla żądań HTTP, zarządzania tokenami i obsługi błędów.
+ *
+ * @property tokenManager Menedżer tokenów uwierzytelniających.
  */
 abstract class BaseApiClient(
     protected val tokenManager: TokenManager
@@ -34,7 +36,7 @@ abstract class BaseApiClient(
     var onUnauthorized: (suspend () -> Unit)? = null
 
     /**
-     * Adds authorization token to request headers.
+     * Dodaje token autoryzacyjny (Bearer) do nagłówków żądania.
      */
     protected suspend fun HttpRequestBuilder.addAuthToken() {
         tokenManager.getToken()?.let { token ->
@@ -43,8 +45,9 @@ abstract class BaseApiClient(
     }
 
     /**
-     * Attempts to refresh the access token using refresh token.
-     * @return true if token was successfully refreshed, false otherwise
+     * Próbuje odświeżyć token dostępu przy użyciu tokenu odświeżania.
+     *
+     * @return true jeśli token został pomyślnie odświeżony, false w przeciwnym razie.
      */
     protected suspend fun tryRefreshToken(): Boolean {
         if (tokenManager.isRefreshTokenExpired()) {
@@ -98,8 +101,11 @@ abstract class BaseApiClient(
     }
 
     /**
-     * Executes HTTP request without authentication.
-     * Handles envelope-based responses and errors.
+     * Wykonuje żądanie HTTP bez autoryzacji.
+     * Obsługuje odpowiedzi oparte na kopercie (ApiEnvelope) i błędy.
+     *
+     * @param block Blok kodu wykonujący żądanie HTTP.
+     * @return Result zawierający dane typu [D] lub błąd.
      */
     protected suspend inline fun <reified T : ApiResponse<D>, D> safeCall(
         crossinline block: suspend HttpClient.() -> T
@@ -116,15 +122,18 @@ abstract class BaseApiClient(
     }
 
     /**
-     * Executes HTTP request with authentication and automatic token refresh.
-     * Handles 401 errors by refreshing token and retrying the request.
+     * Wykonuje żądanie HTTP z autoryzacją i automatycznym odświeżaniem tokenu.
+     * Obsługuje błąd 401 poprzez próbę odświeżenia tokenu i ponowienie żądania.
+     *
+     * @param block Blok kodu wykonujący żądanie HTTP.
+     * @return Result zawierający dane typu [D] lub błąd.
      */
     protected suspend inline fun <reified T : ApiResponse<D>, D> safeCallWithAuth(
         crossinline block: suspend HttpClient.() -> T
     ): Result<D> = try {
         var response = client.block()
 
-        // If 401, try to refresh token and retry
+        // Jeśli 401, spróbuj odświeżyć token i ponów
         if (response.data == null && response.error?.message?.contains("401") == true) {
             if (tryRefreshToken()) {
                 response = client.block()
