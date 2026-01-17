@@ -86,15 +86,13 @@ class AppViewModelTest : BaseTest() {
 
         // When
         viewModel.handleEmailPasswordSignIn(email, password)
-        // Coroutines in tests need to process pending tasks.
-        // With StandardTestDispatcher/runTest, we might need to advance time or rely on runTest waiting.
-        // viewModel uses viewModelScope which defaults to Main Dispatcher,
-        // which we mocked in BaseTest.
-
-        // Then
-        // Allow coroutines to complete
         testDispatcher.scheduler.advanceUntilIdle()
 
+        // Wait for combine flow to emit
+        testDispatcher.scheduler.advanceTimeBy(100)
+        testDispatcher.scheduler.runCurrent()
+
+        // Then
         val state = viewModel.uiState.value
         assertTrue(state.isLoggedIn)
         assertFalse(state.isRefreshing)
@@ -115,6 +113,10 @@ class AppViewModelTest : BaseTest() {
         viewModel.handleEmailPasswordSignIn("a", "b")
         testDispatcher.scheduler.advanceUntilIdle()
 
+        // Wait for combine flow to emit
+        testDispatcher.scheduler.advanceTimeBy(100)
+        testDispatcher.scheduler.runCurrent()
+
         // Then
         val state = viewModel.uiState.value
         assertFalse(state.isLoggedIn)
@@ -126,13 +128,20 @@ class AppViewModelTest : BaseTest() {
         // Given - Logged in state with cards
         viewModel.handleEmailPasswordSignIn("test", "pass")
         testDispatcher.scheduler.advanceUntilIdle()
+        testDispatcher.scheduler.advanceTimeBy(100)
+        testDispatcher.scheduler.runCurrent()
 
-        val initialCard = viewModel.uiState.value.cards.first { it.id == "card-1" }
+        val cards = viewModel.uiState.value.cards
+        assertTrue(cards.isNotEmpty(), "Cards should be loaded after login")
+
+        val initialCard = cards.first { it.id == "card-1" }
         assertTrue(initialCard.isActive) // Default in Fake
 
         // When
         viewModel.onToggleCardStatus("card-1")
         testDispatcher.scheduler.advanceUntilIdle()
+        testDispatcher.scheduler.advanceTimeBy(100)
+        testDispatcher.scheduler.runCurrent()
 
         // Then
         val updatedCard = viewModel.uiState.value.cards.first { it.id == "card-1" }
