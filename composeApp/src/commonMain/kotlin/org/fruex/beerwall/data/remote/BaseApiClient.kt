@@ -12,9 +12,9 @@ import org.fruex.beerwall.LogSeverity
 import org.fruex.beerwall.auth.TokenManager
 import org.fruex.beerwall.getPlatform
 import org.fruex.beerwall.log
-import org.fruex.beerwall.remote.common.ApiResponse
-import org.fruex.beerwall.remote.dto.auth.RefreshTokenRequest
-import org.fruex.beerwall.remote.dto.auth.RefreshTokenResponse
+import org.fruex.beerwall.data.remote.common.ApiResponse
+import org.fruex.beerwall.data.remote.dto.auth.RefreshTokenRequest
+import org.fruex.beerwall.data.remote.dto.auth.RefreshTokenResponse
 
 /**
  * Base class for all API clients.

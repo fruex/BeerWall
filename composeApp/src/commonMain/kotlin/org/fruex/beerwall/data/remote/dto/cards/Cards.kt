@@ -1,7 +1,7 @@
-package org.fruex.beerwall.remote.dto.cards
+package org.fruex.beerwall.data.remote.dto.cards
 
 import kotlinx.serialization.Serializable
-import org.fruex.beerwall.remote.common.ApiEnvelope
+import org.fruex.beerwall.data.remote.common.ApiEnvelope
 
 @Serializable
 data class CardResponse(

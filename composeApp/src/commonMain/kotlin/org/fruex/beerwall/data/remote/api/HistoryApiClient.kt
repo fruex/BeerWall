@@ -6,7 +6,7 @@ import org.fruex.beerwall.LogSeverity
 import org.fruex.beerwall.auth.TokenManager
 import org.fruex.beerwall.data.remote.BaseApiClient
 import org.fruex.beerwall.log
-import org.fruex.beerwall.remote.dto.history.*
+import org.fruex.beerwall.data.remote.dto.history.*
 
 /**
  * API client for transaction history operations.

@@ -19,6 +19,9 @@ import org.fruex.beerwall.ui.AppUiState
  * - CardsViewModel
  * - HistoryViewModel
  * - ProfileViewModel
+ *
+ * // TODO: REFACTOR - This is a God Object. Break this down by creating separate ViewModels per screen
+ * // and passing them via Navigation graph or DI, instead of passing one giant AppViewModel or aggregating state here.
  */
 class AppViewModel(
     val authViewModel: AuthViewModel,

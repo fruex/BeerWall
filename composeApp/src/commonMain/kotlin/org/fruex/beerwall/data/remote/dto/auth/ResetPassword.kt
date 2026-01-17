@@ -1,4 +1,4 @@
-package org.fruex.beerwall.remote.dto.auth
+package org.fruex.beerwall.data.remote.dto.auth
 
 import kotlinx.serialization.Serializable
 
