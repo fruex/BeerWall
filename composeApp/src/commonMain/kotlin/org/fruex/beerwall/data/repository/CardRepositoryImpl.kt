@@ -19,7 +19,7 @@ class CardRepositoryImpl(
     }
 
     override suspend fun toggleCardStatus(cardId: String, isActive: Boolean): Result<Boolean> {
-        return cardsApiClient.toggleCardStatus(cardId, isActive).map { it.isActive }
+        return cardsApiClient.setCardStatus(cardId, isActive).map { it.isActive }
     }
 
     override suspend fun assignCard(guid: String, description: String): Result<Unit> {
