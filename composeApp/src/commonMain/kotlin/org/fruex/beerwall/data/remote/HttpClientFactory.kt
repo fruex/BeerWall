@@ -10,8 +10,8 @@ import org.fruex.beerwall.getPlatform
 import org.fruex.beerwall.log
 
 /**
- * Factory for creating configured HTTP clients.
- * Centralizes HTTP client configuration for all API clients.
+ * Fabryka do tworzenia skonfigurowanych klientów HTTP.
+ * Centralizuje konfigurację klienta HTTP dla wszystkich klientów API.
  */
 object HttpClientFactory {
 
@@ -23,6 +23,12 @@ object HttpClientFactory {
         ignoreUnknownKeys = true
     }
 
+    /**
+     * Tworzy i konfiguruje instancję HttpClient.
+     * Konfiguracja obejmuje negocjację treści (JSON) oraz logowanie.
+     *
+     * @return Skonfigurowana instancja [HttpClient].
+     */
     fun create(): HttpClient = HttpClient {
         install(ContentNegotiation) {
             json(json)
