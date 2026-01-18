@@ -1,8 +1,8 @@
 package org.fruex.beerwall.fakes
 
 import org.fruex.beerwall.domain.model.Balance
+import org.fruex.beerwall.domain.model.PaymentOperator
 import org.fruex.beerwall.domain.repository.BalanceRepository
-import org.fruex.beerwall.remote.dto.operators.PaymentOperatorResponse
 
 class FakeBalanceRepository : BalanceRepository {
     var shouldFail = false
@@ -33,7 +33,7 @@ class FakeBalanceRepository : BalanceRepository {
         return Result.success(Unit)
     }
 
-    override suspend fun getPaymentOperators(): Result<List<PaymentOperatorResponse>> {
+    override suspend fun getPaymentOperators(): Result<List<PaymentOperator>> {
         if (shouldFail) return Result.failure(Exception(failureMessage))
         return Result.success(emptyList())
     }

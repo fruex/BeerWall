@@ -1,10 +1,11 @@
 package org.fruex.beerwall.data.repository
 
 import org.fruex.beerwall.data.mapper.toDomain
+import org.fruex.beerwall.data.mapper.toDomainOperators
 import org.fruex.beerwall.data.remote.api.BalanceApiClient
 import org.fruex.beerwall.domain.model.Balance
+import org.fruex.beerwall.domain.model.PaymentOperator
 import org.fruex.beerwall.domain.repository.BalanceRepository
-import org.fruex.beerwall.remote.dto.operators.PaymentOperatorResponse
 
 /**
  * Implementacja repozytorium sald.
@@ -23,7 +24,7 @@ class BalanceRepositoryImpl(
         return balanceApiClient.topUp(premisesId, paymentMethodId, balance)
     }
 
-    override suspend fun getPaymentOperators(): Result<List<PaymentOperatorResponse>> {
-        return balanceApiClient.getPaymentOperators()
+    override suspend fun getPaymentOperators(): Result<List<PaymentOperator>> {
+        return balanceApiClient.getPaymentOperators().map { it.toDomainOperators() }
     }
 }

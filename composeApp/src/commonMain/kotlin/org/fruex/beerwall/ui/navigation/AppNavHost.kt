@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.fruex.beerwall.ui.models.DailyTransactions
+import org.fruex.beerwall.ui.models.PaymentMethod
 import org.fruex.beerwall.ui.models.UserCard
 import org.fruex.beerwall.ui.models.UserProfile
 import org.fruex.beerwall.ui.models.VenueBalance
@@ -60,7 +61,7 @@ fun AppNavHost(
     cards: List<UserCard> = emptyList(),
     transactionGroups: List<DailyTransactions> = emptyList(),
     userProfile: UserProfile = UserProfile("", "", ""),
-    paymentMethods: List<org.fruex.beerwall.remote.dto.operators.PaymentMethod> = emptyList(),
+    paymentMethods: List<PaymentMethod> = emptyList(),
     isRefreshing: Boolean = false,
     // Callbacks
     onRegisterWithEmail: (email: String, password: String) -> Unit = { _, _ -> },

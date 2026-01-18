@@ -11,7 +11,8 @@ import org.fruex.beerwall.domain.usecase.GetBalancesUseCase
 import org.fruex.beerwall.domain.usecase.GetPaymentOperatorsUseCase
 import org.fruex.beerwall.domain.usecase.TopUpBalanceUseCase
 import org.fruex.beerwall.presentation.mapper.toUi
-import org.fruex.beerwall.remote.dto.operators.PaymentMethod
+import org.fruex.beerwall.presentation.mapper.toUiPaymentMethods
+import org.fruex.beerwall.ui.models.PaymentMethod
 import org.fruex.beerwall.ui.models.VenueBalance
 
 /**
@@ -77,7 +78,7 @@ class BalanceViewModel(
             try {
                 getPaymentOperatorsUseCase()
                     .onSuccess { operators ->
-                        val methods = operators.flatMap { it.paymentMethods }
+                        val methods = operators.flatMap { it.paymentMethods }.toUiPaymentMethods()
                         _uiState.update { it.copy(paymentMethods = methods) }
                     }
             } catch (_: Exception) {
