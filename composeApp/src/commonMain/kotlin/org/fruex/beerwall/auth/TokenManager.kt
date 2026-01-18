@@ -123,7 +123,7 @@ fun decodeTokenPayload(token: String): Map<String, String> {
         
         return result
     } catch (e: Exception) {
-        e.printStackTrace()
+        getPlatform().log("Error decoding token payload: ${e.message}", "TokenManager", LogSeverity.ERROR)
         return emptyMap()
     }
 }
