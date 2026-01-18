@@ -1,8 +1,8 @@
 package org.fruex.beerwall.di
 
 import androidx.compose.runtime.Composable
-import org.fruex.beerwall.presentation.AppViewModel
 import org.fruex.beerwall.presentation.viewmodel.*
+import org.fruex.beerwall.auth.SessionManager
 import org.fruex.beerwall.auth.TokenManager
 import org.fruex.beerwall.data.remote.api.*
 import org.fruex.beerwall.data.repository.*
@@ -23,26 +23,37 @@ abstract class AppContainer {
 
     // Auth Layer
     abstract val tokenManager: TokenManager
+    val sessionManager: SessionManager by lazy { SessionManager() }
 
     // Data Layer - API Clients
     private val authApiClient: AuthApiClient by lazy {
-        AuthApiClient(tokenManager)
+        AuthApiClient(tokenManager).apply {
+            onUnauthorized = { sessionManager.onSessionExpired() }
+        }
     }
 
     private val cardsApiClient: CardsApiClient by lazy {
-        CardsApiClient(tokenManager)
+        CardsApiClient(tokenManager).apply {
+            onUnauthorized = { sessionManager.onSessionExpired() }
+        }
     }
 
     private val balanceApiClient: BalanceApiClient by lazy {
-        BalanceApiClient(tokenManager)
+        BalanceApiClient(tokenManager).apply {
+            onUnauthorized = { sessionManager.onSessionExpired() }
+        }
     }
 
     private val historyApiClient: HistoryApiClient by lazy {
-        HistoryApiClient(tokenManager)
+        HistoryApiClient(tokenManager).apply {
+            onUnauthorized = { sessionManager.onSessionExpired() }
+        }
     }
 
     private val supportApiClient: SupportApiClient by lazy {
-        SupportApiClient(tokenManager)
+        SupportApiClient(tokenManager).apply {
+            onUnauthorized = { sessionManager.onSessionExpired() }
+        }
     }
 
     // Repository Layer
@@ -127,66 +138,47 @@ abstract class AppContainer {
         SendMessageUseCase(supportRepository)
     }
 
-    // ViewModel Factory
-    /**
-     * Tworzy instancję [AppViewModel].
-     */
-    fun createBeerWallViewModel(): AppViewModel {
-        // Tworzenie feature ViewModeli (bez checkSession w init)
-        val authViewModel = AuthViewModel(
+    // ViewModel Factories
+
+    fun createAuthViewModel(): AuthViewModel {
+        return AuthViewModel(
             googleSignInUseCase = googleSignInUseCase,
             emailPasswordSignInUseCase = emailPasswordSignInUseCase,
             registerUseCase = registerUseCase,
             forgotPasswordUseCase = forgotPasswordUseCase,
             resetPasswordUseCase = resetPasswordUseCase,
             checkSessionUseCase = checkSessionUseCase,
-            authRepository = authRepository
+            authRepository = authRepository,
+            sessionManager = sessionManager
         )
+    }
 
-        val balanceViewModel = BalanceViewModel(
+    fun createBalanceViewModel(): BalanceViewModel {
+        return BalanceViewModel(
             getBalancesUseCase = getBalancesUseCase,
             topUpBalanceUseCase = topUpBalanceUseCase,
             getPaymentOperatorsUseCase = getPaymentOperatorsUseCase
         )
+    }
 
-        val cardsViewModel = CardsViewModel(
+    fun createCardsViewModel(): CardsViewModel {
+        return CardsViewModel(
             getCardsUseCase = getCardsUseCase,
             toggleCardStatusUseCase = toggleCardStatusUseCase,
             assignCardUseCase = assignCardUseCase,
             deleteCardUseCase = deleteCardUseCase
         )
+    }
 
-        val historyViewModel = HistoryViewModel(
+    fun createHistoryViewModel(): HistoryViewModel {
+        return HistoryViewModel(
             getTransactionsUseCase = getTransactionsUseCase
         )
+    }
 
-        val profileViewModel = ProfileViewModel(
+    fun createProfileViewModel(): ProfileViewModel {
+        return ProfileViewModel(
             sendMessageUseCase = sendMessageUseCase
         )
-
-        // Tworzenie głównego AppViewModel jako fasady
-        val viewModel = AppViewModel(
-            authViewModel = authViewModel,
-            balanceViewModel = balanceViewModel,
-            cardsViewModel = cardsViewModel,
-            historyViewModel = historyViewModel,
-            profileViewModel = profileViewModel
-        )
-
-        // WAŻNE: Skonfiguruj callback PRZED jakimkolwiek użyciem API
-        val onUnauthorizedCallback: suspend () -> Unit = {
-            viewModel.handleSessionExpired()
-        }
-
-        authApiClient.onUnauthorized = onUnauthorizedCallback
-        cardsApiClient.onUnauthorized = onUnauthorizedCallback
-        balanceApiClient.onUnauthorized = onUnauthorizedCallback
-        historyApiClient.onUnauthorized = onUnauthorizedCallback
-        supportApiClient.onUnauthorized = onUnauthorizedCallback
-
-        // Teraz możemy bezpiecznie sprawdzić sesję
-        authViewModel.checkSession()
-
-        return viewModel
     }
 }

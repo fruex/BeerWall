@@ -11,9 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import org.fruex.beerwall.auth.rememberGoogleAuthProvider
 import org.fruex.beerwall.di.createAppContainer
-import org.fruex.beerwall.presentation.AppViewModel
 import org.fruex.beerwall.ui.navigation.AppNavHost
 import org.fruex.beerwall.ui.navigation.NavigationDestination
 import org.fruex.beerwall.ui.theme.BeerWallTheme
@@ -28,23 +26,23 @@ fun App(
     onStartNfcScanningClick: () -> Unit = {}
 ) {
     val appContainer = createAppContainer()
-    val viewModel: AppViewModel = viewModel {
-        appContainer.createBeerWallViewModel()
-    }
-    val uiState by viewModel.uiState.collectAsState()
-
-    val googleAuthProvider = rememberGoogleAuthProvider()
+    val authViewModel = viewModel { appContainer.createAuthViewModel() }
+    val authState by authViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(uiState.errorMessage) {
-        uiState.errorMessage?.let { message ->
+    LaunchedEffect(Unit) {
+        authViewModel.checkSession()
+    }
+
+    LaunchedEffect(authState.errorMessage) {
+        authState.errorMessage?.let { message ->
             snackbarHostState.showSnackbar(message)
-            viewModel.onClearError()
+            authViewModel.onClearError()
         }
     }
 
     BeerWallTheme {
-        if (uiState.isCheckingSession) {
+        if (authState.isCheckingSession) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -56,39 +54,15 @@ fun App(
                 snackbarHost = { SnackbarHost(snackbarHostState) }
             ) { paddingValues ->
                 AppNavHost(
+                    appContainer = appContainer,
                     modifier = Modifier.padding(paddingValues),
                     startDestination =
-                        if (uiState.isLoggedIn)
+                        if (authState.isLoggedIn)
                             NavigationDestination.Main.route
                         else NavigationDestination.Login.route,
-                    balances = uiState.balances,
-                    cards = uiState.cards,
-                    transactionGroups = uiState.transactionGroups,
-                    userProfile = uiState.userProfile,
-                    paymentMethods = uiState.paymentMethods,
-                    isRefreshing = uiState.isRefreshing,
                     scannedCardId = scannedCardId,
                     isNfcEnabled = isNfcEnabled,
-                    onStartNfcScanningClick = onStartNfcScanningClick,
-                    onRefreshHistoryClick = viewModel::refreshHistory,
-                    onRefreshBalanceClick = viewModel::refreshBalance,
-                    onRegisterWithEmail = viewModel::handleRegister,
-                    onLoginWithEmail = viewModel::handleEmailPasswordSignIn,
-                    onLoginWithGoogleClick = {
-                        viewModel.handleGoogleSignIn(googleAuthProvider)
-                    },
-                    onAddFundsClick = viewModel::onAddFunds,
-                    onToggleCardStatusClick = viewModel::onToggleCardStatus,
-                    onDeleteCardClick = viewModel::onDeleteCard,
-                    onSaveCardClick = viewModel::onSaveCard,
-                    onForgotPassword = viewModel::handleForgotPassword,
-                    onResetPassword = { email, resetCode, newPassword ->
-                        viewModel.handleResetPassword(email, resetCode, newPassword)
-                    },
-                    onSendMessage = viewModel::onSendMessage,
-                    onLogoutClick = {
-                        viewModel.handleLogout(googleAuthProvider)
-                    }
+                    onStartNfcScanningClick = onStartNfcScanningClick
                 )
             }
         }
