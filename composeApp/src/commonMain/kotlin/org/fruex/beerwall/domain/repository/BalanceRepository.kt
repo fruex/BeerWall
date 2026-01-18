@@ -1,8 +1,7 @@
 package org.fruex.beerwall.domain.repository
 
 import org.fruex.beerwall.domain.model.Balance
-import org.fruex.beerwall.data.remote.dto.operators.PaymentOperatorResponse
-// TODO: Repozytorium domeny zwraca DTO (`PaymentOperatorResponse`) z warstwy remote. Należy stworzyć odpowiedni model domeny i mapować dane, aby uniezależnić domenę od warstwy danych/API.
+import org.fruex.beerwall.domain.model.PaymentOperator
 
 /**
  * Interfejs repozytorium do zarządzania saldami i płatnościami.
@@ -28,7 +27,7 @@ interface BalanceRepository {
     /**
      * Pobiera listę dostępnych operatorów płatności.
      *
-     * @return [Result] zawierający listę operatorów [PaymentOperatorResponse] lub błąd.
+     * @return [Result] zawierający listę operatorów [PaymentOperator] lub błąd.
      */
-    suspend fun getPaymentOperators(): Result<List<PaymentOperatorResponse>>
+    suspend fun getPaymentOperators(): Result<List<PaymentOperator>>
 }
