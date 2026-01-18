@@ -1,7 +1,9 @@
 package org.fruex.beerwall.data.repository
 
+import kotlinx.coroutines.flow.Flow
 import org.fruex.beerwall.LogSeverity
 import org.fruex.beerwall.auth.AuthTokens
+import org.fruex.beerwall.auth.SessionManager
 import org.fruex.beerwall.auth.TokenManager
 import org.fruex.beerwall.auth.ensureTimestamp
 import org.fruex.beerwall.auth.decodeTokenPayload
@@ -15,12 +17,16 @@ import org.fruex.beerwall.log
  *
  * @property authApiClient Klient API dla operacji autentykacji.
  * @property tokenManager Menedżer tokenów do przechowywania danych sesji.
+ * @property sessionManager Menedżer sesji do obserwowania stanu.
  */
 class AuthRepositoryImpl(
     private val authApiClient: AuthApiClient,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val sessionManager: SessionManager
 ) : AuthRepository {
     private val platform = getPlatform()
+
+    override fun observeSessionState(): Flow<Boolean> = sessionManager.isUserLoggedIn
 
     private fun createAuthTokens(
         token: String,
@@ -55,6 +61,7 @@ class AuthRepositoryImpl(
             )
             
             tokenManager.saveTokens(tokens)
+            sessionManager.setLoggedIn(true)
             platform.log("✅ Tokens saved", this, LogSeverity.DEBUG)
             tokens
         }
@@ -72,6 +79,7 @@ class AuthRepositoryImpl(
             )
             
             tokenManager.saveTokens(tokens)
+            sessionManager.setLoggedIn(true)
             platform.log("✅ Tokens saved", this, LogSeverity.DEBUG)
             tokens
         }
@@ -134,5 +142,6 @@ class AuthRepositoryImpl(
 
     override suspend fun logout() {
         tokenManager.clearTokens()
+        sessionManager.setLoggedIn(false)
     }
 }

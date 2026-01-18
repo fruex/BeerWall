@@ -1,5 +1,9 @@
 package org.fruex.beerwall.fakes
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import org.fruex.beerwall.auth.AuthTokens
 import org.fruex.beerwall.domain.repository.AuthRepository
 
@@ -8,6 +12,7 @@ class FakeAuthRepository : AuthRepository {
     var failureMessage = "Błąd autoryzacji"
 
     private var isLoggedIn = false
+    private val _sessionState = MutableStateFlow(false)
     private val fakeTokens = AuthTokens(
         token = "fake-token",
         tokenExpires = 3600L,
@@ -17,15 +22,19 @@ class FakeAuthRepository : AuthRepository {
         lastName = "Kowalski"
     )
 
+    override fun observeSessionState(): Flow<Boolean> = _sessionState.asStateFlow()
+
     override suspend fun googleSignIn(idToken: String): Result<AuthTokens> {
         if (shouldFail) return Result.failure(Exception(failureMessage))
         isLoggedIn = true
+        _sessionState.update { true }
         return Result.success(fakeTokens)
     }
 
     override suspend fun emailPasswordSignIn(email: String, password: String): Result<AuthTokens> {
         if (shouldFail) return Result.failure(Exception(failureMessage))
         isLoggedIn = true
+        _sessionState.update { true }
         return Result.success(fakeTokens)
     }
 
@@ -55,10 +64,12 @@ class FakeAuthRepository : AuthRepository {
 
     override suspend fun logout() {
         isLoggedIn = false
+        _sessionState.update { false }
     }
 
     // Metoda pomocnicza do ustawiania stanu w testach
     fun setLoggedIn(loggedIn: Boolean) {
         this.isLoggedIn = loggedIn
+        _sessionState.update { loggedIn }
     }
 }
