@@ -16,15 +16,19 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.lifecycle.viewmodel.compose.viewModel
 import org.fruex.beerwall.auth.rememberGoogleAuthProvider
-import org.fruex.beerwall.di.AppContainer
+import org.fruex.beerwall.presentation.viewmodel.AuthViewModel
+import org.fruex.beerwall.presentation.viewmodel.BalanceViewModel
+import org.fruex.beerwall.presentation.viewmodel.CardsViewModel
+import org.fruex.beerwall.presentation.viewmodel.HistoryViewModel
+import org.fruex.beerwall.presentation.viewmodel.ProfileViewModel
 import org.fruex.beerwall.ui.screens.balance.BalanceScreen
 import org.fruex.beerwall.ui.screens.cards.CardsScreen
 import org.fruex.beerwall.ui.screens.history.HistoryScreen
 import org.fruex.beerwall.ui.screens.profile.ProfileScreen
 import org.fruex.beerwall.ui.theme.CardBackground
 import org.fruex.beerwall.ui.theme.GoldPrimary
+import org.koin.compose.viewmodel.koinViewModel
 
 sealed class BottomNavItem(
     val route: String,
@@ -64,7 +68,6 @@ sealed class BottomNavItem(
 /**
  * Główny ekran aplikacji zawierający dolny pasek nawigacyjny.
  *
- * @param appContainer Kontener zależności do tworzenia ViewModeli.
  * @param onAddFundsClick Callback do ekranu doładowania.
  * @param onAddLocationClick Callback do dodawania lokalizacji.
  * @param onAddCardClick Callback do dodawania karty.
@@ -75,7 +78,6 @@ sealed class BottomNavItem(
  */
 @Composable
 fun MainScreen(
-    appContainer: AppContainer,
     onAddFundsClick: (premisesId: Int) -> Unit = {},
     onAddLocationClick: () -> Unit = {},
     onAddCardClick: () -> Unit = {},
@@ -87,11 +89,11 @@ fun MainScreen(
     var selectedTab by rememberSaveable { mutableStateOf(BottomNavItem.Balance.route) }
 
     // ViewModels for each tab
-    val balanceViewModel = viewModel { appContainer.createBalanceViewModel() }
-    val cardsViewModel = viewModel { appContainer.createCardsViewModel() }
-    val historyViewModel = viewModel { appContainer.createHistoryViewModel() }
-    val profileViewModel = viewModel { appContainer.createProfileViewModel() }
-    val authViewModel = viewModel { appContainer.createAuthViewModel() }
+    val balanceViewModel = koinViewModel<BalanceViewModel>()
+    val cardsViewModel = koinViewModel<CardsViewModel>()
+    val historyViewModel = koinViewModel<HistoryViewModel>()
+    val profileViewModel = koinViewModel<ProfileViewModel>()
+    val authViewModel = koinViewModel<AuthViewModel>()
 
     // Collect states
     val balanceState by balanceViewModel.uiState.collectAsState()

@@ -6,14 +6,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.fruex.beerwall.auth.rememberGoogleAuthProvider
-import org.fruex.beerwall.di.AppContainer
-import org.fruex.beerwall.ui.models.PaymentMethod
+import org.fruex.beerwall.presentation.viewmodel.AuthViewModel
+import org.fruex.beerwall.presentation.viewmodel.BalanceViewModel
+import org.fruex.beerwall.presentation.viewmodel.CardsViewModel
+import org.fruex.beerwall.presentation.viewmodel.ProfileViewModel
 import org.fruex.beerwall.ui.screens.auth.AuthMode
 import org.fruex.beerwall.ui.screens.auth.AuthScreen
 import org.fruex.beerwall.ui.screens.balance.AddFundsScreen
@@ -21,6 +22,7 @@ import org.fruex.beerwall.ui.screens.cards.AddCardScreen
 import org.fruex.beerwall.ui.screens.profile.AboutScreen
 import org.fruex.beerwall.ui.screens.profile.ChangePasswordScreen
 import org.fruex.beerwall.ui.screens.profile.SupportScreen
+import org.koin.compose.viewmodel.koinViewModel
 
 /**
  * Główny komponent nawigacyjny aplikacji (NavHost).
@@ -28,7 +30,6 @@ import org.fruex.beerwall.ui.screens.profile.SupportScreen
  * Definiuje graf nawigacji i obsługuje przejścia między ekranami.
  *
  * @param modifier Modyfikator układu.
- * @param appContainer Kontener zależności.
  * @param navController Kontroler nawigacji.
  * @param startDestination Punkt startowy nawigacji.
  * @param scannedCardId Zeskanowane ID karty (stan) - TODO: Przenieść do CardsViewModel.
@@ -37,7 +38,6 @@ import org.fruex.beerwall.ui.screens.profile.SupportScreen
  */
 @Composable
 fun AppNavHost(
-    appContainer: AppContainer,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     startDestination: String = NavigationDestination.Main.route,
@@ -54,7 +54,7 @@ fun AppNavHost(
     ) {
         // Auth screens
         composable(NavigationDestination.Registration.route) {
-            val authViewModel = viewModel { appContainer.createAuthViewModel() }
+            val authViewModel = koinViewModel<AuthViewModel>()
             val uiState by authViewModel.uiState.collectAsState()
 
             AuthScreen(
@@ -77,7 +77,7 @@ fun AppNavHost(
         }
 
         composable(NavigationDestination.Login.route) {
-            val authViewModel = viewModel { appContainer.createAuthViewModel() }
+            val authViewModel = koinViewModel<AuthViewModel>()
             val uiState by authViewModel.uiState.collectAsState()
 
             AuthScreen(
@@ -105,7 +105,6 @@ fun AppNavHost(
         // Main screen with bottom navigation
         composable(NavigationDestination.Main.route) {
             MainScreen(
-                appContainer = appContainer,
                 onAddFundsClick = { premisesId ->
                     navController.navigate("${NavigationDestination.AddFunds.route}/$premisesId") {
                         launchSingleTop = true
@@ -148,7 +147,7 @@ fun AppNavHost(
 
         // Add Funds screen
         composable(NavigationDestination.AddFunds.route) {
-            val balanceViewModel = viewModel { appContainer.createBalanceViewModel() }
+            val balanceViewModel = koinViewModel<BalanceViewModel>()
             val uiState by balanceViewModel.uiState.collectAsState()
 
             AddFundsScreen(
@@ -169,7 +168,7 @@ fun AppNavHost(
             arguments = listOf(navArgument("venueId") { type = NavType.IntType })
         ) { backStackEntry ->
             val venueId = backStackEntry.savedStateHandle.get<Int>("venueId") ?: 0
-            val balanceViewModel = viewModel { appContainer.createBalanceViewModel() }
+            val balanceViewModel = koinViewModel<BalanceViewModel>()
             val uiState by balanceViewModel.uiState.collectAsState()
             val venue = uiState.balances.find { it.premisesId == venueId }
 
@@ -186,7 +185,7 @@ fun AppNavHost(
 
         // Add Card screen
         composable(NavigationDestination.AddCard.route) {
-            val cardsViewModel = viewModel { appContainer.createCardsViewModel() }
+            val cardsViewModel = koinViewModel<CardsViewModel>()
 
             AddCardScreen(
                 scannedCardId = scannedCardId,
@@ -203,7 +202,7 @@ fun AppNavHost(
 
         // Profile sub-screens
         composable(NavigationDestination.ChangePassword.route) {
-            val authViewModel = viewModel { appContainer.createAuthViewModel() }
+            val authViewModel = koinViewModel<AuthViewModel>()
 
             ChangePasswordScreen(
                 onBackClick = { navController.popBackStack() },
@@ -215,7 +214,7 @@ fun AppNavHost(
         }
 
         composable(NavigationDestination.Support.route) {
-            val profileViewModel = viewModel { appContainer.createProfileViewModel() }
+            val profileViewModel = koinViewModel<ProfileViewModel>()
 
             SupportScreen(
                 onBackClick = { navController.popBackStack() },

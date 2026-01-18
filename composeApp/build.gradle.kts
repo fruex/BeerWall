@@ -36,8 +36,12 @@ kotlin {
             implementation(libs.datastore)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.koin.android)
         }
         commonMain.dependencies {
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
