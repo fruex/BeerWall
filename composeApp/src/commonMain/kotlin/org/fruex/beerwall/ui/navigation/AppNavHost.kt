@@ -1,17 +1,17 @@
 package org.fruex.beerwall.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import org.fruex.beerwall.ui.models.DailyTransactions
-import org.fruex.beerwall.ui.models.UserCard
-import org.fruex.beerwall.ui.models.UserProfile
-import org.fruex.beerwall.ui.models.VenueBalance
+import org.fruex.beerwall.di.AppContainer
 import org.fruex.beerwall.ui.screens.auth.AuthMode
 import org.fruex.beerwall.ui.screens.auth.AuthScreen
 import org.fruex.beerwall.ui.screens.balance.AddFundsScreen
@@ -26,59 +26,22 @@ import org.fruex.beerwall.ui.screens.profile.SupportScreen
  * Definiuje graf nawigacji i obsługuje przejścia między ekranami.
  *
  * @param modifier Modyfikator układu.
+ * @param appContainer Kontener zależności.
  * @param navController Kontroler nawigacji.
  * @param startDestination Punkt startowy nawigacji.
- * @param balances Lista sald (stan).
- * @param cards Lista kart (stan).
- * @param transactionGroups Historia transakcji (stan).
- * @param userProfile Profil użytkownika (stan).
- * @param paymentMethods Metody płatności (stan).
- * @param isRefreshing Flaga odświeżania (stan).
- * @param onRegisterWithEmail Callback rejestracji.
- * @param onLoginWithEmail Callback logowania email/hasło.
- * @param onLoginWithGoogleClick Callback logowania Google.
- * @param onLogoutClick Callback wylogowania.
- * @param onAddFundsClick Callback doładowania konta.
- * @param onToggleCardStatusClick Callback zmiany statusu karty.
- * @param onDeleteCardClick Callback usuwania karty.
- * @param onSaveCardClick Callback zapisywania karty.
- * @param onStartNfcScanningClick Callback startu skanowania NFC.
- * @param onRefreshHistoryClick Callback odświeżania historii.
- * @param onRefreshBalanceClick Callback odświeżania salda.
- * @param onForgotPassword Callback przypomnienia hasła.
- * @param onResetPassword Callback resetu hasła.
- * @param scannedCardId Zeskanowane ID karty (stan).
+ * @param scannedCardId Zeskanowane ID karty (stan) - TODO: Przenieść do CardsViewModel.
  * @param isNfcEnabled Flaga dostępności NFC (stan).
+ * @param onStartNfcScanningClick Callback startu skanowania NFC.
  */
 @Composable
 fun AppNavHost(
+    appContainer: AppContainer,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     startDestination: String = NavigationDestination.Main.route,
-    // Data
-    balances: List<VenueBalance> = emptyList(),
-    cards: List<UserCard> = emptyList(),
-    transactionGroups: List<DailyTransactions> = emptyList(),
-    userProfile: UserProfile = UserProfile("", "", ""),
-    paymentMethods: List<org.fruex.beerwall.remote.dto.operators.PaymentMethod> = emptyList(),
-    isRefreshing: Boolean = false,
-    // Callbacks
-    onRegisterWithEmail: (email: String, password: String) -> Unit = { _, _ -> },
-    onLoginWithEmail: (email: String, password: String) -> Unit = { _, _ -> },
-    onLoginWithGoogleClick: () -> Unit = {},
-    onLogoutClick: () -> Unit = {},
-    onAddFundsClick: (premisesId: Int, paymentMethodId: Int, balance: Double) -> Unit = { _, _, _ -> },
-    onToggleCardStatusClick: (String) -> Unit = {},
-    onDeleteCardClick: (String) -> Unit = {},
-    onSaveCardClick: (name: String, cardId: String) -> Unit = { _, _ -> },
-    onStartNfcScanningClick: () -> Unit = {},
-    onRefreshHistoryClick: () -> Unit = {},
-    onRefreshBalanceClick: () -> Unit = {},
-    onForgotPassword: (email: String) -> Unit = {},
-    onResetPassword: (String, String, String) -> Unit = { _, _, _ -> },
-    onSendMessage: (message: String) -> Unit = {},
     scannedCardId: String? = null,
     isNfcEnabled: Boolean = true,
+    onStartNfcScanningClick: () -> Unit = {}
 ) {
     NavHost(
         navController = navController,
@@ -87,29 +50,35 @@ fun AppNavHost(
     ) {
         // Auth screens
         composable(NavigationDestination.Registration.route) {
+            val authViewModel = viewModel { appContainer.createAuthViewModel() }
+            val uiState by authViewModel.uiState.collectAsState()
+
             AuthScreen(
                 mode = AuthMode.REGISTER,
                 onAuthClick = { email, password ->
-                    onRegisterWithEmail(email, password)
+                    authViewModel.handleRegister(email, password)
                 },
-                onGoogleSignInClick = onLoginWithGoogleClick,
+                onGoogleSignInClick = { /* TODO: Google SignIn flow from Screen or hoist provider */ },
                 onToggleModeClick = {
                     navController.navigate(NavigationDestination.Login.route) {
                         popUpTo(NavigationDestination.Registration.route) { inclusive = true }
                         launchSingleTop = true
                     }
                 },
-                isLoading = isRefreshing
+                isLoading = uiState.isLoading
             )
         }
 
         composable(NavigationDestination.Login.route) {
+            val authViewModel = viewModel { appContainer.createAuthViewModel() }
+            val uiState by authViewModel.uiState.collectAsState()
+
             AuthScreen(
                 mode = AuthMode.LOGIN,
                 onAuthClick = { email, password ->
-                    onLoginWithEmail(email, password)
+                    authViewModel.handleEmailPasswordSignIn(email, password)
                 },
-                onGoogleSignInClick = onLoginWithGoogleClick,
+                onGoogleSignInClick = { /* TODO */ },
                 onToggleModeClick = {
                     navController.navigate(NavigationDestination.Registration.route) {
                         popUpTo(NavigationDestination.Login.route) { inclusive = true }
@@ -117,16 +86,16 @@ fun AppNavHost(
                     }
                 },
                 onForgotPasswordClick = { email ->
-                    onForgotPassword(email)
+                    authViewModel.handleForgotPassword(email)
                 },
-                isLoading = isRefreshing
+                isLoading = uiState.isLoading
             )
         }
 
         // Main screen with bottom navigation
         composable(NavigationDestination.Main.route) {
             MainScreen(
-                balances = balances,
+                appContainer = appContainer,
                 onAddFundsClick = { premisesId ->
                     navController.navigate("${NavigationDestination.AddFunds.route}/$premisesId") {
                         launchSingleTop = true
@@ -137,21 +106,14 @@ fun AppNavHost(
                         launchSingleTop = true
                     }
                 },
-                onRefreshBalanceClick = onRefreshBalanceClick,
-                cards = cards,
                 onAddCardClick = {
                     navController.navigate(NavigationDestination.AddCard.route) {
                         launchSingleTop = true
                     }
                 },
-                onToggleCardStatusClick = onToggleCardStatusClick,
-                onDeleteCardClick = onDeleteCardClick,
-                transactionGroups = transactionGroups,
-                onRefreshHistoryClick = onRefreshHistoryClick,
-                isRefreshing = isRefreshing,
-                userProfile = userProfile,
                 onLogoutClick = {
-                    onLogoutClick()
+                    // Wylogowanie obsługiwane jest przez MainScreen->ProfileScreen->ViewModel
+                    // Tutaj obsługujemy tylko nawigację po wylogowaniu
                     navController.navigate(NavigationDestination.Login.route) {
                         popUpTo(NavigationDestination.Main.route) { inclusive = true }
                     }
@@ -176,12 +138,16 @@ fun AppNavHost(
 
         // Add Funds screen
         composable(NavigationDestination.AddFunds.route) {
+            val balanceViewModel = viewModel { appContainer.createBalanceViewModel() }
+            val uiState by balanceViewModel.uiState.collectAsState()
+
             AddFundsScreen(
-                availablePaymentMethods = paymentMethods,
+                availablePaymentMethods = uiState.paymentMethods,
                 onBackClick = { navController.popBackStack() },
                 onAddFunds = { paymentMethodId, balance ->
-                    // Domyślny lokal jeśli nie został wybrany
-                    onAddFundsClick(balances.firstOrNull()?.premisesId ?: 0, paymentMethodId, balance)
+                    // Domyślny lokal
+                    val venueId = uiState.balances.firstOrNull()?.premisesId ?: 0
+                    balanceViewModel.onAddFunds(venueId, paymentMethodId, balance)
                     navController.popBackStack()
                 }
             )
@@ -193,12 +159,15 @@ fun AppNavHost(
             arguments = listOf(navArgument("venueId") { type = NavType.IntType })
         ) { backStackEntry ->
             val venueId = backStackEntry.savedStateHandle.get<Int>("venueId") ?: 0
-            val venue = balances.find { it.premisesId == venueId }
+            val balanceViewModel = viewModel { appContainer.createBalanceViewModel() }
+            val uiState by balanceViewModel.uiState.collectAsState()
+            val venue = uiState.balances.find { it.premisesId == venueId }
+
             AddFundsScreen(
-                availablePaymentMethods = paymentMethods,
+                availablePaymentMethods = uiState.paymentMethods,
                 onBackClick = { navController.popBackStack() },
                 onAddFunds = { paymentMethodId, balance ->
-                    onAddFundsClick(venueId, paymentMethodId, balance)
+                    balanceViewModel.onAddFunds(venueId, paymentMethodId, balance)
                     navController.popBackStack()
                 },
                 premisesName = venue?.premisesName
@@ -207,6 +176,8 @@ fun AppNavHost(
 
         // Add Card screen
         composable(NavigationDestination.AddCard.route) {
+            val cardsViewModel = viewModel { appContainer.createCardsViewModel() }
+
             AddCardScreen(
                 scannedCardId = scannedCardId,
                 isNfcEnabled = isNfcEnabled,
@@ -214,7 +185,7 @@ fun AppNavHost(
                 onStartScanning = onStartNfcScanningClick,
                 onCardNameChanged = {},
                 onSaveCard = { name, cardId ->
-                    onSaveCardClick(name, cardId)
+                    cardsViewModel.onSaveCard(name, cardId)
                     navController.popBackStack()
                 }
             )
@@ -222,20 +193,24 @@ fun AppNavHost(
 
         // Profile sub-screens
         composable(NavigationDestination.ChangePassword.route) {
+            val authViewModel = viewModel { appContainer.createAuthViewModel() }
+
             ChangePasswordScreen(
                 onBackClick = { navController.popBackStack() },
                 onResetPassword = { email, resetCode, newPassword ->
-                    onResetPassword(email, resetCode, newPassword)
+                    authViewModel.handleResetPassword(email, resetCode, newPassword)
                     navController.popBackStack()
                 }
             )
         }
 
         composable(NavigationDestination.Support.route) {
+            val profileViewModel = viewModel { appContainer.createProfileViewModel() }
+
             SupportScreen(
                 onBackClick = { navController.popBackStack() },
                 onSendMessage = { message ->
-                    onSendMessage(message)
+                    profileViewModel.onSendMessage(message)
                     navController.popBackStack()
                 }
             )
