@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -70,6 +71,8 @@ actual class TokenManagerImpl(private val context: Context) : TokenManager {
         try {
             context.tokenDataStore.updateData { it.copy(tokens = tokens) }
             platform.log("Tokens saved successfully", this, LogSeverity.INFO)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             platform.log("Error saving tokens: ${e.message}", this, LogSeverity.ERROR)
             throw e
@@ -144,6 +147,9 @@ actual class TokenManagerImpl(private val context: Context) : TokenManager {
         try {
             context.tokenDataStore.updateData { it.copy(tokens = null) }
             platform.log("Tokens cleared", this, LogSeverity.INFO)
+        } catch (e: CancellationException) {
+            // CancellationException musi być przepuszczone dalej
+            throw e
         } catch (e: Exception) {
             platform.log("Error clearing tokens: ${e.message}", this, LogSeverity.ERROR)
         }
