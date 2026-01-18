@@ -6,6 +6,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import org.fruex.beerwall.LogSeverity
 import org.fruex.beerwall.auth.TokenManager
+import org.fruex.beerwall.data.remote.ApiRoutes
 import org.fruex.beerwall.data.remote.BaseApiClient
 import org.fruex.beerwall.log
 import org.fruex.beerwall.remote.dto.balance.*
@@ -25,7 +26,7 @@ class BalanceApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager)
      */
     suspend fun getBalance(): Result<List<BalanceResponse>> =
         safeCallWithAuth<GetBalanceEnvelope, List<BalanceResponse>> {
-            get("$baseUrl/mobile/users/balance") {
+            get("$baseUrl/${ApiRoutes.Users.BALANCE}") {
                 addAuthToken()
             }.body()
         }
@@ -44,7 +45,7 @@ class BalanceApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager)
         balance: Double
     ): Result<Unit> = try {
         platform.log("📤 TopUp Request", this, LogSeverity.INFO)
-        val response = client.post("$baseUrl/mobile/payments/topUp") {
+        val response = client.post("$baseUrl/${ApiRoutes.Payments.TOP_UP}") {
             addAuthToken()
             contentType(ContentType.Application.Json)
             setBody(TopUpRequest(premisesId, paymentMethodId, balance))
@@ -77,7 +78,7 @@ class BalanceApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager)
      */
     suspend fun getPaymentOperators(): Result<List<PaymentOperatorResponse>> =
         safeCallWithAuth<GetPaymentOperatorsEnvelope, List<PaymentOperatorResponse>> {
-            get("$baseUrl/mobile/payments/operators") {
+            get("$baseUrl/${ApiRoutes.Payments.OPERATORS}") {
                 addAuthToken()
             }.body()
         }
