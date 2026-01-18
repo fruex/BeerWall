@@ -83,14 +83,6 @@ fun ProfileScreen(
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold
                 )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = userProfile.email,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = TextSecondary
-                )
             }
         }
 
@@ -107,7 +99,7 @@ fun ProfileScreen(
             ) {
                 SettingsItem(
                     icon = Icons.Default.Settings,
-                    label = "Zmiana hasła e-mail",
+                    label = "Zmiana hasła",
                     onClick = onChangePasswordClick
                 )
 
@@ -267,7 +259,6 @@ fun ProfileScreenPreview() {
         ProfileScreen(
             userProfile = UserProfile(
                 name = "Jan Kowalski",
-                email = "jan.kowalski@example.com",
                 initials = "JK"
             ),
             onLogoutClick = {},

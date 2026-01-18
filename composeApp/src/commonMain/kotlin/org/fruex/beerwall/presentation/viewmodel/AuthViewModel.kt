@@ -89,7 +89,7 @@ class AuthViewModel(
                 it.copy(
                     isLoggedIn = false,
                     errorMessage = "Sesja wygasła. Zaloguj się ponownie.",
-                    userProfile = UserProfile("", "", "?")
+                    userProfile = UserProfile("", "")
                 )
             }
         }
@@ -199,7 +199,7 @@ class AuthViewModel(
             _uiState.update {
                 it.copy(
                     isLoggedIn = false,
-                    userProfile = UserProfile("", "", "?")
+                    userProfile = UserProfile("", "")
                 )
             }
         }
@@ -240,5 +240,5 @@ data class AuthUiState(
     val isCheckingSession: Boolean = true,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val userProfile: UserProfile = UserProfile("", "", "?")
+    val userProfile: UserProfile = UserProfile("", "")
 )

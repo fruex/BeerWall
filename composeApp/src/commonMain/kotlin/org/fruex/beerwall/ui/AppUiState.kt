@@ -25,7 +25,7 @@ data class AppUiState(
     val isRefreshing: Boolean = false,
     val balances: List<VenueBalance> = emptyList(),
     val cards: List<UserCard> = emptyList(),
-    val userProfile: UserProfile = UserProfile(name = "", email = "", initials = ""),
+    val userProfile: UserProfile = UserProfile(name = "", initials = ""),
     val transactionGroups: List<DailyTransactions> = emptyList(),
     val paymentMethods: List<PaymentMethod> = emptyList(),
     val errorMessage: String? = null
