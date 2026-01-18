@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.fruex.beerwall.auth.AuthTokens
 import org.fruex.beerwall.auth.GoogleAuthProvider
+import org.fruex.beerwall.auth.SessionManager
 import org.fruex.beerwall.domain.repository.AuthRepository
 import org.fruex.beerwall.domain.usecase.*
 import org.fruex.beerwall.ui.models.UserProfile
@@ -30,11 +31,25 @@ class AuthViewModel(
     private val forgotPasswordUseCase: ForgotPasswordUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val checkSessionUseCase: CheckSessionUseCase,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
+
+    init {
+        // Obserwuj globalny stan sesji
+        viewModelScope.launch {
+            sessionManager.isUserLoggedIn.collect { isLoggedIn ->
+                if (!isLoggedIn && _uiState.value.isLoggedIn) {
+                    handleSessionExpired()
+                } else if (isLoggedIn && !_uiState.value.isLoggedIn) {
+                     _uiState.update { it.copy(isLoggedIn = true) }
+                }
+            }
+        }
+    }
 
     /**
      * Sprawdza sesję przy starcie aplikacji.
@@ -45,6 +60,7 @@ class AuthViewModel(
             try {
                 checkSessionUseCase()
                     .onSuccess { isLoggedIn ->
+                        sessionManager.setLoggedIn(isLoggedIn)
                         _uiState.update {
                             it.copy(
                                 isLoggedIn = isLoggedIn,
@@ -53,9 +69,11 @@ class AuthViewModel(
                         }
                     }
                     .onFailure {
+                        sessionManager.setLoggedIn(false)
                         _uiState.update { it.copy(isCheckingSession = false) }
                     }
             } catch (_: Exception) {
+                sessionManager.setLoggedIn(false)
                 _uiState.update { it.copy(isCheckingSession = false) }
             }
         }
@@ -64,7 +82,7 @@ class AuthViewModel(
     /**
      * Wywołane automatycznie gdy refresh token wygasł.
      */
-    fun handleSessionExpired() {
+    private fun handleSessionExpired() {
         viewModelScope.launch {
             authRepository.logout()
             _uiState.update {
@@ -177,6 +195,7 @@ class AuthViewModel(
         viewModelScope.launch {
             googleAuthProvider.signOut()
             authRepository.logout()
+            sessionManager.setLoggedIn(false)
             _uiState.update {
                 it.copy(
                     isLoggedIn = false,
@@ -192,6 +211,7 @@ class AuthViewModel(
 
     private fun onLoginSuccess(tokens: AuthTokens) {
         updateUserProfile(tokens)
+        sessionManager.setLoggedIn(true)
         _uiState.update { it.copy(isLoggedIn = true, isCheckingSession = false) }
     }
 
