@@ -9,7 +9,7 @@ import org.fruex.beerwall.auth.TokenManager
 import org.fruex.beerwall.data.remote.ApiRoutes
 import org.fruex.beerwall.data.remote.BaseApiClient
 import org.fruex.beerwall.log
-import org.fruex.beerwall.remote.dto.cards.*
+import org.fruex.beerwall.data.remote.dto.cards.*
 
 /**
  * Klient API do obsługi operacji na kartach.

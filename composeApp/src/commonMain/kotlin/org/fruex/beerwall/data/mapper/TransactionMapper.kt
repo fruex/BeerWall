@@ -1,7 +1,7 @@
 package org.fruex.beerwall.data.mapper
 
 import org.fruex.beerwall.domain.model.Transaction
-import org.fruex.beerwall.remote.dto.history.TransactionResponse
+import org.fruex.beerwall.data.remote.dto.history.TransactionResponse
 
 /**
  * Mapuje [TransactionResponse] (DTO) na [Transaction] (Domain Model).
