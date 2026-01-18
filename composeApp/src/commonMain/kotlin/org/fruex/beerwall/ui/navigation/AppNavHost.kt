@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.fruex.beerwall.auth.rememberGoogleAuthProvider
 import org.fruex.beerwall.di.AppContainer
+import org.fruex.beerwall.ui.models.PaymentMethod
 import org.fruex.beerwall.ui.screens.auth.AuthMode
 import org.fruex.beerwall.ui.screens.auth.AuthScreen
 import org.fruex.beerwall.ui.screens.balance.AddFundsScreen
