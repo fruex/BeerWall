@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import org.fruex.beerwall.data.remote.dto.operators.PaymentMethod
+import org.fruex.beerwall.ui.models.UiPaymentMethod
 import org.fruex.beerwall.ui.components.BeerWallButton
 import org.fruex.beerwall.ui.components.BeerWallTextField
 import org.fruex.beerwall.ui.theme.*
@@ -27,7 +27,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddFundsScreen(
-    availablePaymentMethods: List<PaymentMethod>,
+    availablePaymentMethods: List<UiPaymentMethod>,
     onBackClick: () -> Unit,
     onAddFunds: (paymentMethodId: Int, balance: Double) -> Unit,
     premisesName: String? = null,
@@ -274,7 +274,7 @@ fun AddFundsScreen(
 
 @Composable
 fun PaymentMethodCard(
-    paymentMethod: PaymentMethod,
+    paymentMethod: UiPaymentMethod,
     isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -377,7 +377,7 @@ fun AddFundsScreenPreview() {
     BeerWallTheme {
         AddFundsScreen(
             availablePaymentMethods = listOf(
-                PaymentMethod(
+                UiPaymentMethod(
                     paymentMethodId = 1,
                     name = "BLIK",
                     description = "Szybka płatność kodem",
