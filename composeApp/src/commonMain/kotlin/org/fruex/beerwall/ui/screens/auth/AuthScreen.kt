@@ -40,6 +40,7 @@ enum class AuthMode {
  * @param onToggleModeClick Callback to switch between login/register modes
  * @param onForgotPasswordClick Optional callback for forgot password (login only)
  * @param isLoading Loading state
+ * @param errorMessage Optional error message to display
  */
 @Composable
 fun AuthScreen(
@@ -48,7 +49,8 @@ fun AuthScreen(
     onGoogleSignInClick: () -> Unit,
     onToggleModeClick: () -> Unit,
     onForgotPasswordClick: ((String) -> Unit)? = null,
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
+    errorMessage: String? = null
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -79,6 +81,24 @@ fun AuthScreen(
         )
 
         Spacer(modifier = Modifier.height(40.dp))
+
+        // Error message
+        errorMessage?.let { error ->
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer
+                )
+            ) {
+                Text(
+                    text = error,
+                    modifier = Modifier.padding(16.dp),
+                    color = MaterialTheme.colorScheme.onErrorContainer,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
         // Google Button
         SocialLoginButton(
