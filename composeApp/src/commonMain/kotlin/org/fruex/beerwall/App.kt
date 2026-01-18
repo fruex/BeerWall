@@ -10,13 +10,13 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import org.fruex.beerwall.di.createAppContainer
+import org.fruex.beerwall.presentation.viewmodel.AuthViewModel
 import org.fruex.beerwall.ui.navigation.AppNavHost
 import org.fruex.beerwall.ui.navigation.NavigationDestination
 import org.fruex.beerwall.ui.theme.BeerWallTheme
 import org.fruex.beerwall.ui.theme.GoldPrimary
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 @Preview
@@ -25,8 +25,7 @@ fun App(
     isNfcEnabled: Boolean = true,
     onStartNfcScanningClick: () -> Unit = {}
 ) {
-    val appContainer = createAppContainer()
-    val authViewModel = viewModel { appContainer.createAuthViewModel() }
+    val authViewModel = koinViewModel<AuthViewModel>()
     val authState by authViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -54,7 +53,6 @@ fun App(
                 snackbarHost = { SnackbarHost(snackbarHostState) }
             ) { paddingValues ->
                 AppNavHost(
-                    appContainer = appContainer,
                     modifier = Modifier.padding(paddingValues),
                     startDestination =
                         if (authState.isLoggedIn)
