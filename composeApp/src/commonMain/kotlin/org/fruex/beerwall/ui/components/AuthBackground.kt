@@ -8,7 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -26,7 +26,7 @@ fun AuthBackground(
         modifier = modifier
             .fillMaxSize()
             .background(DarkBackground)
-            .drawBehind {
+            .drawWithCache {
                 val gradientBrush = Brush.radialGradient(
                     colors = listOf(
                         GoldPrimary.copy(alpha = 0.2f),
@@ -35,7 +35,9 @@ fun AuthBackground(
                     center = Offset(size.width / 2f, 0f),
                     radius = size.maxDimension / 1.5f
                 )
-                drawRect(brush = gradientBrush)
+                onDrawBehind {
+                    drawRect(brush = gradientBrush)
+                }
             }
     ) {
         content()
