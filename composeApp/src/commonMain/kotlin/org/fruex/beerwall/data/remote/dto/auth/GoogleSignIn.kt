@@ -1,7 +1,7 @@
-package org.fruex.beerwall.remote.dto.auth
+package org.fruex.beerwall.data.remote.dto.auth
 
 import kotlinx.serialization.Serializable
-import org.fruex.beerwall.remote.common.ApiEnvelope
+import org.fruex.beerwall.data.remote.common.ApiEnvelope
 
 /**
  * Alias dla odpowiedzi logowania przez Google (tożsamy z AuthResponse).
