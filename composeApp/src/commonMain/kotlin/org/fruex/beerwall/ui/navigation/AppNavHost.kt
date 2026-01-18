@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import org.fruex.beerwall.auth.rememberGoogleAuthProvider
 import org.fruex.beerwall.di.AppContainer
 import org.fruex.beerwall.ui.screens.auth.AuthMode
 import org.fruex.beerwall.ui.screens.auth.AuthScreen
@@ -43,6 +44,8 @@ fun AppNavHost(
     isNfcEnabled: Boolean = true,
     onStartNfcScanningClick: () -> Unit = {}
 ) {
+    val googleAuthProvider = rememberGoogleAuthProvider()
+
     NavHost(
         navController = navController,
         startDestination = startDestination,
@@ -58,14 +61,17 @@ fun AppNavHost(
                 onAuthClick = { email, password ->
                     authViewModel.handleRegister(email, password)
                 },
-                onGoogleSignInClick = { /* TODO: Google SignIn flow from Screen or hoist provider */ },
+                onGoogleSignInClick = {
+                    authViewModel.handleGoogleSignIn(googleAuthProvider)
+                },
                 onToggleModeClick = {
                     navController.navigate(NavigationDestination.Login.route) {
                         popUpTo(NavigationDestination.Registration.route) { inclusive = true }
                         launchSingleTop = true
                     }
                 },
-                isLoading = uiState.isLoading
+                isLoading = uiState.isLoading,
+                errorMessage = uiState.errorMessage
             )
         }
 
@@ -78,7 +84,9 @@ fun AppNavHost(
                 onAuthClick = { email, password ->
                     authViewModel.handleEmailPasswordSignIn(email, password)
                 },
-                onGoogleSignInClick = { /* TODO */ },
+                onGoogleSignInClick = {
+                    authViewModel.handleGoogleSignIn(googleAuthProvider)
+                },
                 onToggleModeClick = {
                     navController.navigate(NavigationDestination.Registration.route) {
                         popUpTo(NavigationDestination.Login.route) { inclusive = true }
@@ -88,7 +96,8 @@ fun AppNavHost(
                 onForgotPasswordClick = { email ->
                     authViewModel.handleForgotPassword(email)
                 },
-                isLoading = uiState.isLoading
+                isLoading = uiState.isLoading,
+                errorMessage = uiState.errorMessage
             )
         }
 
