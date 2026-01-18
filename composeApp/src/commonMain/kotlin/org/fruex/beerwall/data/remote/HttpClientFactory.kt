@@ -46,7 +46,8 @@ object HttpClientFactory {
                     platform.log(message, "KtorClient", LogSeverity.DEBUG)
                 }
             }
-            level = LogLevel.ALL
+            // Security: Use HEADERS to avoid logging sensitive data (like passwords) in the request body.
+            level = LogLevel.HEADERS
             filter { request ->
                 request.url.host.contains("igibeer")
             }
