@@ -36,7 +36,6 @@ kotlin {
             implementation(libs.datastore)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.ktor.client.okhttp)
-            implementation(libs.koin.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -57,9 +56,6 @@ kotlin {
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.ktor.client.logging)
-            implementation(libs.koin.core)
-            implementation(libs.koin.compose)
-            implementation(libs.koin.compose.viewmodel)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

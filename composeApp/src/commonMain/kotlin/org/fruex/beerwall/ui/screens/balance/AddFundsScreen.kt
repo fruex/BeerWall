@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import org.fruex.beerwall.data.remote.dto.operators.PaymentMethod
+import org.fruex.beerwall.ui.models.PaymentMethod
 import org.fruex.beerwall.ui.components.BeerWallButton
 import org.fruex.beerwall.ui.components.BeerWallTextField
 import org.fruex.beerwall.ui.theme.*
