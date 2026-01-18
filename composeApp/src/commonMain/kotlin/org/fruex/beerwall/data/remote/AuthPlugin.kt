@@ -35,6 +35,15 @@ class AuthPlugin private constructor(
         override val key = AttributeKey<AuthPlugin>("AuthPlugin")
         private val refreshMutex = Mutex()
 
+        // Endpoints that should NOT have Bearer token attached
+        private val publicEndpoints = setOf(
+            "/mobile/auth/googleSignIn",
+            "/mobile/auth/emailPasswordSignIn",
+            "/mobile/auth/register",
+            "/mobile/auth/forgotPassword",
+            "/mobile/auth/resetPassword"
+        )
+
         override fun prepare(block: Configuration.() -> Unit): AuthPlugin {
             val config = Configuration().apply(block)
             return AuthPlugin(config.tokenManager, config.onRefreshFailed)
@@ -46,9 +55,16 @@ class AuthPlugin private constructor(
             scope.plugin(HttpSend).intercept { request ->
                 val initialToken = plugin.tokenManager.getToken()
 
-                // Add token to request
-                initialToken?.let { token ->
-                    request.headers[HttpHeaders.Authorization] = "Bearer $token"
+                // Check if this is a public endpoint
+                val isPublicEndpoint = publicEndpoints.any { endpoint ->
+                    request.url.encodedPath.endsWith(endpoint)
+                }
+
+                // Add token to request only if not a public endpoint
+                if (!isPublicEndpoint) {
+                    initialToken?.let { token ->
+                        request.headers[HttpHeaders.Authorization] = "Bearer $token"
+                    }
                 }
 
                 val originalCall = execute(request)
