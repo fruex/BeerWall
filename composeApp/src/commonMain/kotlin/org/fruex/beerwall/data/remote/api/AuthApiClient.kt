@@ -173,9 +173,8 @@ class AuthApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
      */
     suspend fun refreshToken(refreshToken: String): Result<RefreshTokenResponse> =
         safeCall<RefreshTokenEnvelope, RefreshTokenResponse> {
-            post("$baseUrl/${ApiRoutes.Auth.REFRESH_TOKEN}") {
-                contentType(ContentType.Application.Json)
-                setBody(RefreshTokenRequest(refreshToken))
+            get("$baseUrl/${ApiRoutes.Auth.REFRESH_TOKEN}") {
+                header(HttpHeaders.Authorization, "Bearer $refreshToken")
             }.body()
         }
 }
