@@ -17,7 +17,9 @@ class TokenManagerTest {
             token = "test-token",
             tokenExpires = 3600L,
             refreshToken = "refresh-token",
-            refreshTokenExpires = 7200L
+            refreshTokenExpires = 7200L,
+            firstName = "Jan",
+            lastName = "Kowalski"
         )
 
         // Then
