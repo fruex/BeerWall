@@ -43,3 +43,19 @@ data class UserProfile(
     val email: String,
     val initials: String
 )
+
+// Payment models
+@Immutable
+data class PaymentMethod(
+    val paymentMethodId: Int,
+    val name: String,
+    val description: String,
+    val image: String,
+    val status: String
+)
+
+@Immutable
+data class PaymentOperator(
+    val type: String,
+    val paymentMethods: List<PaymentMethod>
+)
