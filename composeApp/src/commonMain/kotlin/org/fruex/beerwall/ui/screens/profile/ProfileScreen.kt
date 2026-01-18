@@ -107,7 +107,7 @@ fun ProfileScreen(
             ) {
                 SettingsItem(
                     icon = Icons.Default.Settings,
-                    label = "Ustawienia konta",
+                    label = "Zmiana hasła e-mail",
                     onClick = onChangePasswordClick
                 )
 
