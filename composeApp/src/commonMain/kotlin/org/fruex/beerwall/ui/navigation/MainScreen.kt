@@ -16,10 +16,9 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import org.fruex.beerwall.ui.models.DailyTransactions
-import org.fruex.beerwall.ui.models.UserCard
-import org.fruex.beerwall.ui.models.UserProfile
-import org.fruex.beerwall.ui.models.VenueBalance
+import androidx.lifecycle.viewmodel.compose.viewModel
+import org.fruex.beerwall.auth.rememberGoogleAuthProvider
+import org.fruex.beerwall.di.AppContainer
 import org.fruex.beerwall.ui.screens.balance.BalanceScreen
 import org.fruex.beerwall.ui.screens.cards.CardsScreen
 import org.fruex.beerwall.ui.screens.history.HistoryScreen
@@ -65,18 +64,10 @@ sealed class BottomNavItem(
 /**
  * Główny ekran aplikacji zawierający dolny pasek nawigacyjny.
  *
- * @param balances Lista sald (stan).
+ * @param appContainer Kontener zależności do tworzenia ViewModeli.
  * @param onAddFundsClick Callback do ekranu doładowania.
  * @param onAddLocationClick Callback do dodawania lokalizacji.
- * @param onRefreshBalance Callback odświeżania salda.
- * @param cards Lista kart (stan).
  * @param onAddCardClick Callback do dodawania karty.
- * @param onToggleCardStatus Callback zmiany statusu karty.
- * @param onDeleteCard Callback usuwania karty.
- * @param transactionGroups Grupy transakcji (stan).
- * @param onRefreshHistory Callback odświeżania historii.
- * @param isRefreshing Flaga odświeżania (stan).
- * @param userProfile Profil użytkownika (stan).
  * @param onLogoutClick Callback wylogowania.
  * @param onChangePasswordClick Callback zmiany hasła.
  * @param onSupportClick Callback pomocy.
@@ -84,33 +75,31 @@ sealed class BottomNavItem(
  */
 @Composable
 fun MainScreen(
-    // Balance callbacks
-    balances: List<VenueBalance> = emptyList(),
+    appContainer: AppContainer,
     onAddFundsClick: (premisesId: Int) -> Unit = {},
     onAddLocationClick: () -> Unit = {},
-    onRefreshBalanceClick: () -> Unit = {},
-
-    // Cards callbacks
-    cards: List<UserCard> = emptyList(),
     onAddCardClick: () -> Unit = {},
-    onToggleCardStatusClick: (String) -> Unit = {},
-    onDeleteCardClick: (String) -> Unit = {},
-
-    // History data
-    transactionGroups: List<DailyTransactions> = emptyList(),
-    onRefreshHistoryClick: () -> Unit = {},
-
-    // Global state
-    isRefreshing: Boolean = false,
-
-    // Profile data & callbacks
-    userProfile: UserProfile = UserProfile("", "", ""),
     onLogoutClick: () -> Unit = {},
     onChangePasswordClick: () -> Unit = {},
     onSupportClick: () -> Unit = {},
     onAboutClick: () -> Unit = {},
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(BottomNavItem.Balance.route) }
+
+    // ViewModels for each tab
+    val balanceViewModel = viewModel { appContainer.createBalanceViewModel() }
+    val cardsViewModel = viewModel { appContainer.createCardsViewModel() }
+    val historyViewModel = viewModel { appContainer.createHistoryViewModel() }
+    val profileViewModel = viewModel { appContainer.createProfileViewModel() }
+    val authViewModel = viewModel { appContainer.createAuthViewModel() }
+
+    // Collect states
+    val balanceState by balanceViewModel.uiState.collectAsState()
+    val cardsState by cardsViewModel.uiState.collectAsState()
+    val historyState by historyViewModel.uiState.collectAsState()
+    val authState by authViewModel.uiState.collectAsState() // For user profile
+
+    val googleAuthProvider = rememberGoogleAuthProvider()
 
     val items = remember {
         listOf(
@@ -123,8 +112,9 @@ fun MainScreen(
 
     LaunchedEffect(selectedTab) {
         when (selectedTab) {
-            BottomNavItem.Balance.route -> onRefreshBalanceClick()
-            BottomNavItem.History.route -> onRefreshHistoryClick()
+            BottomNavItem.Balance.route -> balanceViewModel.refreshBalance()
+            BottomNavItem.History.route -> historyViewModel.refreshHistory()
+            BottomNavItem.Cards.route -> cardsViewModel.refreshCards()
         }
     }
 
@@ -165,32 +155,35 @@ fun MainScreen(
             when (selectedTab) {
                 BottomNavItem.Balance.route -> {
                     BalanceScreen(
-                        balances = balances,
-                        isRefreshing = isRefreshing,
-                        onRefresh = onRefreshBalanceClick,
+                        balances = balanceState.balances,
+                        isRefreshing = balanceState.isRefreshing,
+                        onRefresh = { balanceViewModel.refreshBalance() },
                         onAddFundsClick = onAddFundsClick,
                         onAddLocationClick = onAddLocationClick
                     )
                 }
                 BottomNavItem.Cards.route -> {
                     CardsScreen(
-                        cards = cards,
+                        cards = cardsState.cards,
                         onAddCardClick = onAddCardClick,
-                        onToggleCardStatus = onToggleCardStatusClick,
-                        onDeleteCard = onDeleteCardClick
+                        onToggleCardStatus = { cardsViewModel.onToggleCardStatus(it) },
+                        onDeleteCard = { cardsViewModel.onDeleteCard(it) }
                     )
                 }
                 BottomNavItem.History.route -> {
                     HistoryScreen(
-                        transactionGroups = transactionGroups,
-                        isRefreshing = isRefreshing,
-                        onRefresh = onRefreshHistoryClick
+                        transactionGroups = historyState.transactionGroups,
+                        isRefreshing = historyState.isRefreshing,
+                        onRefresh = { historyViewModel.refreshHistory() }
                     )
                 }
                 BottomNavItem.Profile.route -> {
                     ProfileScreen(
-                        userProfile = userProfile,
-                        onLogoutClick = onLogoutClick,
+                        userProfile = authState.userProfile,
+                        onLogoutClick = {
+                            authViewModel.handleLogout(googleAuthProvider)
+                            onLogoutClick()
+                        },
                         onChangePasswordClick = onChangePasswordClick,
                         onSupportClick = onSupportClick,
                         onAboutClick = onAboutClick
