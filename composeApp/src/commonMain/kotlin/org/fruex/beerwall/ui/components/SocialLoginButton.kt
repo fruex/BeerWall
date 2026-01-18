@@ -57,12 +57,21 @@ fun SocialLoginButton(
                 contentAlignment = Alignment.Center
             ) {
                 if (iconRes != null) {
-                    Icon(
-                        painter = painterResource(iconRes),
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp),
-                        tint = Color.Unspecified
-                    )
+                    // White circular background for social icons
+                    Surface(
+                        modifier = Modifier.size(24.dp),
+                        shape = androidx.compose.foundation.shape.CircleShape,
+                        color = Color.White
+                    ) {
+                        Icon(
+                            painter = painterResource(iconRes),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .padding(3.dp),
+                            tint = Color.Unspecified
+                        )
+                    }
                 } else if (icon != null) {
                     Icon(
                         imageVector = icon,
