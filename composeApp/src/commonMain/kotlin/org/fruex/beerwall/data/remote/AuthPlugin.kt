@@ -126,13 +126,13 @@ class AuthPlugin private constructor(
 
             val response: HttpResponse = client.post("${org.fruex.beerwall.BuildKonfig.BASE_URL}/mobile/auth/refreshToken") {
                 contentType(ContentType.Application.Json)
-                setBody(org.fruex.beerwall.remote.dto.auth.RefreshTokenRequest(refreshToken = refreshTokenValue))
+                setBody(org.fruex.beerwall.data.remote.dto.auth.RefreshTokenRequest(refreshToken = refreshTokenValue))
             }
 
             client.close()
 
             if (response.status == HttpStatusCode.OK) {
-                val refreshResponse: org.fruex.beerwall.remote.dto.auth.RefreshTokenResponse = response.body()
+                val refreshResponse: org.fruex.beerwall.data.remote.dto.auth.RefreshTokenResponse = response.body()
                 
                 // Decode user data from new token payload
                 val payload = org.fruex.beerwall.auth.decodeTokenPayload(refreshResponse.token)

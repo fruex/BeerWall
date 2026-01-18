@@ -12,9 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import org.fruex.beerwall.auth.SessionManager
 import org.fruex.beerwall.presentation.viewmodel.AuthViewModel
-import org.fruex.beerwall.presentation.viewmodel.BalanceViewModel
-import org.fruex.beerwall.presentation.viewmodel.CardsViewModel
-import org.fruex.beerwall.presentation.viewmodel.HistoryViewModel
 import org.fruex.beerwall.ui.navigation.AppNavHost
 import org.fruex.beerwall.ui.navigation.NavigationDestination
 import org.fruex.beerwall.ui.theme.BeerWallTheme

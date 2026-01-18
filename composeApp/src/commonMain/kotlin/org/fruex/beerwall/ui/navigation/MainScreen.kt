@@ -16,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import org.fruex.beerwall.auth.rememberGoogleAuthProvider
 import org.fruex.beerwall.ui.models.DailyTransactions
 import org.fruex.beerwall.ui.models.UserCard
 import org.fruex.beerwall.ui.models.UserProfile
@@ -66,17 +67,17 @@ sealed class BottomNavItem(
  * Główny ekran aplikacji zawierający dolny pasek nawigacyjny.
  *
  * @param balances Lista sald (stan).
+ * @param cards Lista kart (stan).
+ * @param transactionGroups Historia transakcji (stan).
+ * @param userProfile Profil użytkownika (stan).
+ * @param isRefreshing Flaga odświeżania (stan).
+ * @param onRefreshBalanceClick Callback odświeżania salda.
+ * @param onRefreshHistoryClick Callback odświeżania historii.
+ * @param onToggleCardStatusClick Callback zmiany statusu karty.
+ * @param onDeleteCardClick Callback usuwania karty.
  * @param onAddFundsClick Callback do ekranu doładowania.
  * @param onAddLocationClick Callback do dodawania lokalizacji.
- * @param onRefreshBalance Callback odświeżania salda.
- * @param cards Lista kart (stan).
  * @param onAddCardClick Callback do dodawania karty.
- * @param onToggleCardStatus Callback zmiany statusu karty.
- * @param onDeleteCard Callback usuwania karty.
- * @param transactionGroups Grupy transakcji (stan).
- * @param onRefreshHistory Callback odświeżania historii.
- * @param isRefreshing Flaga odświeżania (stan).
- * @param userProfile Profil użytkownika (stan).
  * @param onLogoutClick Callback wylogowania.
  * @param onChangePasswordClick Callback zmiany hasła.
  * @param onSupportClick Callback pomocy.
@@ -84,27 +85,18 @@ sealed class BottomNavItem(
  */
 @Composable
 fun MainScreen(
-    // Balance callbacks
-    balances: List<VenueBalance> = emptyList(),
+    balances: List<VenueBalance>,
+    cards: List<UserCard>,
+    transactionGroups: List<DailyTransactions>,
+    userProfile: UserProfile,
+    isRefreshing: Boolean,
+    onRefreshBalanceClick: () -> Unit,
+    onRefreshHistoryClick: () -> Unit,
+    onToggleCardStatusClick: (String) -> Unit,
+    onDeleteCardClick: (String) -> Unit,
     onAddFundsClick: (premisesId: Int) -> Unit = {},
     onAddLocationClick: () -> Unit = {},
-    onRefreshBalanceClick: () -> Unit = {},
-
-    // Cards callbacks
-    cards: List<UserCard> = emptyList(),
     onAddCardClick: () -> Unit = {},
-    onToggleCardStatusClick: (String) -> Unit = {},
-    onDeleteCardClick: (String) -> Unit = {},
-
-    // History data
-    transactionGroups: List<DailyTransactions> = emptyList(),
-    onRefreshHistoryClick: () -> Unit = {},
-
-    // Global state
-    isRefreshing: Boolean = false,
-
-    // Profile data & callbacks
-    userProfile: UserProfile = UserProfile("", "", ""),
     onLogoutClick: () -> Unit = {},
     onChangePasswordClick: () -> Unit = {},
     onSupportClick: () -> Unit = {},
@@ -125,6 +117,7 @@ fun MainScreen(
         when (selectedTab) {
             BottomNavItem.Balance.route -> onRefreshBalanceClick()
             BottomNavItem.History.route -> onRefreshHistoryClick()
+            BottomNavItem.Cards.route -> { /* Refresh cards if needed */ }
         }
     }
 

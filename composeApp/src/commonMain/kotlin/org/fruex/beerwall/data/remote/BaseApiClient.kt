@@ -6,7 +6,7 @@ import io.ktor.http.*
 import org.fruex.beerwall.BuildKonfig
 import org.fruex.beerwall.auth.TokenManager
 import org.fruex.beerwall.getPlatform
-import org.fruex.beerwall.remote.common.ApiResponse
+import org.fruex.beerwall.data.remote.common.ApiResponse
 
 /**
  * Base class for all API clients.

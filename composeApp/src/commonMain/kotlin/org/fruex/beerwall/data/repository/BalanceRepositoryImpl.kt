@@ -4,7 +4,7 @@ import org.fruex.beerwall.data.mapper.toDomain
 import org.fruex.beerwall.data.remote.api.BalanceApiClient
 import org.fruex.beerwall.domain.model.Balance
 import org.fruex.beerwall.domain.repository.BalanceRepository
-import org.fruex.beerwall.remote.dto.operators.PaymentOperatorResponse
+import org.fruex.beerwall.data.remote.dto.operators.PaymentOperatorResponse
 
 /**
  * Implementacja repozytorium sald.
