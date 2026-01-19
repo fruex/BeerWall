@@ -13,6 +13,7 @@ import kotlinx.serialization.json.Json
 import com.fruex.beerwall.LogSeverity
 import com.fruex.beerwall.getPlatform
 import com.fruex.beerwall.log
+import com.fruex.beerwall.ui.models.UserProfile
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -155,30 +156,36 @@ actual class TokenManagerImpl(private val context: Context) : TokenManager {
         }
     }
 
-    actual override suspend fun getUserName(): String? = withContext(Dispatchers.IO) {
+    actual override suspend fun getUserProfile(): UserProfile? = withContext(Dispatchers.IO) {
         try {
             val session = context.tokenDataStore.data.first()
             val tokens = session.tokens ?: return@withContext null
             
             // Najpierw sprawdź czy mamy imię i nazwisko zapisane wprost w obiekcie AuthTokens
-            if (!tokens.firstName.isNullOrBlank() || !tokens.lastName.isNullOrBlank()) {
+            val displayName = if (!tokens.firstName.isNullOrBlank() || !tokens.lastName.isNullOrBlank()) {
                 val first = tokens.firstName ?: ""
                 val last = tokens.lastName ?: ""
-                return@withContext "$first $last".trim()
+                "$first $last".trim()
+            } else {
+                // Jeśli nie, spróbuj wyciągnąć z tokenu JWT
+                val payload = decodeTokenPayload(tokens.token)
+                val firstName = payload["firstName"] ?: ""
+                val lastName = payload["lastName"] ?: ""
+                
+                if (firstName.isNotBlank() || lastName.isNotBlank()) {
+                    "$firstName $lastName".trim()
+                } else {
+                    null
+                }
             }
-            
-            // Jeśli nie, spróbuj wyciągnąć z tokenu JWT
-            val payload = decodeTokenPayload(tokens.token)
-            val firstName = payload["firstName"] ?: ""
-            val lastName = payload["lastName"] ?: ""
-            
-            if (firstName.isNotBlank() || lastName.isNotBlank()) {
-                "$firstName $lastName".trim()
+
+            if (displayName != null) {
+                UserProfile(name = displayName)
             } else {
                 null
             }
         } catch (e: Exception) {
-            platform.log("Error getting user name: ${e.message}", this, LogSeverity.ERROR)
+            platform.log("Error getting user profile: ${e.message}", this, LogSeverity.ERROR)
             null
         }
     }

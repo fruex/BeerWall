@@ -22,15 +22,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.auth.rememberGoogleAuthProvider
-import com.fruex.beerwall.presentation.viewmodel.AuthViewModel
-import com.fruex.beerwall.presentation.viewmodel.BalanceViewModel
-import com.fruex.beerwall.presentation.viewmodel.CardsViewModel
-import com.fruex.beerwall.presentation.viewmodel.HistoryViewModel
-import com.fruex.beerwall.presentation.viewmodel.ProfileViewModel
-import com.fruex.beerwall.ui.models.VenueBalance
-import com.fruex.beerwall.ui.models.UserCard
+import com.fruex.beerwall.presentation.viewmodel.*
 import com.fruex.beerwall.ui.models.DailyTransactions
+import com.fruex.beerwall.ui.models.UserCard
 import com.fruex.beerwall.ui.models.UserProfile
+import com.fruex.beerwall.ui.models.VenueBalance
 import com.fruex.beerwall.ui.screens.balance.BalanceScreen
 import com.fruex.beerwall.ui.screens.cards.CardsScreen
 import com.fruex.beerwall.ui.screens.history.HistoryScreen
@@ -276,7 +272,7 @@ fun MainScreenPreview() {
         transactionGroups = emptyList(),
         isHistoryRefreshing = false,
         onHistoryRefresh = {},
-        userProfile = UserProfile(name = "Jan Kowalski", initials = "JK"),
+        userProfile = UserProfile(name = "Jan Kowalski"),
         onLogoutClick = {},
         onAddFundsClick = {},
         onAddLocationClick = {},

@@ -1,11 +1,11 @@
 package com.fruex.beerwall.auth
 
+import com.fruex.beerwall.LogSeverity
+import com.fruex.beerwall.getPlatform
+import com.fruex.beerwall.ui.models.UserProfile
 import kotlinx.serialization.Serializable
-import kotlinx.datetime.Clock
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
-import com.fruex.beerwall.getPlatform
-import com.fruex.beerwall.LogSeverity
 
 /**
  * Model tokenów autoryzacyjnych aplikacji.
@@ -40,7 +40,7 @@ interface TokenManager {
     suspend fun getTokenExpires(): Long?
     suspend fun getRefreshTokenExpires(): Long?
     suspend fun clearTokens()
-    suspend fun getUserName(): String?
+    suspend fun getUserProfile(): UserProfile?
 }
 
 // TODO: `TokenManager` jest interfejsem zdefiniowanym w `auth`, ale jego implementacja (`TokenManagerImpl`) oraz samo użycie sugeruje, że jest to Lokalne Źródło Danych (Local Data Source). Zgodnie z Clean Architecture, powinien znajdować się w warstwie `data` (np. `data/local` lub `data/repository`).
@@ -57,7 +57,7 @@ expect class TokenManagerImpl : TokenManager {
     override suspend fun getTokenExpires(): Long?
     override suspend fun getRefreshTokenExpires(): Long?
     override suspend fun clearTokens()
-    override suspend fun getUserName(): String?
+    override suspend fun getUserProfile(): UserProfile?
 }
 
 /**

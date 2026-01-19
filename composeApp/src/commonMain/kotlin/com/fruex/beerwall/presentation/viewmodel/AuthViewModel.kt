@@ -91,48 +91,24 @@ class AuthViewModel(
                 it.copy(
                     isLoggedIn = false,
                     errorMessage = "Sesja wygasła. Zaloguj się ponownie.",
-                    userProfile = UserProfile("", "")
+                    userProfile = UserProfile("")
                 )
             }
         }
     }
 
     fun handleGoogleSignIn(googleAuthProvider: GoogleAuthProvider) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            try {
-                googleSignInUseCase(googleAuthProvider)
-                    .onSuccess { tokens ->
-                        onLoginSuccess(tokens)
-                    }
-                    .onFailure { error ->
-                        _uiState.update { it.copy(errorMessage = error.message ?: "Błąd logowania Google") }
-                    }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(errorMessage = e.message ?: "Błąd logowania Google") }
-            } finally {
-                _uiState.update { it.copy(isLoading = false) }
-            }
-        }
+        performAuthAction(
+            action = { googleSignInUseCase(googleAuthProvider) },
+            errorMessage = "Błąd logowania Google"
+        )
     }
 
     fun handleEmailPasswordSignIn(email: String, password: String) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            try {
-                emailPasswordSignInUseCase(email, password)
-                    .onSuccess { tokens ->
-                        onLoginSuccess(tokens)
-                    }
-                    .onFailure { error ->
-                        _uiState.update { it.copy(errorMessage = error.message ?: "Błąd logowania") }
-                    }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(errorMessage = e.message ?: "Błąd logowania") }
-            } finally {
-                _uiState.update { it.copy(isLoading = false) }
-            }
-        }
+        performAuthAction(
+            action = { emailPasswordSignInUseCase(email, password) },
+            errorMessage = "Błąd logowania"
+        )
     }
 
     fun handleRegister(email: String, password: String) {
@@ -146,11 +122,10 @@ class AuthViewModel(
                     }
                     .onFailure { error ->
                         _uiState.update { it.copy(errorMessage = error.message ?: "Błąd rejestracji") }
+                        _uiState.update { it.copy(isLoading = false) }
                     }
             } catch (e: Exception) {
-                _uiState.update { it.copy(errorMessage = e.message ?: "Błąd rejestracji") }
-            } finally {
-                _uiState.update { it.copy(isLoading = false) }
+                _uiState.update { it.copy(errorMessage = e.message ?: "Błąd rejestracji", isLoading = false) }
             }
         }
     }
@@ -200,7 +175,7 @@ class AuthViewModel(
             _uiState.update {
                 it.copy(
                     isLoggedIn = false,
-                    userProfile = UserProfile("", "")
+                    userProfile = UserProfile("")
                 )
             }
         }
@@ -210,38 +185,43 @@ class AuthViewModel(
         _uiState.update { it.copy(errorMessage = null) }
     }
 
+    private fun performAuthAction(
+        action: suspend () -> Result<AuthTokens>,
+        errorMessage: String
+    ) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            try {
+                action()
+                    .onSuccess { tokens ->
+                        onLoginSuccess(tokens)
+                    }
+                    .onFailure { error ->
+                        _uiState.update { it.copy(errorMessage = error.message ?: errorMessage) }
+                    }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(errorMessage = e.message ?: errorMessage) }
+            } finally {
+                _uiState.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
     private fun onLoginSuccess(tokens: AuthTokens) {
-        updateUserProfile(tokens)
+        // Po zalogowaniu od razu pobieramy profil z TokenManagera, który ma już zaktualizowane tokeny
+        loadUserProfile()
         checkSession()
         _uiState.update { it.copy(isLoggedIn = true, isCheckingSession = false) }
     }
 
     private fun loadUserProfile() {
         viewModelScope.launch {
-            val userName = tokenManager.getUserName()
-            if (userName != null) {
+            val userProfile = tokenManager.getUserProfile()
+            if (userProfile != null) {
                 _uiState.update { currentState ->
-                    currentState.copy(
-                        userProfile = UserProfile(
-                            name = userName
-                        )
-                    )
+                    currentState.copy(userProfile = userProfile)
                 }
             }
-        }
-    }
-
-    private fun updateUserProfile(tokens: AuthTokens) {
-        val displayName = if (tokens.firstName != null || tokens.lastName != null)
-            "${tokens.firstName ?: ""} ${tokens.lastName ?: ""}".trim()
-        else null
-
-        _uiState.update { currentState ->
-            currentState.copy(
-                userProfile = UserProfile(
-                    name = displayName ?: currentState.userProfile.name
-                )
-            )
         }
     }
 }
@@ -251,5 +231,5 @@ data class AuthUiState(
     val isCheckingSession: Boolean = true,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val userProfile: UserProfile = UserProfile("", "")
+    val userProfile: UserProfile = UserProfile("")
 )
