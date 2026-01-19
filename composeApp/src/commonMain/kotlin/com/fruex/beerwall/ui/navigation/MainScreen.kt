@@ -28,9 +28,9 @@ import com.fruex.beerwall.presentation.viewmodel.CardsViewModel
 import com.fruex.beerwall.presentation.viewmodel.HistoryViewModel
 import com.fruex.beerwall.presentation.viewmodel.ProfileViewModel
 import com.fruex.beerwall.ui.models.DailyTransactions
+import com.fruex.beerwall.ui.models.PremisesBalance
 import com.fruex.beerwall.ui.models.UserCard
 import com.fruex.beerwall.ui.models.UserProfile
-import com.fruex.beerwall.ui.models.VenueBalance
 import com.fruex.beerwall.ui.screens.balance.BalanceScreen
 import com.fruex.beerwall.ui.screens.cards.CardsScreen
 import com.fruex.beerwall.ui.screens.history.HistoryScreen
@@ -152,7 +152,7 @@ fun MainScreen(
 fun MainScreenContent(
     selectedTab: String,
     onTabSelected: (String) -> Unit,
-    balances: List<VenueBalance>,
+    balances: List<PremisesBalance>,
     isBalanceRefreshing: Boolean,
     onBalanceRefresh: () -> Unit,
     cards: List<UserCard>,
@@ -269,13 +269,13 @@ private fun MainScreenPreviewTemplate(selectedTab: String) {
             selectedTab = selectedTab,
             onTabSelected = {},
             balances = listOf(
-                VenueBalance(
+                PremisesBalance(
                     premisesId = 1,
                     premisesName = "Pub Centrum",
                     balance = 45.50,
                     loyaltyPoints = 120
                 ),
-                VenueBalance(
+                PremisesBalance(
                     premisesId = 2,
                     premisesName = "Bar Rynek",
                     balance = 12.00,
@@ -304,8 +304,7 @@ private fun MainScreenPreviewTemplate(selectedTab: String) {
             isHistoryRefreshing = false,
             onHistoryRefresh = {},
             userProfile = UserProfile(
-                name = "Jan Kowalski",
-                initials = "JK"
+                name = "Jan Kowalski"
             ),
             onLogoutClick = {},
             onAddFundsClick = {},

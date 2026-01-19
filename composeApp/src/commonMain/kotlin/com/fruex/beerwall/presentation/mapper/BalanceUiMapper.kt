@@ -1,10 +1,10 @@
 package com.fruex.beerwall.presentation.mapper
 
 import com.fruex.beerwall.domain.model.Balance
-import com.fruex.beerwall.ui.models.VenueBalance
+import com.fruex.beerwall.ui.models.PremisesBalance
 
-fun Balance.toUi(): VenueBalance {
-    return VenueBalance(
+fun Balance.toUi(): PremisesBalance {
+    return PremisesBalance(
         premisesId = premisesId,
         premisesName = premisesName,
         balance = balance,
@@ -12,6 +12,6 @@ fun Balance.toUi(): VenueBalance {
     )
 }
 
-fun List<Balance>.toUi(): List<VenueBalance> {
+fun List<Balance>.toUi(): List<PremisesBalance> {
     return map { it.toUi() }
 }

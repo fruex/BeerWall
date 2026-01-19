@@ -13,7 +13,7 @@ import com.fruex.beerwall.domain.usecase.TopUpBalanceUseCase
 import com.fruex.beerwall.presentation.mapper.toUi
 import com.fruex.beerwall.presentation.mapper.toUiMethods
 import com.fruex.beerwall.ui.models.PaymentMethod
-import com.fruex.beerwall.ui.models.VenueBalance
+import com.fruex.beerwall.ui.models.PremisesBalance
 
 /**
  * ViewModel odpowiedzialny za zarządzanie saldem użytkownika.
@@ -93,7 +93,7 @@ class BalanceViewModel(
 }
 
 data class BalanceUiState(
-    val balances: List<VenueBalance> = emptyList(),
+    val balances: List<PremisesBalance> = emptyList(),
     val paymentMethods: List<PaymentMethod> = emptyList(),
     val isRefreshing: Boolean = false,
     val errorMessage: String? = null

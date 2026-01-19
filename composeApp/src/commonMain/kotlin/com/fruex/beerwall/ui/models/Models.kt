@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 
 // Balance models
 @Immutable
-data class VenueBalance(
+data class PremisesBalance(
     val premisesId: Int,
     val premisesName: String,
     val balance: Double,
