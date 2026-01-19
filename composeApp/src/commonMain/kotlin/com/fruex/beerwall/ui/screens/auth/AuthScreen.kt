@@ -14,10 +14,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -73,24 +70,6 @@ fun AuthScreen(
             .fillMaxSize()
             .background(DarkBackground)
     ) {
-        // Golden glow gradient at the top
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(300.dp)
-                .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            GoldPrimary.copy(alpha = 0.2f),
-                            Color.Transparent
-                        ),
-                        center = Offset.Unspecified,
-                        radius = with(LocalDensity.current) { 300.dp.toPx() }
-                    )
-                )
-                .align(Alignment.TopCenter)
-        )
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
