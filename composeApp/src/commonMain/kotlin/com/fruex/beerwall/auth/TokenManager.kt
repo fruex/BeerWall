@@ -1,7 +1,6 @@
 package com.fruex.beerwall.auth
 
 import kotlinx.serialization.Serializable
-import kotlinx.datetime.Clock
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import com.fruex.beerwall.getPlatform
