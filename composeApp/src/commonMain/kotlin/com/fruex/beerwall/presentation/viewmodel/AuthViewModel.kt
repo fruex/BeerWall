@@ -2,15 +2,16 @@ package com.fruex.beerwall.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fruex.beerwall.auth.AuthTokens
+import com.fruex.beerwall.auth.GoogleAuthProvider
+import com.fruex.beerwall.auth.TokenManager
+import com.fruex.beerwall.domain.usecase.*
+import com.fruex.beerwall.ui.models.UserProfile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import com.fruex.beerwall.auth.AuthTokens
-import com.fruex.beerwall.auth.GoogleAuthProvider
-import com.fruex.beerwall.domain.usecase.*
-import com.fruex.beerwall.ui.models.UserProfile
 
 /**
  * ViewModel odpowiedzialny za autentykację użytkownika.
@@ -30,7 +31,8 @@ class AuthViewModel(
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val checkSessionUseCase: CheckSessionUseCase,
     private val observeSessionStateUseCase: ObserveSessionStateUseCase,
-    private val logoutUseCase: LogoutUseCase
+    private val logoutUseCase: LogoutUseCase,
+    private val tokenManager: TokenManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -44,6 +46,8 @@ class AuthViewModel(
                     handleSessionExpired()
                 } else if (isLoggedIn && !_uiState.value.isLoggedIn) {
                     _uiState.update { it.copy(isLoggedIn = true) }
+                    // Po zalogowaniu (lub przywróceniu sesji) pobierz dane użytkownika
+                    loadUserProfile()
                 }
             }
         }
@@ -63,6 +67,9 @@ class AuthViewModel(
                                 isLoggedIn = isLoggedIn,
                                 isCheckingSession = false
                             )
+                        }
+                        if (isLoggedIn) {
+                            loadUserProfile()
                         }
                     }
                     .onFailure {
@@ -209,6 +216,21 @@ class AuthViewModel(
         _uiState.update { it.copy(isLoggedIn = true, isCheckingSession = false) }
     }
 
+    private fun loadUserProfile() {
+        viewModelScope.launch {
+            val userName = tokenManager.getUserName()
+            if (userName != null) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        userProfile = currentState.userProfile.copy(
+                            name = userName
+                        )
+                    )
+                }
+            }
+        }
+    }
+
     private fun updateUserProfile(tokens: AuthTokens) {
         val displayName = if (tokens.firstName != null || tokens.lastName != null)
             "${tokens.firstName ?: ""} ${tokens.lastName ?: ""}".trim()
@@ -217,15 +239,10 @@ class AuthViewModel(
         _uiState.update { currentState ->
             currentState.copy(
                 userProfile = currentState.userProfile.copy(
-                    name = displayName ?: currentState.userProfile.name,
-                    initials = getUserInitials(displayName, currentState.userProfile.initials)
+                    name = displayName ?: currentState.userProfile.name
                 )
             )
         }
-    }
-
-    private fun getUserInitials(displayName: String?, fallback: String): String {
-        return displayName?.split(" ")?.mapNotNull { it.firstOrNull() }?.joinToString("") ?: fallback
     }
 }
 
