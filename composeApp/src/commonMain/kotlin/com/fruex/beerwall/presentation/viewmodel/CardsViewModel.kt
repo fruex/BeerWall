@@ -1,0 +1,133 @@
+package com.fruex.beerwall.presentation.viewmodel
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import com.fruex.beerwall.domain.usecase.AssignCardUseCase
+import com.fruex.beerwall.domain.usecase.DeleteCardUseCase
+import com.fruex.beerwall.domain.usecase.GetCardsUseCase
+import com.fruex.beerwall.domain.usecase.ToggleCardStatusUseCase
+import com.fruex.beerwall.presentation.mapper.toUi
+import com.fruex.beerwall.ui.models.UserCard
+
+/**
+ * ViewModel odpowiedzialny za zarządzanie kartami NFC użytkownika.
+ *
+ * Zarządza:
+ * - Pobieraniem listy kart
+ * - Przełączaniem statusu karty (aktywna/nieaktywna)
+ * - Dodawaniem nowych kart
+ * - Usuwaniem kart
+ */
+class CardsViewModel(
+    private val getCardsUseCase: GetCardsUseCase,
+    private val toggleCardStatusUseCase: ToggleCardStatusUseCase,
+    private val assignCardUseCase: AssignCardUseCase,
+    private val deleteCardUseCase: DeleteCardUseCase
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(CardsUiState())
+    val uiState: StateFlow<CardsUiState> = _uiState.asStateFlow()
+
+    init {
+        refreshCards()
+    }
+
+    fun refreshCards() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isRefreshing = true, errorMessage = null) }
+            try {
+                getCardsUseCase()
+                    .onSuccess { cards ->
+                        _uiState.update { it.copy(cards = cards.toUi()) }
+                    }
+                    .onFailure { error ->
+                        _uiState.update { it.copy(errorMessage = error.message ?: "Błąd pobierania kart") }
+                    }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(errorMessage = e.message ?: "Błąd pobierania kart") }
+            } finally {
+                _uiState.update { it.copy(isRefreshing = false) }
+            }
+        }
+    }
+
+    fun onToggleCardStatus(cardId: String) {
+        val card = _uiState.value.cards.find { it.id == cardId } ?: return
+        viewModelScope.launch {
+            _uiState.update { it.copy(errorMessage = null) }
+            try {
+                toggleCardStatusUseCase(cardId, !card.isActive)
+                    .onSuccess { isActive ->
+                        updateCardStatus(cardId, isActive)
+                    }
+                    .onFailure { error ->
+                        _uiState.update { it.copy(errorMessage = "Nie udało się zmienić statusu karty: ${error.message}") }
+                    }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(errorMessage = "Nie udało się zmienić statusu karty: ${e.message}") }
+            }
+        }
+    }
+
+    fun onDeleteCard(cardId: String) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isRefreshing = true, errorMessage = null) }
+            try {
+                deleteCardUseCase(cardId)
+                    .onSuccess {
+                        refreshCards()
+                    }
+                    .onFailure { error ->
+                        _uiState.update { it.copy(errorMessage = "Nie udało się usunąć karty: ${error.message}") }
+                    }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(errorMessage = "Nie udało się usunąć karty: ${e.message}") }
+            } finally {
+                _uiState.update { it.copy(isRefreshing = false) }
+            }
+        }
+    }
+
+    fun onSaveCard(name: String, cardId: String) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isRefreshing = true, errorMessage = null) }
+            try {
+                assignCardUseCase(cardId, name)
+                    .onSuccess {
+                        refreshCards()
+                    }
+                    .onFailure { error ->
+                        _uiState.update { it.copy(errorMessage = "Nie udało się zapisać karty: ${error.message}") }
+                    }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(errorMessage = "Nie udało się zapisać karty: ${e.message}") }
+            } finally {
+                _uiState.update { it.copy(isRefreshing = false) }
+            }
+        }
+    }
+
+    private fun updateCardStatus(cardId: String, isActive: Boolean) {
+        _uiState.update { currentState ->
+            val updatedCards = currentState.cards.map {
+                if (it.id == cardId) it.copy(isActive = isActive) else it
+            }
+            currentState.copy(cards = updatedCards)
+        }
+    }
+
+    fun onClearError() {
+        _uiState.update { it.copy(errorMessage = null) }
+    }
+}
+
+data class CardsUiState(
+    val cards: List<UserCard> = emptyList(),
+    val isRefreshing: Boolean = false,
+    val errorMessage: String? = null
+)
