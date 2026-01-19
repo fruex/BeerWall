@@ -36,8 +36,12 @@ kotlin {
             implementation(libs.datastore)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.koin.android)
         }
         commonMain.dependencies {
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
@@ -68,11 +72,11 @@ kotlin {
 }
 
 android {
-    namespace = "org.fruex.beerwall"
+    namespace = "com.fruex.beerwall"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "org.fruex.beerwall"
+        applicationId = "pl.igibeer.wallet"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -99,7 +103,7 @@ dependencies {
 }
 
 buildkonfig {
-    packageName = "org.fruex.beerwall"
+    packageName = "com.fruex.beerwall"
 
     defaultConfigs {
         buildConfigField(com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING, "BUILD_TYPE", "debug")
