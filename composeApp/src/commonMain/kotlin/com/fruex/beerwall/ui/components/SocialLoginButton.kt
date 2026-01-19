@@ -12,13 +12,14 @@ import beerwall.composeapp.generated.resources.Res
 import beerwall.composeapp.generated.resources.ic_facebook
 import beerwall.composeapp.generated.resources.ic_google
 import com.fruex.beerwall.ui.theme.BeerWallTheme
+import com.fruex.beerwall.ui.theme.GoldPrimary
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
- * Social login button with icon and centered text.
- * Supports both DrawableResource (for PNG/vector drawables) and ImageVector (for Material icons).
+ * Przycisk logowania społecznościowego z ikoną i wyśrodkowanym tekstem.
+ * Obsługuje zarówno DrawableResource (dla PNG/wektorów) jak i ImageVector (dla ikon Material).
  */
 @Composable
 fun SocialLoginButton(
@@ -29,7 +30,7 @@ fun SocialLoginButton(
     iconRes: DrawableResource? = null,
     icon: ImageVector? = null
 ) {
-    require(iconRes != null || icon != null) { "Either iconRes or icon must be provided" }
+    require(iconRes != null || icon != null) { "Należy podać iconRes lub icon" }
 
     OutlinedButton(
         onClick = onClick,
@@ -39,11 +40,11 @@ fun SocialLoginButton(
             .height(56.dp),
         colors = ButtonDefaults.outlinedButtonColors(
             containerColor = Color.Transparent,
-            contentColor = Color.White
+            contentColor = GoldPrimary
         ),
         border = ButtonDefaults.outlinedButtonBorder().copy(
             width = 1.dp,
-            brush = androidx.compose.ui.graphics.SolidColor(Color.White.copy(alpha = 0.2f))
+            brush = androidx.compose.ui.graphics.SolidColor(GoldPrimary)
         ),
         shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
     ) {
@@ -51,13 +52,13 @@ fun SocialLoginButton(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Icon column - fixed width, centered
+            // Kolumna ikony - stała szerokość, wyśrodkowana
             Box(
                 modifier = Modifier.width(32.dp),
                 contentAlignment = Alignment.Center
             ) {
                 if (iconRes != null) {
-                    // White circular background for social icons
+                    // Białe okrągłe tło dla ikon społecznościowych
                     Surface(
                         modifier = Modifier.size(24.dp),
                         shape = androidx.compose.foundation.shape.CircleShape,
@@ -84,7 +85,7 @@ fun SocialLoginButton(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            // Text column - centered
+            // Kolumna tekstu - wyśrodkowana
             Box(
                 modifier = Modifier.weight(1f),
                 contentAlignment = Alignment.Center
@@ -95,14 +96,14 @@ fun SocialLoginButton(
                 )
             }
 
-            // Right spacer to balance icon column (32dp icon + 12dp spacer)
+            // Prawy odstęp dla zrównoważenia kolumny ikony (32dp ikona + 12dp odstęp)
             Spacer(modifier = Modifier.width(44.dp))
         }
     }
 }
 
 /**
- * Convenience overload for DrawableResource icons.
+ * Wygodne przeciążenie dla ikon DrawableResource.
  */
 @Composable
 fun SocialLoginButton(
@@ -123,7 +124,7 @@ fun SocialLoginButton(
 }
 
 /**
- * Convenience overload for ImageVector icons.
+ * Wygodne przeciążenie dla ikon ImageVector.
  */
 @Composable
 fun SocialLoginButton(
