@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -88,7 +89,12 @@ class MainActivity : ComponentActivity() {
             NfcAdapter.ACTION_TECH_DISCOVERED == intent.action ||
             NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action) {
 
-            val tag: Tag? = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
+            val tag: Tag? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                intent.getParcelableExtra(NfcAdapter.EXTRA_TAG, Tag::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
+            }
             tag?.let {
                 val scannedId = NfcCardReader.readCardId(it)
                 if (scannedId != null) {
