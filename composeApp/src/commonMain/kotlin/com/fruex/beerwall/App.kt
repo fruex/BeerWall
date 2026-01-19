@@ -16,6 +16,7 @@ import com.fruex.beerwall.ui.navigation.NavigationDestination
 import com.fruex.beerwall.ui.theme.BeerWallTheme
 import com.fruex.beerwall.ui.theme.GoldPrimary
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.KoinContext
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -25,43 +26,45 @@ fun App(
     isNfcEnabled: Boolean = true,
     onStartNfcScanningClick: () -> Unit = {}
 ) {
-    val authViewModel = koinViewModel<AuthViewModel>()
-    val authState by authViewModel.uiState.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
+    KoinContext {
+        val authViewModel = koinViewModel<AuthViewModel>()
+        val authState by authViewModel.uiState.collectAsState()
+        val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(Unit) {
-        authViewModel.checkSession()
-    }
-
-    LaunchedEffect(authState.errorMessage) {
-        authState.errorMessage?.let { message ->
-            snackbarHostState.showSnackbar(message)
-            authViewModel.onClearError()
+        LaunchedEffect(Unit) {
+            authViewModel.checkSession()
         }
-    }
 
-    BeerWallTheme {
-        if (authState.isCheckingSession) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = GoldPrimary)
+        LaunchedEffect(authState.errorMessage) {
+            authState.errorMessage?.let { message ->
+                snackbarHostState.showSnackbar(message)
+                authViewModel.onClearError()
             }
-        } else {
-            Scaffold(
-                snackbarHost = { SnackbarHost(snackbarHostState) }
-            ) { paddingValues ->
-                AppNavHost(
-                    modifier = Modifier.padding(paddingValues),
-                    startDestination =
+        }
+
+        BeerWallTheme {
+            if (authState.isCheckingSession) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = GoldPrimary)
+                }
+            } else {
+                Scaffold(
+                    snackbarHost = { SnackbarHost(snackbarHostState) }
+                ) { paddingValues ->
+                    AppNavHost(
+                        modifier = Modifier.padding(paddingValues),
+                        startDestination =
                         if (authState.isLoggedIn)
                             NavigationDestination.Main.route
                         else NavigationDestination.Login.route,
-                    scannedCardId = scannedCardId,
-                    isNfcEnabled = isNfcEnabled,
-                    onStartNfcScanningClick = onStartNfcScanningClick
-                )
+                        scannedCardId = scannedCardId,
+                        isNfcEnabled = isNfcEnabled,
+                        onStartNfcScanningClick = onStartNfcScanningClick
+                    )
+                }
             }
         }
     }
