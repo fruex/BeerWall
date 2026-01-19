@@ -18,3 +18,17 @@
 
 # Ktor
 -keep class io.ktor.** { *; }
+
+# Coroutines
+-dontwarn kotlinx.coroutines.**
+-keep class kotlinx.coroutines.** { *; }
+
+# OkHttp
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-keep class okhttp3.** { *; }
+-keep class okio.** { *; }
+
+# Coil
+-keep class coil3.** { *; }
+-dontwarn coil3.**
