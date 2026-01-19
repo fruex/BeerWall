@@ -3,7 +3,7 @@ package com.fruex.beerwall.data.repository
 import kotlinx.coroutines.flow.Flow
 import com.fruex.beerwall.LogSeverity
 import com.fruex.beerwall.auth.AuthTokens
-import com.fruex.beerwall.auth.SessionManager
+import com.fruex.beerwall.auth.ISessionManager
 import com.fruex.beerwall.auth.TokenManager
 import com.fruex.beerwall.auth.ensureTimestamp
 import com.fruex.beerwall.auth.decodeTokenPayload
@@ -22,7 +22,7 @@ import com.fruex.beerwall.log
 class AuthRepositoryImpl(
     private val authApiClient: AuthApiClient,
     private val tokenManager: TokenManager,
-    private val sessionManager: SessionManager
+    private val sessionManager: ISessionManager
 ) : AuthRepository {
     private val platform = getPlatform()
 
@@ -49,39 +49,54 @@ class AuthRepositoryImpl(
         )
     }
 
+    /**
+     * Przetwarza odpowiedź z logowania i zapisuje tokeny.
+     * Wspólna logika dla różnych metod logowania.
+     */
+    private suspend fun processLoginResponse(
+        token: String,
+        tokenExpires: Long,
+        refreshToken: String,
+        refreshTokenExpires: Long,
+        loginMethod: String
+    ): AuthTokens {
+        platform.log("🔐 $loginMethod success, saving tokens...", this, LogSeverity.INFO)
+
+        val tokens = createAuthTokens(
+            token = token,
+            tokenExpires = tokenExpires,
+            refreshToken = refreshToken,
+            refreshTokenExpires = refreshTokenExpires
+        )
+
+        tokenManager.saveTokens(tokens)
+        sessionManager.setLoggedIn(true)
+        platform.log("✅ Tokens saved", this, LogSeverity.DEBUG)
+
+        return tokens
+    }
+
     override suspend fun googleSignIn(idToken: String): Result<AuthTokens> {
         return authApiClient.googleSignIn(idToken).mapCatching { response ->
-            platform.log("🔐 Google Login success, saving tokens...", this, LogSeverity.INFO)
-            
-            val tokens = createAuthTokens(
+            processLoginResponse(
                 token = response.token,
                 tokenExpires = response.tokenExpires,
                 refreshToken = response.refreshToken,
-                refreshTokenExpires = response.refreshTokenExpires
+                refreshTokenExpires = response.refreshTokenExpires,
+                loginMethod = "Google Login"
             )
-            
-            tokenManager.saveTokens(tokens)
-            sessionManager.setLoggedIn(true)
-            platform.log("✅ Tokens saved", this, LogSeverity.DEBUG)
-            tokens
         }
     }
 
     override suspend fun emailPasswordSignIn(email: String, password: String): Result<AuthTokens> {
         return authApiClient.emailPasswordSignIn(email, password).mapCatching { response ->
-            platform.log("🔐 Email Login success, saving tokens...", this, LogSeverity.INFO)
-            
-            val tokens = createAuthTokens(
+            processLoginResponse(
                 token = response.token,
                 tokenExpires = response.tokenExpires,
                 refreshToken = response.refreshToken,
-                refreshTokenExpires = response.refreshTokenExpires
+                refreshTokenExpires = response.refreshTokenExpires,
+                loginMethod = "Email Login"
             )
-            
-            tokenManager.saveTokens(tokens)
-            sessionManager.setLoggedIn(true)
-            platform.log("✅ Tokens saved", this, LogSeverity.DEBUG)
-            tokens
         }
     }
 

@@ -15,7 +15,10 @@ import com.fruex.beerwall.data.remote.dto.cards.*
  * Klient API do obsługi operacji na kartach.
  * Obsługuje pobieranie kart, przypisywanie nowych oraz zarządzanie statusem (aktywacja/dezaktywacja).
  */
-class CardsApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
+class CardsApiClient(
+    tokenManager: TokenManager,
+    onUnauthorized: (suspend () -> Unit)? = null
+) : BaseApiClient(tokenManager, onUnauthorized) {
 
     /**
      * Pobiera listę kart przypisanych do użytkownika.

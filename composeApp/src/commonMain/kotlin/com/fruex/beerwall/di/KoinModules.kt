@@ -1,5 +1,6 @@
 package com.fruex.beerwall.di
 
+import com.fruex.beerwall.auth.ISessionManager
 import com.fruex.beerwall.auth.SessionManager
 import com.fruex.beerwall.auth.TokenManager
 import com.fruex.beerwall.auth.TokenManagerImpl
@@ -18,34 +19,29 @@ expect val platformModule: Module
 
 val networkModule = module {
     single {
-        AuthApiClient(get()).apply {
-            onUnauthorized = { get<SessionManager>().onSessionExpired() }
-        }
+        val sessionManager = get<ISessionManager>()
+        AuthApiClient(get(), onUnauthorized = { sessionManager.onSessionExpired() })
     }
     single {
-        CardsApiClient(get()).apply {
-            onUnauthorized = { get<SessionManager>().onSessionExpired() }
-        }
+        val sessionManager = get<ISessionManager>()
+        CardsApiClient(get(), onUnauthorized = { sessionManager.onSessionExpired() })
     }
     single {
-        BalanceApiClient(get()).apply {
-            onUnauthorized = { get<SessionManager>().onSessionExpired() }
-        }
+        val sessionManager = get<ISessionManager>()
+        BalanceApiClient(get(), onUnauthorized = { sessionManager.onSessionExpired() })
     }
     single {
-        HistoryApiClient(get()).apply {
-            onUnauthorized = { get<SessionManager>().onSessionExpired() }
-        }
+        val sessionManager = get<ISessionManager>()
+        HistoryApiClient(get(), onUnauthorized = { sessionManager.onSessionExpired() })
     }
     single {
-        SupportApiClient(get()).apply {
-            onUnauthorized = { get<SessionManager>().onSessionExpired() }
-        }
+        val sessionManager = get<ISessionManager>()
+        SupportApiClient(get(), onUnauthorized = { sessionManager.onSessionExpired() })
     }
 }
 
 val repositoryModule = module {
-    single { SessionManager() }
+    single<ISessionManager> { SessionManager() }
     single { AuthRepositoryImpl(get(), get(), get()) } bind AuthRepository::class
     single { BalanceRepositoryImpl(get()) } bind BalanceRepository::class
     single { CardRepositoryImpl(get()) } bind CardRepository::class
@@ -80,6 +76,9 @@ val useCaseModule = module {
 
     // Support
     singleOf(::SendMessageUseCase)
+
+    // Data Refresh
+    singleOf(::RefreshAllDataUseCase)
 }
 
 val viewModelModule = module {

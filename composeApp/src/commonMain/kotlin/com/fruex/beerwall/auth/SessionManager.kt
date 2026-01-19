@@ -14,21 +14,21 @@ import com.fruex.beerwall.getPlatform
  * - Przechowywanie globalnego stanu zalogowania
  * - Obsługę wygaśnięcia sesji (np. 401 z API)
  */
-class SessionManager {
+class SessionManager : ISessionManager {
     private val _isUserLoggedIn = MutableStateFlow(false)
-    val isUserLoggedIn: StateFlow<Boolean> = _isUserLoggedIn.asStateFlow()
+    override val isUserLoggedIn: StateFlow<Boolean> = _isUserLoggedIn.asStateFlow()
 
     /**
      * Ustawia stan zalogowania.
      */
-    fun setLoggedIn(isLoggedIn: Boolean) {
+    override fun setLoggedIn(isLoggedIn: Boolean) {
         _isUserLoggedIn.update { isLoggedIn }
     }
 
     /**
      * Callback wywoływany gdy API zwróci 401 Unauthorized.
      */
-    suspend fun onSessionExpired() {
+    override suspend fun onSessionExpired() {
         getPlatform().log("Sesja wygasła (401)", "SessionManager", LogSeverity.WARN)
         setLoggedIn(false)
     }
