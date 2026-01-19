@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.ui.components.AppHeader
 import com.fruex.beerwall.ui.components.BeerWallInfoCard
-import com.fruex.beerwall.ui.models.VenueBalance
+import com.fruex.beerwall.ui.models.PremisesBalance
 import com.fruex.beerwall.ui.theme.BeerWallTheme
 import com.fruex.beerwall.ui.theme.DarkBackground
 import com.fruex.beerwall.ui.theme.GoldPrimary
@@ -36,10 +36,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BalanceScreen(
-    balances: List<VenueBalance>,
+    balances: List<PremisesBalance>,
     isRefreshing: Boolean = false,
     onRefresh: () -> Unit = {},
-    onAddFundsClick: (venueId: Int) -> Unit,
+    onAddFundsClick: (premisesId: Int) -> Unit,
     onAddLocationClick: () -> Unit,
 ) {
     PullToRefreshBox(
@@ -71,12 +71,12 @@ fun BalanceScreen(
             items(
                 items = balances,
                 key = { it.premisesId }
-            ) { venueBalance ->
+            ) { premisesBalance ->
                 BalanceCard(
-                    venueName = venueBalance.premisesName,
-                    balance = venueBalance.balance,
-                    loyaltyPoints = venueBalance.loyaltyPoints,
-                    onAddFundsClick = { onAddFundsClick(venueBalance.premisesId) }
+                    premisesName = premisesBalance.premisesName,
+                    balance = premisesBalance.balance,
+                    loyaltyPoints = premisesBalance.loyaltyPoints,
+                    onAddFundsClick = { onAddFundsClick(premisesBalance.premisesId) }
                 )
             }
 
@@ -89,7 +89,7 @@ fun BalanceScreen(
 
 @Composable
 fun BalanceCard(
-    venueName: String,
+    premisesName: String,
     balance: Double,
     loyaltyPoints: Int,
     onAddFundsClick: () -> Unit,
@@ -128,7 +128,7 @@ fun BalanceCard(
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // Venue Name
+                // Premises Name
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -140,7 +140,7 @@ fun BalanceCard(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = venueName,
+                        text = premisesName,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = DarkBackground
@@ -212,13 +212,13 @@ fun BalanceScreenPreview() {
     BeerWallTheme {
         BalanceScreen(
             balances = listOf(
-                VenueBalance(
+                PremisesBalance(
                     premisesId = 1,
                     premisesName = "Pub Centrum",
                     balance = 45.50,
                     loyaltyPoints = 120
                 ),
-                VenueBalance(
+                PremisesBalance(
                     premisesId = 2,
                     premisesName = "Bar przy Rynku",
                     balance = 12.00,
