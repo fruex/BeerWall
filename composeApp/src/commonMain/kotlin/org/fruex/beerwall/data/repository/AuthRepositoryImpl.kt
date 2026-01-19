@@ -137,6 +137,7 @@ class AuthRepositoryImpl(
             return refreshToken().isSuccess
         }
 
+        sessionManager.setLoggedIn(true)
         return true
     }
 

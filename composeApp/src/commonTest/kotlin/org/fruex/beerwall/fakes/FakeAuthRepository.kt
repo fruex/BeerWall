@@ -11,7 +11,6 @@ class FakeAuthRepository : AuthRepository {
     var shouldFail = false
     var failureMessage = "Błąd autoryzacji"
 
-    private var isLoggedIn = false
     private val _sessionState = MutableStateFlow(false)
     private val fakeTokens = AuthTokens(
         token = "fake-token",
@@ -26,14 +25,12 @@ class FakeAuthRepository : AuthRepository {
 
     override suspend fun googleSignIn(idToken: String): Result<AuthTokens> {
         if (shouldFail) return Result.failure(Exception(failureMessage))
-        isLoggedIn = true
         _sessionState.update { true }
         return Result.success(fakeTokens)
     }
 
     override suspend fun emailPasswordSignIn(email: String, password: String): Result<AuthTokens> {
         if (shouldFail) return Result.failure(Exception(failureMessage))
-        isLoggedIn = true
         _sessionState.update { true }
         return Result.success(fakeTokens)
     }
@@ -59,17 +56,15 @@ class FakeAuthRepository : AuthRepository {
     }
 
     override suspend fun isUserLoggedIn(): Boolean {
-        return isLoggedIn
+        return _sessionState.value
     }
 
     override suspend fun logout() {
-        isLoggedIn = false
         _sessionState.update { false }
     }
 
     // Metoda pomocnicza do ustawiania stanu w testach
     fun setLoggedIn(loggedIn: Boolean) {
-        this.isLoggedIn = loggedIn
         _sessionState.update { loggedIn }
     }
 }
