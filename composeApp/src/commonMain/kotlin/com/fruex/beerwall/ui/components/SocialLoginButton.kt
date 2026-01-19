@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import beerwall.composeapp.generated.resources.Res
+import beerwall.composeapp.generated.resources.ic_apple
 import beerwall.composeapp.generated.resources.ic_facebook
 import beerwall.composeapp.generated.resources.ic_google
 import com.fruex.beerwall.ui.theme.BeerWallTheme
@@ -32,6 +33,9 @@ fun SocialLoginButton(
 ) {
     require(iconRes != null || icon != null) { "Należy podać iconRes lub icon" }
 
+    val contentColor = if (enabled) GoldPrimary else GoldPrimary.copy(alpha = 0.38f)
+    val borderColor = if (enabled) GoldPrimary else GoldPrimary.copy(alpha = 0.12f)
+
     OutlinedButton(
         onClick = onClick,
         enabled = enabled,
@@ -40,11 +44,12 @@ fun SocialLoginButton(
             .height(56.dp),
         colors = ButtonDefaults.outlinedButtonColors(
             containerColor = Color.Transparent,
-            contentColor = GoldPrimary
+            contentColor = contentColor,
+            disabledContentColor = contentColor
         ),
-        border = ButtonDefaults.outlinedButtonBorder().copy(
+        border = androidx.compose.foundation.BorderStroke(
             width = 1.dp,
-            brush = androidx.compose.ui.graphics.SolidColor(GoldPrimary)
+            color = borderColor
         ),
         shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
     ) {
@@ -62,7 +67,7 @@ fun SocialLoginButton(
                     Surface(
                         modifier = Modifier.size(24.dp),
                         shape = androidx.compose.foundation.shape.CircleShape,
-                        color = Color.White
+                        color = if (enabled) Color.White else Color.White.copy(alpha = 0.38f)
                     ) {
                         Icon(
                             painter = painterResource(iconRes),
@@ -78,7 +83,7 @@ fun SocialLoginButton(
                         imageVector = icon,
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
-                        tint = Color.White
+                        tint = if (enabled) Color.White else Color.White.copy(alpha = 0.38f)
                     )
                 }
             }
@@ -92,7 +97,8 @@ fun SocialLoginButton(
             ) {
                 Text(
                     text = text,
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = contentColor
                 )
             }
 
@@ -164,6 +170,12 @@ fun SocialLoginButtonPreview() {
                 text = "Kontynuuj z Facebook",
                 onClick = {},
                 iconRes = Res.drawable.ic_facebook,
+                enabled = false
+            )
+            SocialLoginButton(
+                text = "Kontynuuj z Apple",
+                onClick = {},
+                iconRes = Res.drawable.ic_apple,
                 enabled = false
             )
         }
