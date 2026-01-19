@@ -67,7 +67,7 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
-            implementation("io.insert-koin:koin-test:4.0.0")
+            implementation(libs.koin.test)
         }
     }
 }
@@ -77,7 +77,7 @@ android {
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "pl.igibeer.wallet"
+        applicationId = "com.fruex.beerwall"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
