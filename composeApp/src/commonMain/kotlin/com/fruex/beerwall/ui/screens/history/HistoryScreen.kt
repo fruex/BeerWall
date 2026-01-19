@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -20,6 +21,10 @@ import com.fruex.beerwall.ui.models.DailyTransactions
 import com.fruex.beerwall.ui.models.Transaction
 import com.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
+
+// OPTIMIZATION: Hoisted shapes to avoid reallocation on every recomposition.
+private val TransactionItemShape = RoundedCornerShape(16.dp)
+private val TransactionIconShape = RoundedCornerShape(12.dp)
 
 /**
  * Ekran historii transakcji.
@@ -68,12 +73,13 @@ fun HistoryScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // Header
-                item(key = "app_header") {
+                // OPTIMIZATION: contentType helps Compose/RecyclerView recycle views more efficiently
+                item(key = "app_header", contentType = "header_app") {
                     AppHeader()
                 }
 
                 transactionGroups.forEach { group ->
-                    item(key = "header_${group.date}") {
+                    item(key = "header_${group.date}", contentType = "header_date") {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -96,7 +102,9 @@ fun HistoryScreen(
 
                     items(
                         items = group.transactions,
-                        key = { it.transactionId }
+                        key = { it.transactionId },
+                        // OPTIMIZATION: contentType helps Compose recycle views by type
+                        contentType = { "transaction" }
                     ) { transaction ->
                         TransactionItem(transaction)
                     }
@@ -108,9 +116,15 @@ fun HistoryScreen(
 
 @Composable
 fun TransactionItem(transaction: Transaction) {
+    val isPositive = transaction.grossPrice >= 0
+    // OPTIMIZATION: remember calculation to avoid re-formatting string on recomposition
+    val priceText = remember(transaction.grossPrice) {
+        "${if (isPositive) "+" else ""}${transaction.grossPrice} zł"
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = TransactionItemShape,
         colors = CardDefaults.cardColors(
             containerColor = CardBackground
         )
@@ -127,7 +141,7 @@ fun TransactionItem(transaction: Transaction) {
                     .size(56.dp)
                     .background(
                         color = GoldPrimary,
-                        shape = RoundedCornerShape(12.dp)
+                        shape = TransactionIconShape
                     ),
                 contentAlignment = Alignment.Center
             ) {
@@ -157,10 +171,10 @@ fun TransactionItem(transaction: Transaction) {
 
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "${(if (transaction.grossPrice < 0) "" else "+")}${transaction.grossPrice} zł",
+                    text = priceText,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = if (transaction.grossPrice < 0) Error else TextPrimary
+                    color = if (!isPositive) Error else TextPrimary
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
