@@ -145,41 +145,24 @@ fun AppNavHost(
             )
         }
 
-        // Add Funds screen
-        composable(NavigationDestination.AddFunds.route) {
-            val balanceViewModel = koinViewModel<BalanceViewModel>()
-            val uiState by balanceViewModel.uiState.collectAsState()
-
-            AddFundsScreen(
-                availablePaymentMethods = uiState.paymentMethods,
-                onBackClick = { navController.popBackStack() },
-                onAddFunds = { paymentMethodId, balance ->
-                    // Domyślny lokal
-                    val venueId = uiState.balances.firstOrNull()?.premisesId ?: 0
-                    balanceViewModel.onAddFunds(venueId, paymentMethodId, balance)
-                    navController.popBackStack()
-                }
-            )
-        }
-
         // Add Funds with pre-selected venue
         composable(
-            route = "${NavigationDestination.AddFunds.route}/{venueId}",
-            arguments = listOf(navArgument("venueId") { type = NavType.IntType })
+            route = "${NavigationDestination.AddFunds.route}/{premisesId}",
+            arguments = listOf(navArgument("premisesId") { type = NavType.IntType })
         ) { backStackEntry ->
-            val venueId = backStackEntry.savedStateHandle.get<Int>("venueId") ?: 0
+            val premisesId = backStackEntry.savedStateHandle.get<Int>("premisesId") ?: 0
             val balanceViewModel = koinViewModel<BalanceViewModel>()
             val uiState by balanceViewModel.uiState.collectAsState()
-            val venue = uiState.balances.find { it.premisesId == venueId }
+            val premises = uiState.balances.find { it.premisesId == premisesId }
 
             AddFundsScreen(
                 availablePaymentMethods = uiState.paymentMethods,
                 onBackClick = { navController.popBackStack() },
                 onAddFunds = { paymentMethodId, balance ->
-                    balanceViewModel.onAddFunds(venueId, paymentMethodId, balance)
+                    balanceViewModel.onAddFunds(premisesId, paymentMethodId, balance)
                     navController.popBackStack()
                 },
-                premisesName = venue?.premisesName
+                premisesName = premises?.premisesName
             )
         }
 

@@ -66,21 +66,19 @@ class CardsApiClient(
      * @return Result zawierający [CardActivationResponse] lub błąd.
      */
     suspend fun setCardStatus(cardId: String, isActive: Boolean): Result<CardActivationResponse> = try {
-        // Uwaga: Endpoint w kodzie to /mobile/cards, metoda PUT. Swagger mówi o /mobile/cards (PUT) dla update'u.
-        // Zakładamy, że CardUpdateMobileRequest w Swaggerze odpowiada logice tutaj.
-        // Jednak tutaj używamy CardActivationRequest. Sprawdzić zgodność z DTO.
         val response = client.put("$baseUrl/${ApiRoutes.Cards.CARDS}") {
             addAuthToken()
             contentType(ContentType.Application.Json)
-            setBody(CardActivationRequest(cardId, isActive))
+            setBody(CardActivationRequest(guid = cardId, isActive = isActive))
         }
 
         if (response.status == HttpStatusCode.NoContent) {
             // Swagger zwraca 204 No Content dla PUT /mobile/cards, więc nie ma body.
             // Zwracamy sztuczny obiekt odpowiedzi, ponieważ metoda oczekuje CardActivationResponse.
-            // TODO: Dostosować return type metody lub sprawdzić czy backend nie zaczął zwracać body.
             Result.success(CardActivationResponse(cardId, isActive, "Status updated"))
         } else {
+            val bodyText = response.bodyAsText()
+            platform.log("❌ Set Card Status Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
             Result.failure(Exception("Failed to update card status: ${response.status}"))
         }
     } catch (e: Exception) {
