@@ -14,7 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.fruex.beerwall.ui.components.*
+import com.fruex.beerwall.ui.components.AppHeader
+import com.fruex.beerwall.ui.components.BeerWallButton
+import com.fruex.beerwall.ui.components.BeerWallInfoCard
 import com.fruex.beerwall.ui.models.UserCard
 import com.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -328,14 +330,15 @@ fun CardDetailsDialog(
                     BeerWallButton(
                         text = if (card.isActive) "Wyłącz kartę" else "Włącz kartę",
                         onClick = onToggleStatus,
-                        icon = if (card.isActive) Icons.Default.VisibilityOff else Icons.Default.Visibility
+                        icon = if (card.isActive) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                        modifier = Modifier.height(50.dp)
                     )
 
                     // Delete Button (only for physical cards)
                     if (card.isPhysical) {
                         OutlinedButton(
                             onClick = onDelete,
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth().height(50.dp),
                             shape = RoundedCornerShape(12.dp),
                             colors = ButtonDefaults.outlinedButtonColors(
                                 contentColor = TextSecondary

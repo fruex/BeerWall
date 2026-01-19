@@ -157,10 +157,10 @@ fun TransactionItem(transaction: Transaction) {
 
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "${(if (transaction.grossPrice < 0) "" else "+")}${transaction.grossPrice} zł",
+                    text = "${transaction.grossPrice} zł",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = if (transaction.grossPrice < 0) Error else TextPrimary
+                    color = GoldPrimary
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(

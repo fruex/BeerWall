@@ -6,10 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Stars
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -104,75 +101,16 @@ fun BalanceCard(
             containerColor = GoldPrimary
         )
     ) {
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(20.dp)
         ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.LocationOn,
-                        contentDescription = null,
-                        tint = DarkBackground,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = venueName,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = DarkBackground
-                    )
-                }
-                Spacer(modifier = Modifier.height(12.dp))
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Stars,
-                            contentDescription = null,
-                            tint = DarkBackground,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "$loyaltyPoints pkt",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = DarkBackground
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "💰",
-                            style = MaterialTheme.typography.headlineMedium
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "${balance} zł",
-                            style = MaterialTheme.typography.displaySmall,
-                            fontWeight = FontWeight.Bold,
-                            color = DarkBackground
-                        )
-                    }
-                }
-            }
-
+            // Top Right Button
             IconButton(
                 onClick = onAddFundsClick,
                 modifier = Modifier
+                    .align(Alignment.TopEnd)
                     .size(48.dp)
                     .background(
                         color = DarkBackground.copy(alpha = 0.2f),
@@ -185,6 +123,75 @@ fun BalanceCard(
                     tint = DarkBackground,
                     modifier = Modifier.size(28.dp)
                 )
+            }
+
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                // Venue Name
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = null,
+                        tint = DarkBackground,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = venueName,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = DarkBackground
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(24.dp))
+                
+                // Balance and Points in one line
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Balance
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AccountBalanceWallet,
+                            contentDescription = null,
+                            tint = DarkBackground,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "${balance} zł",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = DarkBackground
+                        )
+                    }
+
+                    // Points
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Stars,
+                            contentDescription = null,
+                            tint = DarkBackground,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "$loyaltyPoints pkt",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = DarkBackground
+                        )
+                    }
+                }
             }
         }
     }
