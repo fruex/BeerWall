@@ -1,6 +1,8 @@
 package com.fruex.beerwall.ui.navigation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditCard
@@ -14,17 +16,18 @@ import androidx.compose.material.icons.outlined.Wallet
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.auth.rememberGoogleAuthProvider
 import com.fruex.beerwall.presentation.viewmodel.AuthViewModel
-import com.fruex.beerwall.presentation.viewmodel.BalanceUiState
 import com.fruex.beerwall.presentation.viewmodel.BalanceViewModel
-import com.fruex.beerwall.presentation.viewmodel.CardsUiState
 import com.fruex.beerwall.presentation.viewmodel.CardsViewModel
-import com.fruex.beerwall.presentation.viewmodel.HistoryUiState
 import com.fruex.beerwall.presentation.viewmodel.HistoryViewModel
 import com.fruex.beerwall.presentation.viewmodel.ProfileViewModel
+import com.fruex.beerwall.ui.models.DailyTransactions
 import com.fruex.beerwall.ui.models.UserCard
 import com.fruex.beerwall.ui.models.UserProfile
 import com.fruex.beerwall.ui.models.VenueBalance
@@ -94,8 +97,6 @@ fun MainScreen(
     onSupportClick: () -> Unit = {},
     onAboutClick: () -> Unit = {},
 ) {
-    var selectedTab by rememberSaveable { mutableStateOf(BottomNavItem.Balance.route) }
-
     // ViewModels for each tab
     val balanceViewModel = koinViewModel<BalanceViewModel>()
     val cardsViewModel = koinViewModel<CardsViewModel>()
@@ -107,9 +108,11 @@ fun MainScreen(
     val balanceState by balanceViewModel.uiState.collectAsState()
     val cardsState by cardsViewModel.uiState.collectAsState()
     val historyState by historyViewModel.uiState.collectAsState()
-    val authState by authViewModel.uiState.collectAsState() // For user profile
+    val authState by authViewModel.uiState.collectAsState()
 
     val googleAuthProvider = rememberGoogleAuthProvider()
+
+    var selectedTab by rememberSaveable { mutableStateOf(BottomNavItem.Balance.route) }
 
     LaunchedEffect(selectedTab) {
         when (selectedTab) {
@@ -122,24 +125,26 @@ fun MainScreen(
     MainScreenContent(
         selectedTab = selectedTab,
         onTabSelected = { selectedTab = it },
-        balanceState = balanceState,
-        cardsState = cardsState,
-        historyState = historyState,
+        balances = balanceState.balances,
+        isBalanceRefreshing = balanceState.isRefreshing,
+        onBalanceRefresh = { balanceViewModel.refreshBalance() },
+        cards = cardsState.cards,
+        onToggleCardStatus = { cardsViewModel.onToggleCardStatus(it) },
+        onDeleteCard = { cardsViewModel.onDeleteCard(it) },
+        transactionGroups = historyState.transactionGroups,
+        isHistoryRefreshing = historyState.isRefreshing,
+        onHistoryRefresh = { historyViewModel.refreshHistory() },
         userProfile = authState.userProfile,
-        onAddFundsClick = onAddFundsClick,
-        onAddLocationClick = onAddLocationClick,
-        onAddCardClick = onAddCardClick,
         onLogoutClick = {
             authViewModel.handleLogout(googleAuthProvider)
             onLogoutClick()
         },
+        onAddFundsClick = onAddFundsClick,
+        onAddLocationClick = onAddLocationClick,
+        onAddCardClick = onAddCardClick,
         onChangePasswordClick = onChangePasswordClick,
         onSupportClick = onSupportClick,
-        onAboutClick = onAboutClick,
-        onRefreshBalance = { balanceViewModel.refreshBalance() },
-        onRefreshHistory = { historyViewModel.refreshHistory() },
-        onToggleCardStatus = { cardsViewModel.onToggleCardStatus(it) },
-        onDeleteCard = { cardsViewModel.onDeleteCard(it) }
+        onAboutClick = onAboutClick
     )
 }
 
@@ -147,21 +152,23 @@ fun MainScreen(
 fun MainScreenContent(
     selectedTab: String,
     onTabSelected: (String) -> Unit,
-    balanceState: BalanceUiState,
-    cardsState: CardsUiState,
-    historyState: HistoryUiState,
-    userProfile: UserProfile,
-    onAddFundsClick: (Int) -> Unit,
+    balances: List<VenueBalance>,
+    isBalanceRefreshing: Boolean,
+    onBalanceRefresh: () -> Unit,
+    cards: List<UserCard>,
+    onToggleCardStatus: (String) -> Unit,
+    onDeleteCard: (String) -> Unit,
+    transactionGroups: List<DailyTransactions>,
+    isHistoryRefreshing: Boolean,
+    onHistoryRefresh: () -> Unit,
+    userProfile: UserProfile?,
+    onLogoutClick: () -> Unit,
+    onAddFundsClick: (premisesId: Int) -> Unit,
     onAddLocationClick: () -> Unit,
     onAddCardClick: () -> Unit,
-    onLogoutClick: () -> Unit,
     onChangePasswordClick: () -> Unit,
     onSupportClick: () -> Unit,
     onAboutClick: () -> Unit,
-    onRefreshBalance: () -> Unit,
-    onRefreshHistory: () -> Unit,
-    onToggleCardStatus: (String) -> Unit,
-    onDeleteCard: (String) -> Unit
 ) {
     val items = remember {
         listOf(
@@ -176,7 +183,8 @@ fun MainScreenContent(
         bottomBar = {
             NavigationBar(
                 containerColor = CardBackground,
-                contentColor = GoldPrimary
+                contentColor = GoldPrimary,
+                modifier = Modifier.height(64.dp)
             ) {
                 items.forEach { item ->
                     NavigationBarItem(
@@ -196,7 +204,7 @@ fun MainScreenContent(
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = GoldPrimary,
                             selectedTextColor = GoldPrimary,
-                            indicatorColor = GoldPrimary.copy(alpha = 0.2f),
+                            indicatorColor = Color.Transparent,
                             unselectedIconColor = GoldPrimary.copy(alpha = 0.5f),
                             unselectedTextColor = GoldPrimary.copy(alpha = 0.5f)
                         )
@@ -209,16 +217,16 @@ fun MainScreenContent(
             when (selectedTab) {
                 BottomNavItem.Balance.route -> {
                     BalanceScreen(
-                        balances = balanceState.balances,
-                        isRefreshing = balanceState.isRefreshing,
-                        onRefresh = onRefreshBalance,
+                        balances = balances,
+                        isRefreshing = isBalanceRefreshing,
+                        onRefresh = onBalanceRefresh,
                         onAddFundsClick = onAddFundsClick,
                         onAddLocationClick = onAddLocationClick
                     )
                 }
                 BottomNavItem.Cards.route -> {
                     CardsScreen(
-                        cards = cardsState.cards,
+                        cards = cards,
                         onAddCardClick = onAddCardClick,
                         onToggleCardStatus = onToggleCardStatus,
                         onDeleteCard = onDeleteCard
@@ -226,19 +234,28 @@ fun MainScreenContent(
                 }
                 BottomNavItem.History.route -> {
                     HistoryScreen(
-                        transactionGroups = historyState.transactionGroups,
-                        isRefreshing = historyState.isRefreshing,
-                        onRefresh = onRefreshHistory
+                        transactionGroups = transactionGroups,
+                        isRefreshing = isHistoryRefreshing,
+                        onRefresh = onHistoryRefresh
                     )
                 }
                 BottomNavItem.Profile.route -> {
-                    ProfileScreen(
-                        userProfile = userProfile,
-                        onLogoutClick = onLogoutClick,
-                        onChangePasswordClick = onChangePasswordClick,
-                        onSupportClick = onSupportClick,
-                        onAboutClick = onAboutClick
-                    )
+                    if (userProfile != null) {
+                        ProfileScreen(
+                            userProfile = userProfile,
+                            onLogoutClick = onLogoutClick,
+                            onChangePasswordClick = onChangePasswordClick,
+                            onSupportClick = onSupportClick,
+                            onAboutClick = onAboutClick
+                        )
+                    } else {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = GoldPrimary)
+                        }
+                    }
                 }
             }
         }
@@ -251,54 +268,52 @@ private fun MainScreenPreviewTemplate(selectedTab: String) {
         MainScreenContent(
             selectedTab = selectedTab,
             onTabSelected = {},
-            balanceState = BalanceUiState(
-                balances = listOf(
-                    VenueBalance(
-                        premisesId = 1,
-                        premisesName = "Pub Centrum",
-                        balance = 45.50,
-                        loyaltyPoints = 120
-                    ),
-                    VenueBalance(
-                        premisesId = 2,
-                        premisesName = "Bar Rynek",
-                        balance = 12.00,
-                        loyaltyPoints = 50
-                    )
+            balances = listOf(
+                VenueBalance(
+                    premisesId = 1,
+                    premisesName = "Pub Centrum",
+                    balance = 45.50,
+                    loyaltyPoints = 120
+                ),
+                VenueBalance(
+                    premisesId = 2,
+                    premisesName = "Bar Rynek",
+                    balance = 12.00,
+                    loyaltyPoints = 50
                 )
             ),
-            cardsState = CardsUiState(
-                cards = listOf(
-                    UserCard(
-                        id = "123",
-                        name = "Moja karta",
-                        isActive = true,
-                        isPhysical = true
-                    ),
-                    UserCard(
-                        id = "456",
-                        name = "Karta wirtualna",
-                        isActive = false,
-                        isPhysical = false
-                    )
+            isBalanceRefreshing = false,
+            onBalanceRefresh = {},
+            cards = listOf(
+                UserCard(
+                    id = "123",
+                    name = "Moja karta",
+                    isActive = true,
+                    isPhysical = true
+                ),
+                UserCard(
+                    id = "456",
+                    name = "Karta wirtualna",
+                    isActive = false,
+                    isPhysical = false
                 )
             ),
-            historyState = HistoryUiState(),
+            onToggleCardStatus = {},
+            onDeleteCard = {},
+            transactionGroups = emptyList(),
+            isHistoryRefreshing = false,
+            onHistoryRefresh = {},
             userProfile = UserProfile(
                 name = "Jan Kowalski",
                 initials = "JK"
             ),
+            onLogoutClick = {},
             onAddFundsClick = {},
             onAddLocationClick = {},
             onAddCardClick = {},
-            onLogoutClick = {},
             onChangePasswordClick = {},
             onSupportClick = {},
-            onAboutClick = {},
-            onRefreshBalance = {},
-            onRefreshHistory = {},
-            onToggleCardStatus = {},
-            onDeleteCard = {}
+            onAboutClick = {}
         )
     }
 }

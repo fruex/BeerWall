@@ -2,6 +2,7 @@ package com.fruex.beerwall.auth
 
 import platform.Foundation.NSDate
 import platform.Foundation.timeIntervalSince1970
+import com.fruex.beerwall.ui.models.UserProfile
 
 actual fun currentTimeSeconds(): Long = NSDate().timeIntervalSince1970.toLong()
 
@@ -48,23 +49,29 @@ actual class TokenManagerImpl : TokenManager {
         // TODO: Implement secure storage for iOS (Keychain)
     }
 
-    actual override suspend fun getUserName(): String? {
+    actual override suspend fun getUserProfile(): UserProfile? {
         val currentTokens = tokens ?: return null
         
         // Najpierw sprawdź czy mamy imię i nazwisko zapisane wprost w obiekcie AuthTokens
-        if (!currentTokens.firstName.isNullOrBlank() || !currentTokens.lastName.isNullOrBlank()) {
+        val displayName = if (!currentTokens.firstName.isNullOrBlank() || !currentTokens.lastName.isNullOrBlank()) {
             val first = currentTokens.firstName ?: ""
             val last = currentTokens.lastName ?: ""
-            return "$first $last".trim()
+            "$first $last".trim()
+        } else {
+            // Jeśli nie, spróbuj wyciągnąć z tokenu JWT
+            val payload = decodeTokenPayload(currentTokens.token)
+            val firstName = payload["firstName"] ?: ""
+            val lastName = payload["lastName"] ?: ""
+
+            if (firstName.isNotBlank() || lastName.isNotBlank()) {
+                "$firstName $lastName".trim()
+            } else {
+                null
+            }
         }
-        
-        // Jeśli nie, spróbuj wyciągnąć z tokenu JWT
-        val payload = decodeTokenPayload(currentTokens.token)
-        val firstName = payload["firstName"] ?: ""
-        val lastName = payload["lastName"] ?: ""
-        
-        return if (firstName.isNotBlank() || lastName.isNotBlank()) {
-            "$firstName $lastName".trim()
+
+        return if (displayName != null) {
+            UserProfile(name = displayName)
         } else {
             null
         }
