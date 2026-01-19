@@ -13,10 +13,9 @@ import com.fruex.beerwall.data.remote.common.ApiResponse
  * Provides common functionality for HTTP requests, token management, and error handling.
  */
 abstract class BaseApiClient(
-    protected val tokenManager: TokenManager
+    protected val tokenManager: TokenManager,
+    private val onUnauthorized: (suspend () -> Unit)?
 ) {
-    var onUnauthorized: (suspend () -> Unit)? = null
-
     private var _client: HttpClient? = null
     protected val client: HttpClient
         get() {

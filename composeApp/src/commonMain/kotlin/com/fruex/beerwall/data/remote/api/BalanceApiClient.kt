@@ -17,7 +17,10 @@ import com.fruex.beerwall.data.remote.dto.operators.PaymentOperatorResponse
  * Klient API do obsługi operacji finansowych (saldo, płatności).
  * Obsługuje pobieranie salda, doładowania konta oraz pobieranie metod płatności.
  */
-class BalanceApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
+class BalanceApiClient(
+    tokenManager: TokenManager,
+    onUnauthorized: (suspend () -> Unit)? = null
+) : BaseApiClient(tokenManager, onUnauthorized) {
 
     /**
      * Pobiera salda użytkownika we wszystkich lokalach.

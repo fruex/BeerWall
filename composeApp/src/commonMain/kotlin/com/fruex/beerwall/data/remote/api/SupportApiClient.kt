@@ -7,7 +7,10 @@ import com.fruex.beerwall.data.remote.BaseApiClient
  * Klient API do obsługi wsparcia użytkownika.
  * Obsługuje wysyłanie wiadomości do supportu.
  */
-class SupportApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
+class SupportApiClient(
+    tokenManager: TokenManager,
+    onUnauthorized: (suspend () -> Unit)? = null
+) : BaseApiClient(tokenManager, onUnauthorized) {
 
     /**
      * Wysyła wiadomość od użytkownika do supportu.

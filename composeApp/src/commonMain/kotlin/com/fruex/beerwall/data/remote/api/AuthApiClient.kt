@@ -15,7 +15,10 @@ import com.fruex.beerwall.data.remote.dto.auth.*
  * Klient API do obsługi operacji uwierzytelniania.
  * Obsługuje logowanie użytkownika, rejestrację, zarządzanie hasłami oraz odświeżanie tokenu.
  */
-class AuthApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
+class AuthApiClient(
+    tokenManager: TokenManager,
+    onUnauthorized: (suspend () -> Unit)? = null
+) : BaseApiClient(tokenManager, onUnauthorized) {
 
     /**
      * Uwierzytelnia użytkownika przy użyciu tokenu Google ID.

@@ -12,7 +12,10 @@ import com.fruex.beerwall.data.remote.dto.history.TransactionResponse
  * Klient API do obsługi operacji historii.
  * Obsługuje pobieranie historii transakcji użytkownika.
  */
-class HistoryApiClient(tokenManager: TokenManager) : BaseApiClient(tokenManager) {
+class HistoryApiClient(
+    tokenManager: TokenManager,
+    onUnauthorized: (suspend () -> Unit)? = null
+) : BaseApiClient(tokenManager, onUnauthorized) {
 
     /**
      * Pobiera historię transakcji dla obecnego użytkownika.

@@ -14,6 +14,9 @@ class BeerWallApplication : Application() {
             androidLogger()
             androidContext(this@BeerWallApplication)
             modules(appModules())
+            if (BuildKonfig.DEBUG) {
+                checkModules()
+            }
         }
     }
 }
