@@ -50,3 +50,543 @@ Przepływ danych:
 UI → ViewModel → UseCase → Repository → DataSource → API
                                 ↓
                             Domain Models
+
+
+📊 OCENA KOŃCOWA
+Gotowość techniczna: 85/100
+Brakuje:
+🔴 App signing (krytyczne - 10 pkt)
+🟡 Network security config (5 pkt)
+Po dodaniu signing i poprawie manifestu: 100/100 ✅
+
+💡 REKOMENDACJE
+Priorytet 1: Skonfiguruj app signing (30 minut)
+Priorytet 2: Popraw network security (15 minut)
+Priorytet 3: Przetestuj release build (1-2 godziny)
+Priorytet 4: Przygotuj materiały do Google Play Console (2-3 godziny)
+Szacowany czas do pełnej gotowości: 4-6 godzin pracy
+
+# 🎯 Szczegółowa instrukcja przygotowania aplikacji do Google Play
+## 📍 **PRIORYTET 1: Skonfiguruj App Signing** (30 minut)
+### Krok 1: Wygeneruj keystore (plik z kluczem podpisującym)
+1. **Otwórz terminal** w katalogu projektu BeerWall
+2. **Wykonaj komendę** (Windows - użyj Git Bash lub PowerShell):``` bash
+keytool -genkey -v -keystore beerwall-release.keystore -alias beerwall -keyalg RSA -keysize 2048 -validity 10000
+```
+
+Odpowiedz na pytania:```
+Enter keystore password: [WYMYŚL SILNE HASŁO - ZAPISZ JE!]
+Re-enter new password: [POWTÓRZ HASŁO]
+
+What is your first and last name?
+  [Unknown]: Adrian Kowalski  (lub Twoje imię)
+
+What is the name of your organizational unit?
+  [Unknown]: Development
+
+What is the name of your organization?
+  [Unknown]: Fruex
+
+What is the name of your City or Locality?
+  [Unknown]: Warsaw
+
+What is the name of your State or Province?
+  [Unknown]: Mazowieckie
+
+What is the two-letter country code for this unit?
+  [Unknown]: PL
+
+Is CN=Adrian Kowalski, OU=Development, O=Fruex, L=Warsaw, ST=Mazowieckie, C=PL correct?
+  [no]: yes
+
+Enter key password for <beerwall>
+	(RETURN if same as keystore password): [NACIŚNIJ ENTER]
+```
+
+Sprawdź czy plik został utworzony:``` bash
+ls -la beerwall-release.keystore
+```
+
+⚠️ BARDZO WAŻNE:
+Zapisz hasło w bezpiecznym miejscu (menedżer haseł)
+NIE COMMITUJ tego pliku do Git
+Zrób backup keystore w bezpiecznym miejscu (chmura, pendrive)
+Jeśli zgubisz keystore, nie będziesz mógł aktualizować aplikacji w Google Play!
+
+Krok 2: Utwórz plik z hasłami (lokalny, nie w Git)
+Skopiuj istniejący gradle.properties:``` bash
+cp gradle.properties gradle.properties.backup
+```
+
+Otwórz gradle.properties w edytorze i dodaj na końcu:``` properties
+# App Signing Configuration (DO NOT COMMIT!)
+BEERWALL_KEYSTORE_FILE=beerwall-release.keystore
+BEERWALL_KEYSTORE_PASSWORD=TWOJE_HASŁO_KEYSTORE
+BEERWALL_KEY_ALIAS=beerwall
+BEERWALL_KEY_PASSWORD=TWOJE_HASŁO_KEYSTORE
+```
+
+Zastąp TWOJE_HASŁO_KEYSTORE hasłem które ustaliłeś w Kroku 1.
+
+Krok 3: Zaktualizuj .gitignore
+Otwórz plik .gitignore w głównym katalogu projektu
+Dodaj na końcu:``` gitignore
+# Signing files
+*.keystore
+*.jks
+*.p12
+gradle.properties
+
+# Keep template
+!gradle.properties.template
+```
+
+Stwórz szablon dla innych developerów:``` bash
+cat > gradle.properties.template << 'EOF'
+#Kotlin
+kotlin.code.style=official
+kotlin.daemon.jvmargs=-Xmx3072M
+
+#Gradle
+org.gradle.jvmargs=-Xmx4096M -Dfile.encoding=UTF-8
+org.gradle.configuration-cache=true
+org.gradle.caching=true
+
+#Android
+android.nonTransitiveRClass=true
+android.useAndroidX=true
+
+# App Signing Configuration
+# Copy this file to gradle.properties and fill in your values
+#BEERWALL_KEYSTORE_FILE=beerwall-release.keystore
+#BEERWALL_KEYSTORE_PASSWORD=your_keystore_password
+#BEERWALL_KEY_ALIAS=beerwall
+#BEERWALL_KEY_PASSWORD=your_key_password
+EOF
+```
+
+
+Krok 4: Skonfiguruj signing w build.gradle.kts
+Otwórz: composeApp/build.gradle.kts
+Znajdź sekcję android { (około linii 74)
+Dodaj signingConfigs PRZED buildTypes:``` kotlin
+android {
+    namespace = "com.fruex.beerwall"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+    defaultConfig {
+        applicationId = "pl.igibeer.wallet"
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
+        versionCode = 1
+        versionName = project.findProperty("versionName")?.toString() ?: "1.0"
+    }
+
+    // ✅ DODAJ TO:
+    signingConfigs {
+        create("release") {
+            val keystoreFile = project.findProperty("BEERWALL_KEYSTORE_FILE") as String?
+            val keystorePassword = project.findProperty("BEERWALL_KEYSTORE_PASSWORD") as String?
+            val keyAlias = project.findProperty("BEERWALL_KEY_ALIAS") as String?
+            val keyPassword = project.findProperty("BEERWALL_KEY_PASSWORD") as String?
+
+            if (keystoreFile != null && keystorePassword != null && keyAlias != null && keyPassword != null) {
+                storeFile = file(keystoreFile)
+                storePassword = keystorePassword
+                this.keyAlias = keyAlias
+                this.keyPassword = keyPassword
+            } else {
+                println("⚠️ Release signing config not found in gradle.properties")
+            }
+        }
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
+    buildTypes {
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")  // ✅ DODAJ TO
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+    }
+
+    // reszta konfiguracji...
+}
+```
+
+
+Krok 5: Przetestuj konfigurację``` bash
+./gradlew :composeApp:assembleRelease
+```
+
+Oczekiwany rezultat:```
+BUILD SUCCESSFUL in 2m 15s
+```
+
+Sprawdź czy APK został podpisany:``` bash
+jarsigner -verify -verbose -certs composeApp/build/outputs/apk/release/composeApp-release.apk
+```
+
+Powinno być:```
+jar verified.
+```
+
+
+📍 PRIORYTET 2: Popraw Network Security (15 minut)
+Krok 1: Stwórz network security config
+Utwórz katalog:``` bash
+mkdir -p composeApp/src/androidMain/res/xml
+```
+
+Stwórz plik: composeApp/src/androidMain/res/xml/network_security_config.xml``` xml
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Dla buildu debug - pozwól na HTTP -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">api-debug.igibeer.pl</domain>
+        <domain includeSubdomains="true">10.0.2.2</domain> <!-- Android Emulator localhost -->
+        <domain includeSubdomains="true">localhost</domain>
+    </domain-config>
+
+    <!-- Dla buildu release - TYLKO HTTPS -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
+```
+
+
+Krok 2: Zaktualizuj AndroidManifest.xml
+Otwórz: composeApp/src/androidMain/AndroidManifest.xml
+Zmień:
+PRZED:``` xml
+<application
+    android:name=".BeerWallApplication"
+    android:allowBackup="true"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/app_name"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:supportsRtl="true"
+    android:usesCleartextTraffic="true"
+    android:theme="@android:style/Theme.Material.NoActionBar">
+```
+
+PO:``` xml
+<application
+    android:name=".BeerWallApplication"
+    android:allowBackup="true"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/app_name"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:supportsRtl="true"
+    android:networkSecurityConfig="@xml/network_security_config"
+    android:theme="@android:style/Theme.Material.NoActionBar">
+```
+
+Usuń: android:usesCleartextTraffic="true"
+Dodaj: android:networkSecurityConfig="@xml/network_security_config"
+
+Krok 3: Sprawdź czy HTTPS jest używane w release
+Otwórz: composeApp/build.gradle.kts
+Sprawdź sekcję buildkonfig:``` kotlin
+buildkonfig {
+    packageName = "com.fruex.beerwall"
+
+    defaultConfigs {
+        buildConfigField(Type.STRING, "BUILD_TYPE", "debug")
+        buildConfigField(Type.BOOLEAN, "DEBUG", "true")
+        buildConfigField(Type.STRING, "BASE_URL", "http://api-debug.igibeer.pl:7000")  // ✅ HTTP dla debug OK
+    }
+
+    defaultConfigs("release") {
+        buildConfigField(Type.STRING, "BUILD_TYPE", "release")
+        buildConfigField(Type.BOOLEAN, "DEBUG", "false")
+        buildConfigField(Type.STRING, "BASE_URL", "https://beerwall-apitest-cjcfgfehh9grhne5.polandcentral-01.azurewebsites.net/api")  // ✅ HTTPS dla release OK
+    }
+}
+```
+
+To jest poprawne! Release używa HTTPS ✅
+
+📍 PRIORYTET 3: Przetestuj Release Build (1-2 godziny)
+Krok 1: Zbuduj release APK``` bash
+./gradlew :composeApp:assembleRelease
+```
+
+APK będzie w: composeApp/build/outputs/apk/release/composeApp-release.apk
+
+Krok 2: Zainstaluj na fizycznym urządzeniu
+Podłącz telefon przez USB
+Włącz USB debugging (Ustawienia → O telefonie → Stuknij 7x "Numer kompilacji" → Opcje programisty → Debugowanie USB)
+Zainstaluj APK:``` bash
+adb install composeApp/build/outputs/apk/release/composeApp-release.apk
+```
+
+Lub przeciągnij APK na telefon i zainstaluj ręcznie.
+
+Krok 3: Lista testów do wykonania
+Wypełnij tę checklistę:
+Podstawowe funkcje:
+Aplikacja uruchamia się poprawnie
+Nie ma crashy przy starcie
+Splash screen wyświetla się poprawnie
+Ikona aplikacji wygląda dobrze
+Logowanie:
+Google Sign-In działa
+Logowanie przez email/hasło działa
+Rejestracja nowego użytkownika działa
+Forgot password działa
+Wylogowanie działa
+NFC:
+Aplikacja wykrywa karty NFC
+Można przypisać kartę NFC
+Można aktywować/dezaktywować kartę
+Można usunąć kartę
+Sieć:
+API requests działają (tylko HTTPS w release)
+Pobieranie salda działa
+Doładowanie konta działa
+Historia transakcji wyświetla się
+UI/UX:
+Wszystkie ekrany wyświetlają się poprawnie
+Nawigacja działa płynnie
+Brak błędów UI (overlapping, missing text, etc.)
+Snackbary/toasty wyświetlają się
+Performance:
+Aplikacja działa płynnie (60 FPS)
+Brak memory leaks
+Rozmiar APK jest akceptowalny (<50 MB)
+
+Krok 4: Sprawdź rozmiar APK``` bash
+ls -lh composeApp/build/outputs/apk/release/composeApp-release.apk
+```
+
+Dobry rozmiar: < 30 MB
+Akceptowalny: < 50 MB
+Za duży: > 50 MB (trzeba optymalizować)
+
+📍 PRIORYTET 4: Google Play Console (2-3 godziny)
+Krok 1: Zbuduj Android App Bundle (AAB)
+Google Play preferuje AAB zamiast APK:``` bash
+./gradlew :composeApp:bundleRelease
+```
+
+Bundle będzie w: composeApp/build/outputs/bundle/release/composeApp-release.aab
+
+Krok 2: Załóż konto Google Play Console
+Wejdź na: https://play.google.com/console
+Zarejestruj się ($25 jednorazowa opłata)
+Wypełnij dane firmy/developera
+
+Krok 3: Stwórz nową aplikację
+Kliknij: "Create app"
+Wypełnij:
+App name: IgiBeer
+Default language: Polish - polski
+App or game: App
+Free or paid: Free (prawdopodobnie)
+Declarations: zaznacz wszystkie checkboxy
+
+Krok 4: Przygotuj materiały graficzne
+A) Screenshoty (WYMAGANE)
+Zrób minimum 2, maksimum 8 screenshotów:
+Uruchom aplikację na telefonie
+Zrób screenshoty głównych ekranów:
+Ekran logowania
+Ekran główny (dashboard)
+Ekran z kartami NFC
+Ekran salda
+Ekran historii transakcji
+Ekran profilu
+Wymiary:
+Phone: 1080x1920 do 1080x2340 (16:9 lub 9:16)
+7-inch tablet: 1200x1920 (opcjonalnie)
+10-inch tablet: 2048x2732 (opcjonalnie)
+Możesz użyć narzędzi do stworzenia ładnych screenshotów:
+https://screenshots.pro/
+https://www.mockuphone.com/
+
+B) Feature Graphic (WYMAGANE)
+Wymiary: 1024 x 500 px
+Stwórz w Canva/Figma/Photoshop:
+Tło w kolorze głównym aplikacji (złoty/czarny)
+Logo IgiBeer
+Tekst: "Twoja cyfrowa karta do klubów piwowarskich"
+Przykład layoutu:```
++--------------------------------+
+|  [LOGO]   IgiBeer             |
+|  Twoja cyfrowa karta           |
+|  do klubów piwowarskich        |
++--------------------------------+
+```
+
+
+C) Icon (już masz ✅)
+Twój ic_launcher.png jest już gotowy.
+
+Krok 5: Napisz opisy aplikacji
+Krótki opis (80 znaków):```
+Cyfrowy portfel dla klubów piwowarskich. Płać kartą NFC lub telefonem.
+```
+
+Długi opis (4000 znaków):```
+IgiBeer - Twoja cyfrowa karta do klubów piwowarskich
+
+Zapomnij o plastikowych kartach! IgiBeer to nowoczesna aplikacja mobilna, która pozwala zarządzać Twoim kontem w klubach piwowarskich bezpośrednio z telefonu.
+
+🍺 FUNKCJE:
+
+• Zarządzanie saldo w czasie rzeczywistym
+• Płatności zbliżeniowe przez NFC
+• Doładowania konta online
+• Historia wszystkich transakcji
+• Zarządzanie wieloma kartami NFC
+• Bezpieczne logowanie przez Google lub email
+
+💳 JAK TO DZIAŁA:
+
+1. Pobierz aplikację i załóż konto
+2. Przypisz swoją kartę NFC lub użyj telefonu
+3. Doładuj saldo online
+4. Płać w klubach piwowarskich jednym stuknięciem
+
+🔒 BEZPIECZEŃSTWO:
+
+• Szyfrowane połączenie
+• Autoryzacja dwuskładnikowa
+• Bezpieczne przechowywanie danych
+• Możliwość zablokowania karty w razie zgubienia
+
+📱 DLA KOGO:
+
+• Miłośników piwa kraftowego
+• Członków klubów piwowarskich
+• Osób ceniących wygodę płatności mobilnych
+
+Dołącz do społeczności IgiBeer i ciesz się nowoczesnym sposobem płatności w swoich ulubionych miejscach!
+
+---
+
+Kontakt:
+Email: support@igibeer.pl
+Web: https://igibeer.pl
+
+Polityka prywatności: https://igibeer.pl/privacy
+Regulamin: https://igibeer.pl/terms
+```
+
+
+Krok 6: Kategoria i tagi
+Category: Lifestyle lub Food & Drink
+Tags: piwo, nfc, płatności, portfel, karta
+Content rating: Alcohol reference (aplikacja promuje spożywanie alkoholu)
+
+Krok 7: Wypełnij wymagane deklaracje
+A) Privacy Policy (WYMAGANE)
+Musisz mieć stronę z polityką prywatności. Możesz użyć generatora:
+https://www.termsfeed.com/privacy-policy-generator/
+https://www.freeprivacypolicy.com/
+URL: https://igibeer.pl/privacy (musisz stworzyć)
+
+B) Data Safety (WYMAGANE)
+Deklarujesz jakie dane zbierasz:
+Twoja aplikacja zbiera:
+✅ Email address (do logowania)
+✅ Name (opcjonalnie z Google)
+✅ Payment info (saldo, transakcje)
+✅ Device ID (NFC card IDs)
+Dane są:
+✅ Encrypted in transit (HTTPS)
+✅ User can request deletion
+❌ NOT shared with third parties (poza Google Sign-In)
+
+C) Content Rating Questionnaire
+Wypełnij kwestionariusz:
+Czy aplikacja zawiera przemoc? NIE
+Czy aplikacja zawiera treści seksualne? NIE
+Czy aplikacja zawiera przekleństwa? NIE
+Czy aplikacja dotyczy alkoholu? TAK
+Czy można kupić alkohol? NIE
+Wynik: PEGI 18+ lub podobny rating
+
+Krok 8: Upload AAB
+Production → Create new release
+Upload composeApp-release.aab
+Release name: "1.0.0 - Initial Release"
+Release notes:```
+Pierwsza wersja aplikacji IgiBeer!
+
+• Logowanie przez Google i email
+• Zarządzanie kartami NFC
+• Doładowanie salda online
+• Historia transakcji
+• Bezpieczne płatności
+```
+
+
+Krok 9: Review i publikacja
+Przejrzyj wszystko: Store listing → Review
+Kliknij: "Send for review"
+Czekaj: 1-7 dni na review od Google
+
+📋 KOŃCOWA CHECKLISTA
+Przed wysłaniem do Google Play:
+Keystore wygenerowany i bezpiecznie zapisany
+App signing skonfigurowany w build.gradle.kts
+Network security config dodany
+Release build kompiluje się bez błędów
+APK/AAB podpisany poprawnie
+Aplikacja przetestowana na fizycznym urządzeniu
+Wszystkie funkcje działają w release build
+Google Sign-In działa
+NFC działa
+API calls działają (tylko HTTPS)
+Screenshoty przygotowane (min. 2)
+Feature graphic przygotowany (1024x500)
+Opisy aplikacji napisane
+Privacy Policy stworzona i opublikowana
+Data Safety wypełniona
+Content Rating wypełniony
+Google Play Console account utworzony
+AAB uploaded do Production track
+
+⏱️ SZACOWANY CZAS
+Zadanie
+Czas
+Signing configuration
+30 min
+Network security
+15 min
+Testing
+1-2 h
+Screenshoty
+30 min
+Feature graphic
+1 h
+Opisy i teksty
+30 min
+Privacy Policy
+1 h
+Google Play Console setup
+1 h
+Upload i review
+30 min
+RAZEM
+5-7 godzin
+
+🆘 POMOC
+Jeśli coś pójdzie nie tak:
+Build errors: Sprawdź czy gradle.properties ma poprawne hasła
+Signing errors: Sprawdź czy keystore istnieje i hasła są poprawne
+Google Play rejection: Przeczytaj feedback i popraw wskazane problemy
+Crash w release: Sprawdź ProGuard rules, może trzeba dodać -keep rules
+
+Powodzenia! 🚀
