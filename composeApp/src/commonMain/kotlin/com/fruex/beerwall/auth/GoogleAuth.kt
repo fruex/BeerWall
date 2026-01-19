@@ -1,10 +1,10 @@
 package com.fruex.beerwall.auth
 
 import androidx.compose.runtime.Composable
+import com.fruex.beerwall.LogSeverity
+import com.fruex.beerwall.getPlatform
+import com.fruex.beerwall.log
 import kotlinx.serialization.Serializable
-import org.fruex.beerwall.LogSeverity
-import org.fruex.beerwall.getPlatform
-import org.fruex.beerwall.log
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.time.Clock
