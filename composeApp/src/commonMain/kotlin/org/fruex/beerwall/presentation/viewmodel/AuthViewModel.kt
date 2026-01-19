@@ -58,9 +58,6 @@ class AuthViewModel(
             try {
                 checkSessionUseCase()
                     .onSuccess { isLoggedIn ->
-                        // Ustawienie stanu sesji odbywa się automatycznie przez repozytorium/sessionManager
-                        // tutaj tylko aktualizujemy UI jeśli to konieczne, ale observeSessionStateUseCase
-                        // powinno załatwić sprawę. Jednak checkSessionUseCase może wymuszać odświeżenie.
                         _uiState.update {
                             it.copy(
                                 isLoggedIn = isLoggedIn,
@@ -208,23 +205,6 @@ class AuthViewModel(
 
     private fun onLoginSuccess(tokens: AuthTokens) {
         updateUserProfile(tokens)
-        // SessionManager jest aktualizowany przez repozytorium (via AuthApiClient callback lub jawnie),
-        // ale w przypadku sukcesu logowania musimy poinformować system.
-        // Jednak tutaj mamy lukę: UseCase zwraca tokeny, ale czy ustawia stan zalogowania w SessionManager?
-        // AuthRepositoryImpl tylko zapisuje tokeny.
-        // W poprzedniej wersji AuthViewModel ustawiał sessionManager.setLoggedIn(true).
-        // Teraz nie mamy dostępu do SessionManager.
-        // AuthRepository powinno zarządzać stanem sesji.
-        // Zrobimy to przez checkSession() lub założenie, że sukces logowania = zalogowany.
-        // TODO: Refactor AuthRepository to handle session state internally fully.
-        // Na razie zakładamy, że observeSessionStateUseCase wyłapie zmianę,
-        // jeśli AuthRepository lub SessionManager zareaguje na zapisanie tokenów?
-        // TokenManager nie ma callbacka.
-        // Wymuśmy sprawdzenie sesji lub dodajmy metodę do repozytorium "setLoggedIn".
-        // Ale "setLoggedIn" to detale implementacyjne SessionManagera.
-        // Rozwiązanie tymczasowe: checkSessionUseCase po sukcesie?
-        // Lub lepiej: AuthRepositoryImpl po sukcesie logowania powinno ustawić flagę w SessionManager.
-        // (Zrobię to w AuthRepositoryImpl w kolejnym kroku, lub zaktualizuję teraz ViewModel by po prostu odświeżył stan).
         checkSession()
         _uiState.update { it.copy(isLoggedIn = true, isCheckingSession = false) }
     }
