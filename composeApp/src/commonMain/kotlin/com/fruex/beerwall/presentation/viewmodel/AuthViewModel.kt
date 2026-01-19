@@ -222,7 +222,7 @@ class AuthViewModel(
             if (userName != null) {
                 _uiState.update { currentState ->
                     currentState.copy(
-                        userProfile = currentState.userProfile.copy(
+                        userProfile = UserProfile(
                             name = userName
                         )
                     )
@@ -238,7 +238,7 @@ class AuthViewModel(
 
         _uiState.update { currentState ->
             currentState.copy(
-                userProfile = currentState.userProfile.copy(
+                userProfile = UserProfile(
                     name = displayName ?: currentState.userProfile.name
                 )
             )
