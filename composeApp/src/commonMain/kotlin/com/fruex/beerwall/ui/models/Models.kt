@@ -40,7 +40,11 @@ data class DailyTransactions(
 @Immutable
 data class UserProfile(
     val name: String,
-    val initials: String
+    val initials: String = name.split(" ")
+        .mapNotNull { it.firstOrNull() }
+        .take(2)
+        .joinToString("")
+        .uppercase()
 )
 
 // Payment models
