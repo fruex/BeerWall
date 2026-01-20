@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.fruex.beerwall.ui.models.PaymentMethod
@@ -36,8 +37,13 @@ fun AddFundsScreen(
     var customAmount by rememberSaveable { mutableStateOf("") }
     var blikCode by rememberSaveable { mutableStateOf("") }
     var isProcessing by remember { mutableStateOf(false) }
-    var selectedPaymentMethod by remember {
-        mutableStateOf(availablePaymentMethods.firstOrNull())
+    var selectedPaymentMethod by remember { mutableStateOf<PaymentMethod?>(null) }
+
+    // Auto-select first payment method when available
+    LaunchedEffect(availablePaymentMethods) {
+        if (selectedPaymentMethod == null && availablePaymentMethods.isNotEmpty()) {
+            selectedPaymentMethod = availablePaymentMethods.first()
+        }
     }
 
     val predefinedAmounts = listOf("10", "20", "50", "100", "200", "Inna")
@@ -127,7 +133,7 @@ fun AddFundsScreen(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = if (premisesName != null) "Doładuj saldo w $premisesName" else "Doładuj saldo Beer Wall",
+                    text = if (premisesName != null) "Doładuj saldo w $premisesName" else "Doładuj saldo IgiBeer",
                     style = MaterialTheme.typography.bodyMedium,
                     color = TextSecondary
                 )
@@ -138,7 +144,7 @@ fun AddFundsScreen(
                 Text(
                     text = "Metoda płatności",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -157,7 +163,7 @@ fun AddFundsScreen(
                 Text(
                     text = "Wybierz kwotę",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -222,7 +228,7 @@ fun AddFundsScreen(
                 Text(
                     text = "Kod BLIK",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -237,7 +243,8 @@ fun AddFundsScreen(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number
                     ),
-                    isError = blikCode.isNotEmpty() && !isBlikCodeValid
+                    isError = blikCode.isNotEmpty() && !isBlikCodeValid,
+                    textAlign = TextAlign.Center
                 )
 
                 if (blikCode.isNotEmpty() && !isBlikCodeValid) {

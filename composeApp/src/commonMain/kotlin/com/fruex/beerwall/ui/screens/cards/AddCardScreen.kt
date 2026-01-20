@@ -189,7 +189,7 @@ fun AddCardScreen(
                 // Info Card
                 BeerWallInfoCard(
                     icon = Icons.Default.Info,
-                    description = "Upewnij się, że NFC jest włączone na urządzeniu. Karta zostanie połączona z Twoim kontem i można jej używać przy każdym kranie Beer Wall."
+                    description = "Upewnij się, że NFC jest włączone na urządzeniu. Karta zostanie połączona z Twoim kontem i można jej używać przy każdym kranie IgiBeer."
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))

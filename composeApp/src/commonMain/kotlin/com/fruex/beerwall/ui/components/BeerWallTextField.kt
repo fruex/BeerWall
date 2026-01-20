@@ -10,7 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import com.fruex.beerwall.ui.theme.BeerWallTheme
 import com.fruex.beerwall.ui.theme.InputBackground
 import com.fruex.beerwall.ui.theme.TextPrimary
@@ -47,7 +50,8 @@ fun BeerWallTextField(
     trailingIcon: @Composable (() -> Unit)? = null,
     isError: Boolean = false,
     errorMessage: String? = null,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     val effectiveVisualTransformation = if (isPassword) PasswordVisualTransformation() else visualTransformation
     Column(modifier = modifier) {
@@ -57,7 +61,9 @@ fun BeerWallTextField(
             placeholder = {
                 Text(
                     text = placeholder,
-                    color = TextSecondary
+                    color = TextSecondary,
+                    textAlign = textAlign,
+                    modifier = Modifier.fillMaxWidth()
                 )
             },
             modifier = Modifier.fillMaxWidth(),
@@ -82,7 +88,11 @@ fun BeerWallTextField(
                 errorIndicatorColor = Color.Transparent,
             ),
             shape = RoundedCornerShape(16.dp),
-            singleLine = true
+            singleLine = true,
+            textStyle = TextStyle(
+                textAlign = textAlign,
+                fontWeight = FontWeight.SemiBold
+            )
         )
         if (isError && errorMessage != null) {
             Spacer(modifier = Modifier.height(4.dp))
