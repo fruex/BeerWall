@@ -68,12 +68,18 @@ fun HistoryScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // Header
-                item(key = "app_header") {
+                item(
+                    key = "app_header",
+                    contentType = "header"
+                ) {
                     AppHeader()
                 }
 
                 transactionGroups.forEach { group ->
-                    item(key = "header_${group.date}") {
+                    item(
+                        key = "header_${group.date}",
+                        contentType = "group_header"
+                    ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -96,7 +102,8 @@ fun HistoryScreen(
 
                     items(
                         items = group.transactions,
-                        key = { it.transactionId }
+                        key = { it.transactionId },
+                        contentType = { "transaction" }
                     ) { transaction ->
                         TransactionItem(transaction)
                     }
@@ -110,7 +117,7 @@ fun HistoryScreen(
 fun TransactionItem(transaction: Transaction) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = CardShape,
         colors = CardDefaults.cardColors(
             containerColor = CardBackground
         )
@@ -127,7 +134,7 @@ fun TransactionItem(transaction: Transaction) {
                     .size(56.dp)
                     .background(
                         color = GoldPrimary,
-                        shape = RoundedCornerShape(12.dp)
+                        shape = IconBoxShape
                     ),
                 contentAlignment = Alignment.Center
             ) {
