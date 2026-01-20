@@ -46,11 +46,17 @@ fun CardsScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         // Header
-        item(key = "app_header") {
+        item(
+            key = "app_header",
+            contentType = "header"
+        ) {
             AppHeader()
         }
 
-        item(key = "section_title") {
+        item(
+            key = "section_title",
+            contentType = "title"
+        ) {
             Column {
                 Text(
                     text = "Moje karty",
@@ -69,7 +75,8 @@ fun CardsScreen(
 
         items(
             items = cards,
-            key = { it.id }
+            key = { it.id },
+            contentType = { "card" }
         ) { card ->
             var showCardDetails by remember { mutableStateOf(false) }
 
@@ -94,14 +101,20 @@ fun CardsScreen(
             }
         }
 
-        item(key = "add_card_button") {
+        item(
+            key = "add_card_button",
+            contentType = "button"
+        ) {
             BeerWallButton(
                 text = "Dodaj nową kartę",
                 onClick = onAddCardClick,
             )
         }
 
-        item(key = "nfc_info") {
+        item(
+            key = "nfc_info",
+            contentType = "info"
+        ) {
             NFCInfoCard()
         }
     }
@@ -129,13 +142,13 @@ fun CardItemView(
             .border(
                 width = 1.dp,
                 color = GoldPrimary.copy(alpha = 0.3f),
-                shape = RoundedCornerShape(16.dp)
+                shape = CardShape
             )
     }
 
     Card(
         modifier = cardModifier,
-        shape = RoundedCornerShape(16.dp),
+        shape = CardShape,
         colors = CardDefaults.cardColors(
             containerColor = cardBackground
         ),
@@ -158,14 +171,14 @@ fun CardItemView(
                             // Lighter gold for virtual cards
                             GoldPrimary.copy(alpha = 0.25f)
                         },
-                        shape = RoundedCornerShape(12.dp)
+                        shape = IconBoxShape
                     )
                     .then(
                         if (!card.isPhysical) {
                             Modifier.border(
                                 width = 1.dp,
                                 color = GoldPrimary.copy(alpha = 0.4f),
-                                shape = RoundedCornerShape(12.dp)
+                                shape = IconBoxShape
                             )
                         } else Modifier
                     ),
@@ -339,7 +352,7 @@ fun CardDetailsDialog(
                         OutlinedButton(
                             onClick = onDelete,
                             modifier = Modifier.fillMaxWidth().height(50.dp),
-                            shape = RoundedCornerShape(12.dp),
+                            shape = ButtonShape,
                             colors = ButtonDefaults.outlinedButtonColors(
                                 contentColor = TextSecondary
                             ),
