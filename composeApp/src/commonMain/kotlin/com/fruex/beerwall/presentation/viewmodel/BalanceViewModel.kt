@@ -62,7 +62,8 @@ class BalanceViewModel(
             try {
                 topUpBalanceUseCase(premisesId, paymentMethodId, balance)
                     .onSuccess {
-                        // Odpowiedź przyjdzie przez webhook, nie czekamy na response
+                        // Odśwież saldo po udanym doładowaniu
+                        refreshBalance()
                     }
                     .onFailure { error ->
                         _uiState.update { it.copy(errorMessage = "Nie udało się doładować konta: ${error.message}") }

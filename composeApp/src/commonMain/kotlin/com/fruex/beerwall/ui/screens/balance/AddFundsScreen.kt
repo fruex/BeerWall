@@ -52,7 +52,7 @@ fun AddFundsScreen(
 
     if (isProcessing) {
         LaunchedEffect(Unit) {
-            kotlinx.coroutines.delay(3000)
+            kotlinx.coroutines.delay(5000)
             finalAmount.toDoubleOrNull()?.let { balanceValue ->
                 selectedPaymentMethod?.let { method ->
                     onAddFunds(method.paymentMethodId, balanceValue)
