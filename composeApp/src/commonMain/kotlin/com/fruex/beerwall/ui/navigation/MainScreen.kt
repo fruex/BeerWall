@@ -1,6 +1,7 @@
 package com.fruex.beerwall.ui.navigation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -179,7 +180,8 @@ fun MainScreenContent(
             NavigationBar(
                 containerColor = CardBackground,
                 contentColor = GoldPrimary,
-                modifier = Modifier.height(64.dp)
+                modifier = Modifier.height(64.dp),
+                windowInsets = WindowInsets(0, 0, 0, 0)
             ) {
                 items.forEach { item ->
                     NavigationBarItem(
@@ -260,25 +262,40 @@ fun MainScreenContent(
 @Preview
 @Composable
 fun MainScreenPreview() {
-    MainScreenContent(
-        selectedTab = BottomNavItem.Balance.route,
-        onTabSelected = {},
-        balances = emptyList(),
-        isBalanceRefreshing = false,
-        onBalanceRefresh = {},
-        cards = emptyList(),
-        onToggleCardStatus = {},
-        onDeleteCard = {},
-        transactionGroups = emptyList(),
-        isHistoryRefreshing = false,
-        onHistoryRefresh = {},
-        userProfile = UserProfile(name = "Jan Kowalski"),
-        onLogoutClick = {},
-        onAddFundsClick = {},
-        onAddLocationClick = {},
-        onAddCardClick = {},
-        onChangePasswordClick = {},
-        onSupportClick = {},
-        onAboutClick = {}
-    )
+    com.fruex.beerwall.ui.theme.BeerWallTheme {
+        MainScreenContent(
+            selectedTab = BottomNavItem.Balance.route,
+            onTabSelected = {},
+            balances = listOf(
+                PremisesBalance(
+                    premisesId = 1,
+                    premisesName = "Pub Centrum",
+                    balance = 45.50,
+                    loyaltyPoints = 120
+                ),
+                PremisesBalance(
+                    premisesId = 2,
+                    premisesName = "Bar przy Rynku",
+                    balance = 12.00,
+                    loyaltyPoints = 50
+                )
+            ),
+            isBalanceRefreshing = false,
+            onBalanceRefresh = {},
+            cards = emptyList(),
+            onToggleCardStatus = {},
+            onDeleteCard = {},
+            transactionGroups = emptyList(),
+            isHistoryRefreshing = false,
+            onHistoryRefresh = {},
+            userProfile = UserProfile(name = "Jan Kowalski"),
+            onLogoutClick = {},
+            onAddFundsClick = {},
+            onAddLocationClick = {},
+            onAddCardClick = {},
+            onChangePasswordClick = {},
+            onSupportClick = {},
+            onAboutClick = {}
+        )
+    }
 }
