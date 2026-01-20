@@ -38,12 +38,17 @@ class AuthViewModel(
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
+    private var isManualLogout = false
+
     init {
         // Obserwuj globalny stan sesji
         viewModelScope.launch {
             observeSessionStateUseCase().collect { isLoggedIn ->
                 if (!isLoggedIn && _uiState.value.isLoggedIn) {
-                    handleSessionExpired()
+                    if (!isManualLogout) {
+                        handleSessionExpired()
+                    }
+                    isManualLogout = false // Reset flag
                 } else if (isLoggedIn && !_uiState.value.isLoggedIn) {
                     _uiState.update { it.copy(isLoggedIn = true) }
                     // Po zalogowaniu (lub przywróceniu sesji) pobierz dane użytkownika
@@ -170,6 +175,7 @@ class AuthViewModel(
 
     fun handleLogout(googleAuthProvider: GoogleAuthProvider) {
         viewModelScope.launch {
+            isManualLogout = true
             googleAuthProvider.signOut()
             logoutUseCase()
             _uiState.update {
