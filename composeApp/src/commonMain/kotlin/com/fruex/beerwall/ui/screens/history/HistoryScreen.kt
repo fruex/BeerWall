@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Wallet
@@ -20,6 +19,30 @@ import com.fruex.beerwall.ui.models.DailyTransactions
 import com.fruex.beerwall.ui.models.Transaction
 import com.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+
+/**
+ * Formatuje datę ISO 8601 do czytelnego formatu.
+ *
+ * @param isoDateTime Data w formacie ISO 8601 (np. "2024-11-24T18:30:00Z").
+ * @return Sformatowana data w formacie "dd.MM.yyyy HH:mm".
+ */
+private fun formatDateTime(isoDateTime: String): String {
+    return try {
+        val instant = Instant.parse(isoDateTime)
+        val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+        val day = localDateTime.dayOfMonth.toString().padStart(2, '0')
+        val month = localDateTime.monthNumber.toString().padStart(2, '0')
+        val year = localDateTime.year
+        val hour = localDateTime.hour.toString().padStart(2, '0')
+        val minute = localDateTime.minute.toString().padStart(2, '0')
+        "$day.$month.$year $hour:$minute"
+    } catch (e: Exception) {
+        isoDateTime
+    }
+}
 
 /**
  * Ekran historii transakcji.
@@ -156,7 +179,7 @@ fun TransactionItem(transaction: Transaction) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = transaction.startDateTime,
+                    text = formatDateTime(transaction.startDateTime),
                     style = MaterialTheme.typography.bodySmall,
                     color = TextSecondary
                 )
@@ -219,14 +242,14 @@ fun HistoryScreenPreview() {
                             transactionId = 1,
                             commodityName = "Piwo Jasne",
                             grossPrice = -12.50,
-                            capacity = 500,
+                            capacity = 500.00,
                             startDateTime = "2024-11-24T18:30:00"
                         ),
                         Transaction(
                             transactionId = 2,
                             commodityName = "Doładowanie",
                             grossPrice = 50.00,
-                            capacity = 0,
+                            capacity = 0.00,
                             startDateTime = "2024-11-24T18:00:00"
                         )
                     )
@@ -238,7 +261,7 @@ fun HistoryScreenPreview() {
                             transactionId = 3,
                             commodityName = "Piwo Ciemne",
                             grossPrice = -15.00,
-                            capacity = 500,
+                            capacity = 500.00,
                             startDateTime = "2024-11-23T20:15:00"
                         )
                     )

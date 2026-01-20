@@ -18,7 +18,7 @@ data class TransactionResponse(
     val commodityName: String,
     val startDateTime: String,
     val grossPrice: Double,
-    val capacity: Int
+    val capacity: Double
 )
 
 /**
