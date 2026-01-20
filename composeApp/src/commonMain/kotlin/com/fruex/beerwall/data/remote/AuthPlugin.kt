@@ -146,29 +146,36 @@ class AuthPlugin private constructor(
 
             client.close()
 
-            if (response.status == HttpStatusCode.OK) {
-                val refreshResponse: com.fruex.beerwall.data.remote.dto.auth.RefreshTokenResponse = response.body()
-                
-                // Decode user data from new token payload
-                val payload = com.fruex.beerwall.auth.decodeTokenPayload(refreshResponse.token)
-                val firstName = payload["firstName"]
-                val lastName = payload["lastName"]
+            when (response.status) {
+                HttpStatusCode.OK -> {
+                    val refreshResponse: com.fruex.beerwall.data.remote.dto.auth.RefreshTokenResponse = response.body()
 
-                tokenManager.saveTokens(
-                    tokens = AuthTokens(
-                        token = refreshResponse.token,
-                        tokenExpires = ensureTimestamp(refreshResponse.tokenExpires),
-                        refreshToken = refreshResponse.refreshToken,
-                        refreshTokenExpires = ensureTimestamp(refreshResponse.refreshTokenExpires),
-                        firstName = firstName,
-                        lastName = lastName
+                    // Decode user data from new token payload
+                    val payload = com.fruex.beerwall.auth.decodeTokenPayload(refreshResponse.token)
+                    val firstName = payload["firstName"]
+                    val lastName = payload["lastName"]
+
+                    tokenManager.saveTokens(
+                        tokens = AuthTokens(
+                            token = refreshResponse.token,
+                            tokenExpires = ensureTimestamp(refreshResponse.tokenExpires),
+                            refreshToken = refreshResponse.refreshToken,
+                            refreshTokenExpires = ensureTimestamp(refreshResponse.refreshTokenExpires),
+                            firstName = firstName,
+                            lastName = lastName
+                        )
                     )
-                )
-                platform.log("✅ Token refreshed successfully", "AuthPlugin", LogSeverity.INFO)
-                true
-            } else {
-                platform.log("❌ Token refresh failed: ${response.status}", "AuthPlugin", LogSeverity.ERROR)
-                false
+                    platform.log("✅ Token refreshed successfully", "AuthPlugin", LogSeverity.INFO)
+                    true
+                }
+                HttpStatusCode.Unauthorized -> {
+                    platform.log("❌ Refresh token expired or invalid (401)", "AuthPlugin", LogSeverity.ERROR)
+                    false
+                }
+                else -> {
+                    platform.log("❌ Token refresh failed: ${response.status}", "AuthPlugin", LogSeverity.ERROR)
+                    false
+                }
             }
         } catch (e: Exception) {
             platform.log("❌ Token refresh exception: ${e.message}", "AuthPlugin", LogSeverity.ERROR)
