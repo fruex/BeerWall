@@ -68,7 +68,7 @@ fun AboutScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Text(
-                        text = "Beer Wall",
+                        text = "IgiBeer",
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -82,7 +82,7 @@ fun AboutScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Beer Wall to innowacyjny system samoobsługowy umożliwiający nalewanie piwa z wykorzystaniem technologii NFC i zarządzania saldem online.",
+                        text = "IgiBeer to innowacyjny system samoobsługowy umożliwiający nalewanie piwa z wykorzystaniem technologii NFC i zarządzania saldem online.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = TextSecondary
                     )

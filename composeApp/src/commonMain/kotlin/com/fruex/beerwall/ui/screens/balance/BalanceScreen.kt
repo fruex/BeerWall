@@ -210,7 +210,7 @@ fun InfoCard() {
     BeerWallInfoCard(
         icon = Icons.Default.Info,
         title = "Jak to działa",
-        description = "Dodaj środki do salda i używaj podłączonych kart NFC przy każdym kranie Beer Wall. Saldo zostanie automatycznie odliczone podczas nalewania."
+        description = "Dodaj środki do salda i używaj podłączonych kart NFC przy każdym kranie IgiBeer. Saldo zostanie automatycznie odliczone podczas nalewania."
     )
 }
 

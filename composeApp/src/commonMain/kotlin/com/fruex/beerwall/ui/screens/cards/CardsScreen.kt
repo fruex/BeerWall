@@ -429,7 +429,7 @@ fun NFCInfoCard() {
     BeerWallInfoCard(
         icon = Icons.Default.Nfc,
         title = "Karty NFC",
-        description = "Twoje fizyczne karty są połączone z Twoim kontem. Po prostu użyj dowolnej fizycznej karty przy kranie Beer Wall, aby nalać i zapłacić.",
+        description = "Twoje fizyczne karty są połączone z Twoim kontem. Po prostu użyj dowolnej fizycznej karty przy kranie IgiBeer, aby nalać i zapłacić.",
         iconBackground = GoldPrimary.copy(alpha = 0.2f)
     )
 }
