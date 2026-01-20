@@ -17,9 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.ui.components.AppHeader
 import com.fruex.beerwall.ui.components.BeerWallInfoCard
 import com.fruex.beerwall.ui.models.PremisesBalance
-import com.fruex.beerwall.ui.theme.BeerWallTheme
-import com.fruex.beerwall.ui.theme.DarkBackground
-import com.fruex.beerwall.ui.theme.GoldPrimary
+import com.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -55,11 +53,17 @@ fun BalanceScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Header
-            item(key = "app_header") {
+            item(
+                key = "app_header",
+                contentType = "header"
+            ) {
                 AppHeader()
             }
 
-            item(key = "section_title") {
+            item(
+                key = "section_title",
+                contentType = "title"
+            ) {
                 Text(
                     text = "Dostępne saldo",
                     style = MaterialTheme.typography.titleLarge,
@@ -70,7 +74,8 @@ fun BalanceScreen(
 
             items(
                 items = balances,
-                key = { it.premisesId }
+                key = { it.premisesId },
+                contentType = { "balance_card" }
             ) { premisesBalance ->
                 BalanceCard(
                     premisesName = premisesBalance.premisesName,
@@ -80,7 +85,10 @@ fun BalanceScreen(
                 )
             }
 
-            item(key = "info_card") {
+            item(
+                key = "info_card",
+                contentType = "info"
+            ) {
                 InfoCard()
             }
         }
@@ -96,7 +104,7 @@ fun BalanceCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = CardShape,
         colors = CardDefaults.cardColors(
             containerColor = GoldPrimary
         )
@@ -114,7 +122,7 @@ fun BalanceCard(
                     .size(48.dp)
                     .background(
                         color = DarkBackground.copy(alpha = 0.2f),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = IconBoxShape
                     )
             ) {
                 Icon(

@@ -28,6 +28,7 @@ fun BeerWallTheme(
     MaterialTheme(
         colorScheme = BeerWallColorScheme,
         typography = Typography,
+        shapes = BeerWallShapes,
         content = content
     )
 }
