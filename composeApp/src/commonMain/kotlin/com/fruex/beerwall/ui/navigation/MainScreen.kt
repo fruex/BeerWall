@@ -24,9 +24,9 @@ import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.auth.rememberGoogleAuthProvider
 import com.fruex.beerwall.presentation.viewmodel.*
 import com.fruex.beerwall.ui.models.DailyTransactions
+import com.fruex.beerwall.ui.models.PremisesBalance
 import com.fruex.beerwall.ui.models.UserCard
 import com.fruex.beerwall.ui.models.UserProfile
-import com.fruex.beerwall.ui.models.PremisesBalance
 import com.fruex.beerwall.ui.screens.balance.BalanceScreen
 import com.fruex.beerwall.ui.screens.cards.CardsScreen
 import com.fruex.beerwall.ui.screens.history.HistoryScreen
