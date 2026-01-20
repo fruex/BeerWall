@@ -46,10 +46,11 @@ object HttpClientFactory {
                     platform.log(message, "KtorClient", LogSeverity.DEBUG)
                 }
             }
-            level = LogLevel.ALL
+            level = LogLevel.HEADERS
             filter { request ->
                 request.url.host.contains("igibeer")
             }
+            sanitizeHeader { header -> header == io.ktor.http.HttpHeaders.Authorization }
         }
     }
 }
