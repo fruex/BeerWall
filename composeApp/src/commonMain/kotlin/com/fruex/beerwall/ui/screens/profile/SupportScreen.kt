@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.ui.components.BeerWallButton
 import com.fruex.beerwall.ui.theme.BeerWallTheme
 import com.fruex.beerwall.ui.theme.DarkBackground
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,6 +26,9 @@ fun SupportScreen(
     onSendMessage: (message: String) -> Unit,
 ) {
     var message by rememberSaveable { mutableStateOf("") }
+    var isSending by remember { mutableStateOf(false) }
+    var showSuccessMessage by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -63,6 +68,22 @@ fun SupportScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
+            if (showSuccessMessage) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
+                    Text(
+                        text = "✓ Wiadomość została wysłana do zespołu wsparcia BeerWall",
+                        modifier = Modifier.padding(16.dp),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
@@ -84,12 +105,21 @@ fun SupportScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             BeerWallButton(
-                text = "Wyślij wiadomość",
+                text = if (isSending) "Wysyłanie..." else "Wyślij wiadomość",
                 onClick = {
-                    onSendMessage(message)
-                    message = ""
+                    scope.launch {
+                        isSending = true
+                        showSuccessMessage = false
+                        delay(1500)
+                        onSendMessage(message)
+                        message = ""
+                        isSending = false
+                        showSuccessMessage = true
+                        delay(5000)
+                        showSuccessMessage = false
+                    }
                 },
-                enabled = message.isNotBlank(),
+                enabled = message.isNotBlank() && !isSending,
                 icon = Icons.AutoMirrored.Filled.Send
             )
         }
