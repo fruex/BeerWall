@@ -193,8 +193,6 @@ fun AddFundsScreen(
                             modifier = Modifier.weight(1f)
                         )
                     }
-                    // Spacer for layout balance
-                    Spacer(modifier = Modifier.weight(1f))
                 }
 
                 // Custom Amount Input
@@ -348,7 +346,7 @@ fun AmountChip(
 ) {
     Box(
         modifier = modifier
-            .height(48.dp)
+            .heightIn(min = 48.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(
                 if (isSelected) GoldPrimary else CardBackground
@@ -359,14 +357,16 @@ fun AmountChip(
                 shape = RoundedCornerShape(12.dp)
             )
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 20.dp, vertical = 12.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = if (amount == "Inna") amount else "$amount PLN",
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.SemiBold,
-            color = if (isSelected) DarkBackground else TextPrimary
+            color = if (isSelected) DarkBackground else TextPrimary,
+            maxLines = 1,
+            softWrap = false
         )
     }
 }
