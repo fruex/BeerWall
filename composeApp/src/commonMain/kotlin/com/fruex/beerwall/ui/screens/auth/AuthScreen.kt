@@ -3,21 +3,31 @@ package com.fruex.beerwall.ui.screens.auth
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import beerwall.composeapp.generated.resources.Res
 import beerwall.composeapp.generated.resources.ic_apple
@@ -57,8 +67,17 @@ fun AuthScreen(
     var password by rememberSaveable { mutableStateOf("") }
     var showEmailAuth by rememberSaveable { mutableStateOf(false) }
     var showPasswordStep by rememberSaveable { mutableStateOf(false) }
+    var isPasswordVisible by rememberSaveable { mutableStateOf(false) }
 
     val isLogin = mode == AuthMode.LOGIN
+    val focusManager = LocalFocusManager.current
+    val passwordFocusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(showPasswordStep) {
+        if (showPasswordStep) {
+            passwordFocusRequester.requestFocus()
+        }
+    }
 
     LoadingDialog(
         isVisible = isLoading,
@@ -156,8 +175,16 @@ fun AuthScreen(
                     value = email,
                     onValueChange = { email = it },
                     placeholder = "E-mail",
-                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                        keyboardType = KeyboardType.Email
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            if (email.isNotBlank()) {
+                                showPasswordStep = true
+                            }
+                        }
                     ),
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !isLoading && !showPasswordStep
@@ -178,11 +205,31 @@ fun AuthScreen(
                         value = password,
                         onValueChange = { password = it },
                         placeholder = "Hasło",
-                        visualTransformation = PasswordVisualTransformation(),
-                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                            keyboardType = KeyboardType.Password
+                        visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Done
                         ),
-                        modifier = Modifier.fillMaxWidth(),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                if (password.isNotBlank()) {
+                                    focusManager.clearFocus()
+                                    onAuthClick(email, password)
+                                }
+                            }
+                        ),
+                        trailingIcon = {
+                            IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                                Icon(
+                                    imageVector = if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                    contentDescription = if (isPasswordVisible) "Ukryj hasło" else "Pokaż hasło",
+                                    tint = TextSecondary
+                                )
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(passwordFocusRequester),
                         enabled = !isLoading
                     )
 
