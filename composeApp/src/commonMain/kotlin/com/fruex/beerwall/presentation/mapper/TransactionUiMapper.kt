@@ -11,11 +11,13 @@ private val monthNames = listOf(
 )
 
 fun Transaction.toUi(): com.fruex.beerwall.ui.models.Transaction {
+    val time = startDateTime.time
+    val formattedTime = "${time.hour.toString().padStart(2, '0')}:${time.minute.toString().padStart(2, '0')}"
+
     return com.fruex.beerwall.ui.models.Transaction(
         transactionId = transactionId,
         commodityName = commodityName,
-        startDateTime = startDateTime,
-        formattedTime = startDateTime.substringAfter("T").take(5),
+        formattedTime = formattedTime,
         grossPrice = grossPrice,
         capacity = capacity
     )
@@ -26,14 +28,9 @@ fun List<Transaction>.toUi(): List<com.fruex.beerwall.ui.models.Transaction> {
 }
 
 fun List<Transaction>.groupByDate(): List<DailyTransactions> {
-    return groupBy { it.startDateTime.substringBefore("T") }
-        .map { (dateString, transactions) ->
-            val formattedDate = try {
-                val date = LocalDate.parse(dateString)
-                "${date.day} ${monthNames[date.month.number - 1]}"
-            } catch (e: Exception) {
-                dateString.uppercase()
-            }
+    return groupBy { it.startDateTime.date }
+        .map { (date, transactions) ->
+            val formattedDate = "${date.day} ${monthNames[date.month.number - 1]}"
 
             DailyTransactions(
                 date = formattedDate,

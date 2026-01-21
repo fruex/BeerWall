@@ -2,6 +2,7 @@ package com.fruex.beerwall.data.mapper
 
 import com.fruex.beerwall.domain.model.Transaction
 import com.fruex.beerwall.data.remote.dto.history.TransactionResponse
+import kotlinx.datetime.LocalDateTime
 
 /**
  * Mapuje [TransactionResponse] (DTO) na [Transaction] (Domain Model).
@@ -10,7 +11,7 @@ fun TransactionResponse.toDomain(): Transaction {
     return Transaction(
         transactionId = transactionId,
         commodityName = commodityName,
-        startDateTime = startDateTime,
+        startDateTime = LocalDateTime.parse(startDateTime),
         grossPrice = grossPrice,
         capacity = capacity
     )
