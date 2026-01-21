@@ -186,13 +186,17 @@ fun AppNavHost(
         // Profile sub-screens
         composable(NavigationDestination.ChangePassword.route) {
             val authViewModel = koinViewModel<AuthViewModel>()
+            val uiState by authViewModel.uiState.collectAsState()
 
             ChangePasswordScreen(
                 onBackClick = { navController.popBackStack() },
-                onResetPassword = { email, resetCode, newPassword ->
-                    authViewModel.handleResetPassword(email, resetCode, newPassword)
-                    navController.popBackStack()
-                }
+                onChangePassword = { newPassword ->
+                    authViewModel.handleChangePassword(newPassword) {
+                        navController.popBackStack()
+                    }
+                },
+                isLoading = uiState.isLoading,
+                errorMessage = uiState.errorMessage
             )
         }
 
