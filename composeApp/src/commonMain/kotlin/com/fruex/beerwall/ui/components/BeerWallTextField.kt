@@ -42,6 +42,7 @@ fun BeerWallTextField(
     onValueChange: (String) -> Unit,
     placeholder: String,
     modifier: Modifier = Modifier,
+    inputModifier: Modifier = Modifier,
     isPassword: Boolean = false,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
@@ -66,7 +67,9 @@ fun BeerWallTextField(
                     modifier = Modifier.fillMaxWidth()
                 )
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(inputModifier),
             visualTransformation = effectiveVisualTransformation,
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
