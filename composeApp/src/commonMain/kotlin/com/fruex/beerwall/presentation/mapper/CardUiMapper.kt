@@ -5,7 +5,7 @@ import com.fruex.beerwall.ui.models.UserCard
 
 fun Card.toUi(): UserCard {
     return UserCard(
-        id = id,
+        cardGuid = cardGuid,
         name = name,
         isActive = isActive,
         isPhysical = isPhysical

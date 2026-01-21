@@ -57,7 +57,7 @@ class CardsViewModel(
     }
 
     fun onToggleCardStatus(cardId: String) {
-        val card = _uiState.value.cards.find { it.id == cardId } ?: return
+        val card = _uiState.value.cards.find { it.cardGuid == cardId } ?: return
         viewModelScope.launch {
             _uiState.update { it.copy(errorMessage = null) }
             try {
@@ -115,7 +115,7 @@ class CardsViewModel(
     private fun updateCardStatus(cardId: String, isActive: Boolean) {
         _uiState.update { currentState ->
             val updatedCards = currentState.cards.map {
-                if (it.id == cardId) it.copy(isActive = isActive) else it
+                if (it.cardGuid == cardId) it.copy(isActive = isActive) else it
             }
             currentState.copy(cards = updatedCards)
         }

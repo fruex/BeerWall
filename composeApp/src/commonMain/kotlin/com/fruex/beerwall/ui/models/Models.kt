@@ -14,7 +14,7 @@ data class PremisesBalance(
 // Card models
 @Immutable
 data class UserCard(
-    val id: String,
+    val cardGuid: String,
     val name: String,
     val isActive: Boolean,
     val isPhysical: Boolean
