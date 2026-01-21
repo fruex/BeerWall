@@ -21,17 +21,6 @@ import com.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
- * Formatuje datę ISO 8601 do godziny.
- *
- * @param isoDateTime Data w formacie ISO 8601 (np. "2026-01-17T11:43:04").
- * @return Sformatowana godzina w formacie "HH:mm".
- */
-private fun formatDateTime(isoDateTime: String): String {
-    val time = isoDateTime.substringAfter("T").take(5)
-    return time
-}
-
-/**
  * Ekran historii transakcji.
  *
  * Wyświetla listę transakcji pogrupowanych według daty.
@@ -166,7 +155,7 @@ fun TransactionItem(transaction: Transaction) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = formatDateTime(transaction.startDateTime),
+                    text = transaction.formattedTime,
                     style = MaterialTheme.typography.bodySmall,
                     color = TextSecondary
                 )
@@ -230,14 +219,16 @@ fun HistoryScreenPreview() {
                             commodityName = "Piwo Jasne",
                             grossPrice = -12.50,
                             capacity = 500.00,
-                            startDateTime = "2024-11-24T18:30:00"
+                            startDateTime = "2024-11-24T18:30:00",
+                            formattedTime = "18:30"
                         ),
                         Transaction(
                             transactionId = 2,
                             commodityName = "Doładowanie",
                             grossPrice = 50.00,
                             capacity = 0.00,
-                            startDateTime = "2024-11-24T18:00:00"
+                            startDateTime = "2024-11-24T18:00:00",
+                            formattedTime = "18:00"
                         )
                     )
                 ),
@@ -249,7 +240,8 @@ fun HistoryScreenPreview() {
                             commodityName = "Piwo Ciemne",
                             grossPrice = -15.00,
                             capacity = 500.00,
-                            startDateTime = "2024-11-23T20:15:00"
+                            startDateTime = "2024-11-23T20:15:00",
+                            formattedTime = "20:15"
                         )
                     )
                 )

@@ -26,6 +26,7 @@ data class Transaction(
     val transactionId: Int,
     val commodityName: String,
     val startDateTime: String,
+    val formattedTime: String,
     val grossPrice: Double,
     val capacity: Double
 )
