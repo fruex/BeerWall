@@ -15,6 +15,6 @@ class TransactionRepositoryImpl(
 ) : TransactionRepository {
 
     override suspend fun getTransactions(): Result<List<Transaction>> {
-        return historyApiClient.getHistory().map { it.toDomain() }
+        return historyApiClient.getHistory().mapCatching { it.toDomain() }
     }
 }
