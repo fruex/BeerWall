@@ -21,11 +21,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 @Preview
-fun App(
-    scannedCardId: String? = null,
-    isNfcEnabled: Boolean = true,
-    onStartNfcScanningClick: () -> Unit = {}
-) {
+fun App() {
     KoinContext {
         val authViewModel = koinViewModel<AuthViewModel>()
         val authState by authViewModel.uiState.collectAsState()
@@ -59,10 +55,7 @@ fun App(
                         startDestination =
                         if (authState.isLoggedIn)
                             NavigationDestination.Main.route
-                        else NavigationDestination.Login.route,
-                        scannedCardId = scannedCardId,
-                        isNfcEnabled = isNfcEnabled,
-                        onStartNfcScanningClick = onStartNfcScanningClick
+                        else NavigationDestination.Login.route
                     )
                 }
             }

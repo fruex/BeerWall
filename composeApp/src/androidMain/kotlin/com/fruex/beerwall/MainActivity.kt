@@ -10,18 +10,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
+import com.fruex.beerwall.domain.repository.NfcRepository
 import com.fruex.beerwall.nfc.NfcCardReader
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
 
     private var nfcAdapter: NfcAdapter? = null
-    private var cardId by mutableStateOf<String?>(null)
-    private var isNfcEnabled by mutableStateOf(true)
     private val platform = getPlatform()
+    private val nfcRepository: NfcRepository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
@@ -34,14 +34,7 @@ class MainActivity : ComponentActivity() {
         checkNfcStatus()
 
         setContent {
-            App(
-                scannedCardId = cardId,
-                isNfcEnabled = isNfcEnabled,
-                onStartNfcScanningClick = { 
-                    cardId = null
-                    checkNfcStatus()
-                }
-            )
+            App()
         }
     }
 
@@ -62,7 +55,10 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun checkNfcStatus() {
-        isNfcEnabled = nfcAdapter?.isEnabled == true
+        val isEnabled = nfcAdapter?.isEnabled == true
+        lifecycleScope.launch {
+            nfcRepository.setNfcEnabled(isEnabled)
+        }
     }
 
     private fun enableForegroundDispatch() {
@@ -98,8 +94,10 @@ class MainActivity : ComponentActivity() {
             tag?.let {
                 val scannedId = NfcCardReader.readCardId(it)
                 if (scannedId != null) {
-                    cardId = scannedId
-                    platform.log("Card scanned: $cardId", this, LogSeverity.INFO)
+                    lifecycleScope.launch {
+                        nfcRepository.setScannedCardId(scannedId)
+                    }
+                    platform.log("Card scanned: $scannedId", this, LogSeverity.INFO)
                 }
             }
         }
