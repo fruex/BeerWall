@@ -16,7 +16,7 @@ class ToggleCardStatusUseCaseTest : BaseTest() {
         // Given
         val cardId = "card-1"
         // Upewnij się, że karta istnieje w fake'u
-        assertTrue(fakeCardRepository.fakeCards.any { it.id == cardId })
+        assertTrue(fakeCardRepository.fakeCards.any { it.cardGuid == cardId })
 
         // When
         val result = useCase(cardId, true)
@@ -24,7 +24,7 @@ class ToggleCardStatusUseCaseTest : BaseTest() {
         // Then
         assertTrue(result.isSuccess)
         assertTrue(result.getOrNull() == true)
-        assertTrue(fakeCardRepository.fakeCards.first { it.id == cardId }.isActive)
+        assertTrue(fakeCardRepository.fakeCards.first { it.cardGuid == cardId }.isActive)
     }
 
     @Test
@@ -38,7 +38,7 @@ class ToggleCardStatusUseCaseTest : BaseTest() {
         // Then
         assertTrue(result.isSuccess)
         assertTrue(result.getOrNull() == false)
-        assertTrue(fakeCardRepository.fakeCards.first { it.id == cardId }.isActive == false)
+        assertTrue(fakeCardRepository.fakeCards.first { it.cardGuid == cardId }.isActive == false)
     }
 
     @Test

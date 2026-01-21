@@ -125,6 +125,8 @@ fun MainScreen(
         isBalanceRefreshing = balanceState.isRefreshing,
         onBalanceRefresh = { balanceViewModel.refreshBalance() },
         cards = cardsState.cards,
+        isCardsRefreshing = cardsState.isRefreshing,
+        onCardsRefresh = { cardsViewModel.refreshCards() },
         onToggleCardStatus = { cardsViewModel.onToggleCardStatus(it) },
         onDeleteCard = { cardsViewModel.onDeleteCard(it) },
         transactionGroups = historyState.transactionGroups,
@@ -152,6 +154,8 @@ fun MainScreenContent(
     isBalanceRefreshing: Boolean,
     onBalanceRefresh: () -> Unit,
     cards: List<UserCard>,
+    isCardsRefreshing: Boolean,
+    onCardsRefresh: () -> Unit,
     onToggleCardStatus: (String) -> Unit,
     onDeleteCard: (String) -> Unit,
     transactionGroups: List<DailyTransactions>,
@@ -224,6 +228,8 @@ fun MainScreenContent(
                 BottomNavItem.Cards.route -> {
                     CardsScreen(
                         cards = cards,
+                        isRefreshing = isCardsRefreshing,
+                        onRefresh = onCardsRefresh,
                         onAddCardClick = onAddCardClick,
                         onToggleCardStatus = onToggleCardStatus,
                         onDeleteCard = onDeleteCard
@@ -283,6 +289,8 @@ fun MainScreenPreview() {
             isBalanceRefreshing = false,
             onBalanceRefresh = {},
             cards = emptyList(),
+            isCardsRefreshing = false,
+            onCardsRefresh = {},
             onToggleCardStatus = {},
             onDeleteCard = {},
             transactionGroups = emptyList(),

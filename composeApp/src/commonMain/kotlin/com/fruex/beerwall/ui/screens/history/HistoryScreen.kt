@@ -19,29 +19,16 @@ import com.fruex.beerwall.ui.models.DailyTransactions
 import com.fruex.beerwall.ui.models.Transaction
 import com.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 /**
- * Formatuje datę ISO 8601 do czytelnego formatu.
+ * Formatuje datę ISO 8601 do godziny.
  *
- * @param isoDateTime Data w formacie ISO 8601 (np. "2024-11-24T18:30:00Z").
- * @return Sformatowana data w formacie "dd.MM.yyyy HH:mm".
+ * @param isoDateTime Data w formacie ISO 8601 (np. "2026-01-17T11:43:04").
+ * @return Sformatowana godzina w formacie "HH:mm".
  */
 private fun formatDateTime(isoDateTime: String): String {
-    return try {
-        val instant = Instant.parse(isoDateTime)
-        val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-        val day = localDateTime.dayOfMonth.toString().padStart(2, '0')
-        val month = localDateTime.monthNumber.toString().padStart(2, '0')
-        val year = localDateTime.year
-        val hour = localDateTime.hour.toString().padStart(2, '0')
-        val minute = localDateTime.minute.toString().padStart(2, '0')
-        "$day.$month.$year $hour:$minute"
-    } catch (e: Exception) {
-        isoDateTime
-    }
+    val time = isoDateTime.substringAfter("T").take(5)
+    return time
 }
 
 /**
@@ -194,7 +181,7 @@ fun TransactionItem(transaction: Transaction) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "${transaction.capacity}ml",
+                    text = "${transaction.capacity} ml",
                     style = MaterialTheme.typography.bodySmall,
                     color = TextSecondary
                 )

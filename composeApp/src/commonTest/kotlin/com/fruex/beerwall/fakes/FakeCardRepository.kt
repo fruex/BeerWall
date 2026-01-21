@@ -9,13 +9,13 @@ class FakeCardRepository : CardRepository {
 
     val fakeCards = mutableListOf(
         Card(
-            id = "card-1",
+            cardGuid = "card-1",
             name = "Moja Karta",
             isActive = true,
             isPhysical = true
         ),
         Card(
-            id = "card-2",
+            cardGuid = "card-2",
             name = "Karta Zapasowa",
             isActive = false,
             isPhysical = false
@@ -30,7 +30,7 @@ class FakeCardRepository : CardRepository {
     override suspend fun toggleCardStatus(cardId: String, isActive: Boolean): Result<Boolean> {
         if (shouldFail) return Result.failure(Exception(failureMessage))
 
-        val index = fakeCards.indexOfFirst { it.id == cardId }
+        val index = fakeCards.indexOfFirst { it.cardGuid == cardId }
         if (index != -1) {
             val current = fakeCards[index]
             fakeCards[index] = current.copy(isActive = isActive)
@@ -43,7 +43,7 @@ class FakeCardRepository : CardRepository {
         if (shouldFail) return Result.failure(Exception(failureMessage))
         fakeCards.add(
             Card(
-                id = guid,
+                cardGuid = guid,
                 name = description,
                 isActive = true,
                 isPhysical = true
@@ -55,7 +55,7 @@ class FakeCardRepository : CardRepository {
     override suspend fun deleteCard(guid: String): Result<Unit> {
         if (shouldFail) return Result.failure(Exception(failureMessage))
         val initialSize = fakeCards.size
-        fakeCards.removeAll { it.id == guid }
+        fakeCards.removeAll { it.cardGuid == guid }
         return if (fakeCards.size < initialSize) Result.success(Unit) else Result.failure(Exception("Karta nie znaleziona"))
     }
 }

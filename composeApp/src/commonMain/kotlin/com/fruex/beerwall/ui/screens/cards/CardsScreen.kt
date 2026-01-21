@@ -5,10 +5,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,95 +27,106 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
  * Umożliwia przeglądanie, dodawanie, usuwanie i zmianę statusu kart użytkownika.
  *
  * @param cards Lista kart.
+ * @param isRefreshing Flaga odświeżania.
+ * @param onRefresh Callback odświeżania.
  * @param onAddCardClick Callback do dodawania karty.
  * @param onToggleCardStatus Callback zmiany statusu karty.
  * @param onDeleteCard Callback usuwania karty.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardsScreen(
     cards: List<UserCard>,
+    isRefreshing: Boolean = false,
+    onRefresh: () -> Unit = {},
     onAddCardClick: () -> Unit,
     onToggleCardStatus: (String) -> Unit,
     onDeleteCard: (String) -> Unit,
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(DarkBackground),
-        contentPadding = PaddingValues(24.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        modifier = Modifier.fillMaxSize()
     ) {
-        // Header
-        item(
-            key = "app_header",
-            contentType = "header"
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(DarkBackground),
+            contentPadding = PaddingValues(24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            AppHeader()
-        }
-
-        item(
-            key = "section_title",
-            contentType = "title"
-        ) {
-            Column {
-                Text(
-                    text = "Moje karty",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "${cards.size} karty połączone",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
-                )
-                Spacer(modifier = Modifier.height(4.dp))
+            // Header
+            item(
+                key = "app_header",
+                contentType = "header"
+            ) {
+                AppHeader()
             }
-        }
 
-        items(
-            items = cards,
-            key = { it.id },
-            contentType = { "card" }
-        ) { card ->
-            var showCardDetails by remember { mutableStateOf(false) }
+            item(
+                key = "section_title",
+                contentType = "title"
+            ) {
+                Column {
+                    Text(
+                        text = "Moje karty",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "${cards.size} karty połączone",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+            }
 
-            CardItemView(
-                card = card,
-                onClick = { showCardDetails = true }
-            )
+            items(
+                items = cards,
+                key = { it.cardGuid },
+                contentType = { "card" }
+            ) { card ->
+                var showCardDetails by remember { mutableStateOf(false) }
 
-            if (showCardDetails) {
-                CardDetailsDialog(
+                CardItemView(
                     card = card,
-                    onDismiss = { showCardDetails = false },
-                    onToggleStatus = {
-                        onToggleCardStatus(card.id)
-                        showCardDetails = false
-                    },
-                    onDelete = {
-                        onDeleteCard(card.id)
-                        showCardDetails = false
-                    }
+                    onClick = { showCardDetails = true }
+                )
+
+                if (showCardDetails) {
+                    CardDetailsDialog(
+                        card = card,
+                        onDismiss = { showCardDetails = false },
+                        onToggleStatus = {
+                            onToggleCardStatus(card.cardGuid)
+                            showCardDetails = false
+                        },
+                        onDelete = {
+                            onDeleteCard(card.cardGuid)
+                            showCardDetails = false
+                        }
+                    )
+                }
+            }
+
+            item(
+                key = "add_card_button",
+                contentType = "button"
+            ) {
+                BeerWallButton(
+                    text = "Dodaj nową kartę",
+                    onClick = onAddCardClick,
                 )
             }
-        }
 
-        item(
-            key = "add_card_button",
-            contentType = "button"
-        ) {
-            BeerWallButton(
-                text = "Dodaj nową kartę",
-                onClick = onAddCardClick,
-            )
-        }
-
-        item(
-            key = "nfc_info",
-            contentType = "info"
-        ) {
-            NFCInfoCard()
+            item(
+                key = "nfc_info",
+                contentType = "info"
+            ) {
+                NFCInfoCard()
+            }
         }
     }
 }
@@ -204,7 +215,7 @@ fun CardItemView(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = card.id,
+                    text = card.cardGuid,
                     style = MaterialTheme.typography.bodyMedium,
                     color = TextSecondary
                 )
@@ -268,22 +279,22 @@ fun CardDetailsDialog(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // Card ID
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "ID karty",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
-                    )
-                    Text(
-                        text = card.id,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
+//                Row(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.SpaceBetween,
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Text(
+//                        text = "ID karty",
+//                        style = MaterialTheme.typography.bodyMedium,
+//                        color = TextSecondary
+//                    )
+//                    Text(
+//                        text = card.cardGuid,
+//                        style = MaterialTheme.typography.bodyMedium,
+//                        fontWeight = FontWeight.Medium
+//                    )
+//                }
 
                 // Card Type
                 Row(
@@ -394,7 +405,7 @@ fun CardDetailsDialogPhysicalPreview() {
     BeerWallTheme {
         CardDetailsDialog(
             card = UserCard(
-                id = "1234567890",
+                cardGuid = "1234567890",
                 name = "Moja karta fizyczna",
                 isActive = true,
                 isPhysical = true
@@ -412,7 +423,7 @@ fun CardDetailsDialogVirtualPreview() {
     BeerWallTheme {
         CardDetailsDialog(
             card = UserCard(
-                id = "0987654321",
+                cardGuid = "0987654321",
                 name = "Karta wirtualna",
                 isActive = false,
                 isPhysical = false
@@ -441,13 +452,13 @@ fun CardsScreenPreview() {
         CardsScreen(
             cards = listOf(
                 UserCard(
-                    id = "0987654321",
+                    cardGuid = "0987654321",
                     name = "Karta wirtualna",
                     isActive = false,
                     isPhysical = false
                 ),
                 UserCard(
-                    id = "1234567890",
+                    cardGuid = "1234567890",
                     name = "Moja karta",
                     isActive = true,
                     isPhysical = true
