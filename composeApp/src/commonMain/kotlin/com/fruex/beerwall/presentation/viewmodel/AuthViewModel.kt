@@ -29,6 +29,7 @@ class AuthViewModel(
     private val registerUseCase: RegisterUseCase,
     private val forgotPasswordUseCase: ForgotPasswordUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
+    private val changePasswordUseCase: ChangePasswordUseCase,
     private val checkSessionUseCase: CheckSessionUseCase,
     private val observeSessionStateUseCase: ObserveSessionStateUseCase,
     private val logoutUseCase: LogoutUseCase,
@@ -167,6 +168,25 @@ class AuthViewModel(
                     }
             } catch (e: Exception) {
                 _uiState.update { it.copy(errorMessage = e.message ?: "Błąd resetowania hasła") }
+            } finally {
+                _uiState.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    fun handleChangePassword(newPassword: String, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            try {
+                changePasswordUseCase(newPassword)
+                    .onSuccess {
+                        onSuccess()
+                    }
+                    .onFailure { error ->
+                        _uiState.update { it.copy(errorMessage = error.message ?: "Błąd zmiany hasła") }
+                    }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(errorMessage = e.message ?: "Błąd zmiany hasła") }
             } finally {
                 _uiState.update { it.copy(isLoading = false) }
             }

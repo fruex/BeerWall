@@ -56,6 +56,7 @@ val useCaseModule = module {
     singleOf(::RegisterUseCase)
     singleOf(::ForgotPasswordUseCase)
     singleOf(::ResetPasswordUseCase)
+    singleOf(::ChangePasswordUseCase)
     singleOf(::CheckSessionUseCase)
     singleOf(::LogoutUseCase)
     singleOf(::ObserveSessionStateUseCase)
