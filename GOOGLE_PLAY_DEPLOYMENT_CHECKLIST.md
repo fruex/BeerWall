@@ -149,11 +149,11 @@
 
 ## 🌐 9. API i Backend
 
-- [ ] **Weryfikacja BASE_URL**
+- [x] **Weryfikacja BASE_URL**
   - Debug: `http://api-debug.igibeer.pl:7000`
   - Release: `https://api.igibeer.pl`
-  - ⚠️ Release URL zawiera "apitest" - czy to jest produkcyjny endpoint?
-  - Upewnić się że backend produkcyjny jest stabilny
+  - ✅ Skonfigurowano produkcyjny endpoint
+  - Upewnić się że backend produkcyjny jest stabilny i gotowy
 
 - [ ] **Obsługa błędów API**
   - Sprawdzić czy wszystkie błędy sieciowe są prawidłowo obsługiwane
@@ -230,12 +230,11 @@
 
 ---
 
-## ✅ Status Gotowości: ~70%
+## ✅ Status Gotowości: ~75%
 
 **Krytyczne blokery:**
 1. ❌ Brak release keystore i konfiguracji signing
-2. ⚠️ Brak testowania release buildu
-3. ⚠️ Weryfikacja URL produkcyjnego API
+2. ⚠️ Brak testowania release buildu z produkcyjnym API
 
 **Zalecane przed pierwszym release:**
 - Rozwiązanie TODO w kodzie
