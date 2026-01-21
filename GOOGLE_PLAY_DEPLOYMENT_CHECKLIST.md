@@ -29,9 +29,10 @@
 
 ## 📱 2. Manifest i Permissions
 
-- [ ] **Wyłączyć `usesCleartextTraffic` dla release**
-  - Aktualnie: `android:usesCleartextTraffic="true"` (linia 16 w AndroidManifest.xml)
-  - Zmienić na `false` lub usunąć dla produkcji (używamy HTTPS w release)
+- [x] **Network Security Configuration**
+  - ✅ Skonfigurowano `network_security_config.xml`
+  - ✅ Cleartext traffic dozwolony tylko dla debug API (api-debug.igibeer.pl, localhost)
+  - ✅ Release wymusza HTTPS (cleartextTrafficPermitted=false)
 
 - [ ] **Weryfikacja permissions**
   - ✅ NFC permission (opcjonalny)
@@ -150,7 +151,7 @@
 
 - [ ] **Weryfikacja BASE_URL**
   - Debug: `http://api-debug.igibeer.pl:7000`
-  - Release: `https://beerwall-apitest-cjcfgfehh9grhne5.polandcentral-01.azurewebsites.net/api`
+  - Release: `https://api.igibeer.pl`
   - ⚠️ Release URL zawiera "apitest" - czy to jest produkcyjny endpoint?
   - Upewnić się że backend produkcyjny jest stabilny
 
@@ -229,13 +230,12 @@
 
 ---
 
-## ✅ Status Gotowości: ~65%
+## ✅ Status Gotowości: ~70%
 
 **Krytyczne blokery:**
 1. ❌ Brak release keystore i konfiguracji signing
-2. ⚠️ `usesCleartextTraffic=true` w manifeście
-3. ⚠️ Brak testowania release buildu
-4. ⚠️ Weryfikacja URL produkcyjnego API
+2. ⚠️ Brak testowania release buildu
+3. ⚠️ Weryfikacja URL produkcyjnego API
 
 **Zalecane przed pierwszym release:**
 - Rozwiązanie TODO w kodzie
