@@ -71,7 +71,14 @@ fun AuthScreen(
 
     val isLogin = mode == AuthMode.LOGIN
     val focusManager = LocalFocusManager.current
+    val emailFocusRequester = remember { FocusRequester() }
     val passwordFocusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(showEmailAuth) {
+        if (showEmailAuth) {
+            emailFocusRequester.requestFocus()
+        }
+    }
 
     LaunchedEffect(showPasswordStep) {
         if (showPasswordStep) {
@@ -187,6 +194,7 @@ fun AuthScreen(
                         }
                     ),
                     modifier = Modifier.fillMaxWidth(),
+                    inputModifier = Modifier.focusRequester(emailFocusRequester),
                     enabled = !isLoading && !showPasswordStep
                 )
 
@@ -227,9 +235,8 @@ fun AuthScreen(
                                 )
                             }
                         },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(passwordFocusRequester),
+                        modifier = Modifier.fillMaxWidth(),
+                        inputModifier = Modifier.focusRequester(passwordFocusRequester),
                         enabled = !isLoading
                     )
 
