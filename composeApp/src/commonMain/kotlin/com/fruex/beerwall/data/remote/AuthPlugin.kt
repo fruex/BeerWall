@@ -13,10 +13,11 @@ import io.ktor.util.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import com.fruex.beerwall.LogSeverity
-import com.fruex.beerwall.auth.AuthTokens
-import com.fruex.beerwall.auth.TokenManager
-import com.fruex.beerwall.auth.ensureTimestamp
-import com.fruex.beerwall.auth.currentTimeSeconds
+import com.fruex.beerwall.domain.model.AuthTokens
+import com.fruex.beerwall.data.local.TokenManager
+import com.fruex.beerwall.data.local.ensureTimestamp
+import com.fruex.beerwall.data.local.currentTimeSeconds
+import com.fruex.beerwall.data.local.decodeTokenPayload
 import com.fruex.beerwall.getPlatform
 import com.fruex.beerwall.log
 
@@ -151,7 +152,7 @@ class AuthPlugin private constructor(
                     val refreshResponse: com.fruex.beerwall.data.remote.dto.auth.RefreshTokenResponse = response.body()
 
                     // Decode user data from new token payload
-                    val payload = com.fruex.beerwall.auth.decodeTokenPayload(refreshResponse.token)
+                    val payload = decodeTokenPayload(refreshResponse.token)
                     val firstName = payload["firstName"]
                     val lastName = payload["lastName"]
 

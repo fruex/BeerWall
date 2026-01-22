@@ -2,9 +2,9 @@ package com.fruex.beerwall.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fruex.beerwall.auth.AuthTokens
+import com.fruex.beerwall.domain.model.AuthTokens
 import com.fruex.beerwall.auth.GoogleAuthProvider
-import com.fruex.beerwall.auth.TokenManager
+import com.fruex.beerwall.data.local.TokenManager
 import com.fruex.beerwall.domain.usecase.*
 import com.fruex.beerwall.ui.models.UserProfile
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -1,6 +1,6 @@
 package com.fruex.beerwall.data.remote.api
 
-import com.fruex.beerwall.auth.TokenManager
+import com.fruex.beerwall.data.local.TokenManager
 import com.fruex.beerwall.data.remote.BaseApiClient
 
 /**
