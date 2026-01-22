@@ -6,26 +6,17 @@
   - Wygenerować keystore dla produkcji: `keytool -genkey -v -keystore release.keystore -alias beerwall -keyalg RSA -keysize 2048 -validity 10000`
   - Przechowywać keystore w bezpiecznym miejscu (NIGDY nie commitować do repo)
 
-- [ ] **Konfiguracja signing w `build.gradle.kts`**
-  - Dodać signingConfigs dla release
-  - Skonfigurować zmienne środowiskowe lub `keystore.properties` dla danych keystore
-  ```kotlin
-  android {
-      signingConfigs {
-          create("release") {
-              storeFile = file(keystoreProperties["storeFile"] as String)
-              storePassword = keystoreProperties["storePassword"] as String
-              keyAlias = keystoreProperties["keyAlias"] as String
-              keyPassword = keystoreProperties["keyPassword"] as String
-          }
-      }
-      buildTypes {
-          release {
-              signingConfig = signingConfigs.getByName("release")
-          }
-      }
-  }
-  ```
+- [x] **Konfiguracja signing w `build.gradle.kts`**
+  - ✅ Skonfigurowano `signingConfigs` dla release (obsługa `keystore.properties` oraz zmiennych środowiskowych CI)
+  - ✅ Dodano obsługę w Github Workflows
+
+## 🛠️ Konfiguracja Github CI/CD
+  - ✅ Zaktualizowano `.github/workflows/android-build.yml` do obsługi Release builds
+  - ✅ Wymagane Secrets w Github Repository:
+    - `RELEASE_KEYSTORE_BASE64` (base64 z pliku .jks)
+    - `STORE_PASSWORD`
+    - `KEY_ALIAS`
+    - `KEY_PASSWORD`
 
 ## 📱 2. Manifest i Permissions
 
@@ -209,7 +200,8 @@
 ## 📝 Notatki Dodatkowe
 
 ### Aktualna konfiguracja:
-- **Package name:** `com.fruex.beerwall`
+- **Application ID:** `pl.igibeer.beerwall` (Zmieniono z com.fruex.beerwall)
+- **Namespace (Kod):** `com.fruex.beerwall`
 - **App name:** IgiBeer
 - **Min SDK:** 27 (Android 8.1)
 - **Target SDK:** 36 (Android 14)

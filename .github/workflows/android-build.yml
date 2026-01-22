@@ -25,16 +25,34 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: Decode Keystore
+    - name: Decode Debug Keystore
       run: |
         mkdir -p shared
-        echo "${{ secrets.DEBUG_KEYSTORE_BASE64_FROM_MAC }}" | base64 --decode > shared/debug.keystore
+        if [ ! -z "${{ secrets.DEBUG_KEYSTORE_BASE64_FROM_MAC }}" ]; then
+          echo "${{ secrets.DEBUG_KEYSTORE_BASE64_FROM_MAC }}" | base64 --decode > shared/debug.keystore
+        fi
+
+    - name: Decode Release Keystore
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: |
+        mkdir -p shared
+        echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 --decode > shared/release.keystore
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Build with Gradle
+    - name: Build Debug with Gradle
+      if: "!startsWith(github.ref, 'refs/tags/v')"
       run: ./gradlew :composeApp:assembleDebug -PversionName=${{ github.ref_name }}
+
+    - name: Build Release with Gradle
+      if: startsWith(github.ref, 'refs/tags/v')
+      env:
+        KEYSTORE_FILE: ${{ github.workspace }}/shared/release.keystore
+        STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      run: ./gradlew :composeApp:assembleRelease -PversionName=${{ github.ref_name }}
 
     - name: Run Tests
       run: ./gradlew test
@@ -42,7 +60,12 @@ jobs:
     - name: Prepare APK for distribution
       run: |
         if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-          mv composeApp/build/outputs/apk/debug/composeApp-debug.apk "beerwall-${{ github.ref_name }}.apk"
+          mv composeApp/build/outputs/apk/release/composeApp-release.apk "beerwall-${{ github.ref_name }}.apk"
+        else
+          # Optional: Keep debug APK for non-tag builds if needed, or remove this logic
+          if [ -f composeApp/build/outputs/apk/debug/composeApp-debug.apk ]; then
+             mv composeApp/build/outputs/apk/debug/composeApp-debug.apk "beerwall-debug.apk"
+          fi
         fi
 
     - name: Upload Artifact
