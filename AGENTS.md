@@ -11,6 +11,10 @@ Budowanie wersji Debug oraz uruchomienie testów jednostkowych:
 ```bash
 ./gradlew :composeApp:assembleDebug :composeApp:testDebugUnitTest
 ```
+Sprawdzenie kompilacji testów jednostkowych:
+```bash
+./gradlew :composeApp:compileDebugUnitTestKotlinAndroid
+```
 
 ### 2. iOS
 Weryfikacja linkowania frameworka oraz uruchomienie testów na symulatorze:
