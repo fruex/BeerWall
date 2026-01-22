@@ -111,6 +111,15 @@ android {
                 keyPassword = System.getenv("KEY_PASSWORD")
             }
         }
+        getByName("debug") {
+            val debugKeystore = rootProject.file("keystores/debug.keystore")
+            if (debugKeystore.exists()) {
+                storeFile = debugKeystore
+                storePassword = "android"
+                keyAlias = "androiddebugkey"
+                keyPassword = "android"
+            }
+        }
     }
 
     packaging {
