@@ -169,6 +169,32 @@ class AuthApiClient(
     }
 
     /**
+     * Zmienia hasło zalogowanego użytkownika.
+     *
+     * @param newPassword Nowe hasło użytkownika.
+     * @return Result pusty w przypadku sukcesu lub błąd.
+     */
+    suspend fun changePassword(newPassword: String): Result<Unit> = try {
+        platform.log("📤 Change Password Request", this, LogSeverity.INFO)
+        val response = client.post("$baseUrl/${ApiRoutes.Users.RESET_PASSWORD}") {
+            contentType(ContentType.Application.Json)
+            setBody(ChangePasswordRequest(newPassword))
+        }
+
+        if (response.status == HttpStatusCode.NoContent || response.status == HttpStatusCode.OK) {
+            platform.log("✅ Change Password Success", this, LogSeverity.INFO)
+            Result.success(Unit)
+        } else {
+            val bodyText = response.bodyAsText()
+            platform.log("❌ Change Password Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
+            Result.failure(Exception("Change password failed: ${response.status}"))
+        }
+    } catch (e: Exception) {
+        platform.log("❌ Change Password Exception: ${e.message}", this, LogSeverity.ERROR)
+        Result.failure(e)
+    }
+
+    /**
      * Odświeża token dostępu przy użyciu tokenu odświeżania.
      *
      * @param refreshToken Token odświeżania.

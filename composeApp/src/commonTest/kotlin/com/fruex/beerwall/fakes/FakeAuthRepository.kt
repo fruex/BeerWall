@@ -50,6 +50,11 @@ class FakeAuthRepository : AuthRepository {
         return Result.success(Unit)
     }
 
+    override suspend fun changePassword(newPassword: String): Result<Unit> {
+        if (shouldFail) return Result.failure(Exception(failureMessage))
+        return Result.success(Unit)
+    }
+
     override suspend fun refreshToken(): Result<AuthTokens> {
         if (shouldFail) return Result.failure(Exception(failureMessage))
         return Result.success(fakeTokens)
