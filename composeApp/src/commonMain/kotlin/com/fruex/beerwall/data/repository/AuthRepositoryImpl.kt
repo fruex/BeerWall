@@ -2,11 +2,11 @@ package com.fruex.beerwall.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import com.fruex.beerwall.LogSeverity
-import com.fruex.beerwall.auth.AuthTokens
+import com.fruex.beerwall.domain.model.AuthTokens
 import com.fruex.beerwall.auth.ISessionManager
-import com.fruex.beerwall.auth.TokenManager
-import com.fruex.beerwall.auth.ensureTimestamp
-import com.fruex.beerwall.auth.decodeTokenPayload
+import com.fruex.beerwall.data.local.TokenManager
+import com.fruex.beerwall.data.local.ensureTimestamp
+import com.fruex.beerwall.data.local.decodeTokenPayload
 import com.fruex.beerwall.data.remote.api.AuthApiClient
 import com.fruex.beerwall.domain.repository.AuthRepository
 import com.fruex.beerwall.getPlatform

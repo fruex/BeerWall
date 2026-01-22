@@ -1,4 +1,4 @@
-package com.fruex.beerwall.auth
+package com.fruex.beerwall.data.local
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -13,6 +13,7 @@ import kotlinx.serialization.json.Json
 import com.fruex.beerwall.LogSeverity
 import com.fruex.beerwall.getPlatform
 import com.fruex.beerwall.log
+import com.fruex.beerwall.domain.model.AuthTokens
 import com.fruex.beerwall.ui.models.UserProfile
 import java.io.InputStream
 import java.io.OutputStream
