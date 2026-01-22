@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -33,6 +35,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
  * @param onClick Akcja po kliknięciu.
  * @param modifier Modyfikator.
  * @param enabled Czy przycisk jest aktywny.
+ * @param isLoading Czy trwa ładowanie (wyświetla spinner).
  * @param icon Opcjonalna ikona.
  */
 @Composable
@@ -41,10 +44,11 @@ fun BeerWallButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    isLoading: Boolean = false,
     icon: ImageVector? = null
 ) {
     Button(
-        onClick = onClick,
+        onClick = if (isLoading) {{}} else onClick,
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp),
@@ -57,19 +61,27 @@ fun BeerWallButton(
         ),
         shape = RoundedCornerShape(16.dp)
     ) {
-        if (icon != null) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = LocalContentColor.current,
+                strokeWidth = 2.dp
             )
-            Spacer(modifier = Modifier.width(8.dp))
+        } else {
+            if (icon != null) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+            Text(
+                text = text,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
+            )
         }
-        Text(
-            text = text,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium
-        )
     }
 }
 
@@ -80,6 +92,7 @@ fun BeerWallButton(
  * @param onClick Akcja po kliknięciu.
  * @param modifier Modyfikator.
  * @param enabled Czy przycisk jest aktywny.
+ * @param isLoading Czy trwa ładowanie (wyświetla spinner).
  * @param icon Opcjonalna ikona.
  */
 @Composable
@@ -88,10 +101,11 @@ fun BeerWallOutlinedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    isLoading: Boolean = false,
     icon: ImageVector? = null
 ) {
     Button(
-        onClick = onClick,
+        onClick = if (isLoading) {{}} else onClick,
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp),
@@ -103,20 +117,28 @@ fun BeerWallOutlinedButton(
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(2.dp, GoldPrimary)
     ) {
-        if (icon != null) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
+        if (isLoading) {
+            CircularProgressIndicator(
                 modifier = Modifier.size(24.dp),
-                tint = Color.Unspecified // To keep original colors if icon is multi-color
+                color = LocalContentColor.current,
+                strokeWidth = 2.dp
             )
-            Spacer(modifier = Modifier.width(12.dp))
+        } else {
+            if (icon != null) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                    tint = Color.Unspecified // To keep original colors if icon is multi-color
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+            }
+            Text(
+                text = text,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
+            )
         }
-        Text(
-            text = text,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium
-        )
     }
 }
 
