@@ -43,6 +43,10 @@ fun CardsScreen(
     onToggleCardStatus: (String) -> Unit,
     onDeleteCard: (String) -> Unit,
 ) {
+    // ⚡ Bolt Optimization: Hoist dialog state out of LazyColumn to prevent
+    // creating state per item and decouple dialog from item lifecycle.
+    var selectedCard by remember { mutableStateOf<UserCard?>(null) }
+
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
@@ -88,27 +92,10 @@ fun CardsScreen(
                 key = { it.cardGuid },
                 contentType = { "card" }
             ) { card ->
-                var showCardDetails by remember { mutableStateOf(false) }
-
                 CardItemView(
                     card = card,
-                    onClick = { showCardDetails = true }
+                    onClick = { selectedCard = card }
                 )
-
-                if (showCardDetails) {
-                    CardDetailsDialog(
-                        card = card,
-                        onDismiss = { showCardDetails = false },
-                        onToggleStatus = {
-                            onToggleCardStatus(card.cardGuid)
-                            showCardDetails = false
-                        },
-                        onDelete = {
-                            onDeleteCard(card.cardGuid)
-                            showCardDetails = false
-                        }
-                    )
-                }
             }
 
             item(
@@ -128,6 +115,22 @@ fun CardsScreen(
                 NFCInfoCard()
             }
         }
+    }
+
+    // Render dialog outside of LazyColumn
+    selectedCard?.let { card ->
+        CardDetailsDialog(
+            card = card,
+            onDismiss = { selectedCard = null },
+            onToggleStatus = {
+                onToggleCardStatus(card.cardGuid)
+                selectedCard = null
+            },
+            onDelete = {
+                onDeleteCard(card.cardGuid)
+                selectedCard = null
+            }
+        )
     }
 }
 
