@@ -57,6 +57,13 @@ jobs:
     - name: Run Tests
       run: ./gradlew test
 
+    - name: Prepare Artifact Name
+      id: artifact-name
+      run: |
+        # Replace slashes with dashes for branch names like feature/xyz
+        SAFE_NAME=$(echo "${{ github.ref_name }}" | sed 's/\//-/g')
+        echo "name=$SAFE_NAME" >> $GITHUB_OUTPUT
+
     - name: Prepare APK for distribution
       run: |
         if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
@@ -71,7 +78,7 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: beerwall-app-${{ github.ref_name }}
+        name: beerwall-app-${{ steps.artifact-name.outputs.name }}
         path: beerwall-*.apk
 
     - name: Create Release
