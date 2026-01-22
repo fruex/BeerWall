@@ -219,7 +219,6 @@ fun HistoryScreenPreview() {
                             commodityName = "Piwo Jasne",
                             grossPrice = -12.50,
                             capacity = 500.00,
-                            startDateTime = "2024-11-24T18:30:00",
                             formattedTime = "18:30"
                         ),
                         Transaction(
@@ -227,7 +226,6 @@ fun HistoryScreenPreview() {
                             commodityName = "Doładowanie",
                             grossPrice = 50.00,
                             capacity = 0.00,
-                            startDateTime = "2024-11-24T18:00:00",
                             formattedTime = "18:00"
                         )
                     )
@@ -240,7 +238,6 @@ fun HistoryScreenPreview() {
                             commodityName = "Piwo Ciemne",
                             grossPrice = -15.00,
                             capacity = 500.00,
-                            startDateTime = "2024-11-23T20:15:00",
                             formattedTime = "20:15"
                         )
                     )
