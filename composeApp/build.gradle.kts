@@ -13,7 +13,6 @@ kotlin {
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
-            freeCompilerArgs.add("-Xexpect-actual-classes")
         }
     }
     
@@ -24,6 +23,14 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+        }
+    }
+
+    targets.configureEach {
+        compilations.configureEach {
+            compileTaskProvider.configure {
+                compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
+            }
         }
     }
     
