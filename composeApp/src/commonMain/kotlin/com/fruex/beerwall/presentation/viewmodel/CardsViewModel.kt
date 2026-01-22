@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.fruex.beerwall.domain.repository.NfcRepository
 import com.fruex.beerwall.domain.usecase.AssignCardUseCase
 import com.fruex.beerwall.domain.usecase.DeleteCardUseCase
 import com.fruex.beerwall.domain.usecase.GetCardsUseCase
@@ -27,7 +28,8 @@ class CardsViewModel(
     private val getCardsUseCase: GetCardsUseCase,
     private val toggleCardStatusUseCase: ToggleCardStatusUseCase,
     private val assignCardUseCase: AssignCardUseCase,
-    private val deleteCardUseCase: DeleteCardUseCase
+    private val deleteCardUseCase: DeleteCardUseCase,
+    private val nfcRepository: NfcRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CardsUiState())
@@ -35,6 +37,26 @@ class CardsViewModel(
 
     init {
         refreshCards()
+        observeNfcState()
+    }
+
+    private fun observeNfcState() {
+        viewModelScope.launch {
+            nfcRepository.scannedCardId.collect { id ->
+                _uiState.update { it.copy(scannedCardId = id) }
+            }
+        }
+        viewModelScope.launch {
+            nfcRepository.isNfcEnabled.collect { isEnabled ->
+                _uiState.update { it.copy(isNfcEnabled = isEnabled) }
+            }
+        }
+    }
+
+    fun startScanning() {
+        viewModelScope.launch {
+            nfcRepository.clearScannedCard()
+        }
     }
 
     fun refreshCards() {
@@ -129,5 +151,7 @@ class CardsViewModel(
 data class CardsUiState(
     val cards: List<UserCard> = emptyList(),
     val isRefreshing: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val scannedCardId: String? = null,
+    val isNfcEnabled: Boolean = false
 )

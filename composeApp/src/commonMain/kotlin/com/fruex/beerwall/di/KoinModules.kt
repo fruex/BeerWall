@@ -9,6 +9,8 @@ import com.fruex.beerwall.data.repository.*
 import com.fruex.beerwall.domain.repository.*
 import com.fruex.beerwall.domain.usecase.*
 import com.fruex.beerwall.presentation.viewmodel.*
+import com.fruex.beerwall.domain.repository.NfcRepository
+import com.fruex.beerwall.data.repository.NfcRepositoryImpl
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
@@ -47,6 +49,7 @@ val repositoryModule = module {
     single { CardRepositoryImpl(get()) } bind CardRepository::class
     single { TransactionRepositoryImpl(get()) } bind TransactionRepository::class
     single { SupportRepositoryImpl(get()) } bind SupportRepository::class
+    singleOf(::NfcRepositoryImpl) bind NfcRepository::class
 }
 
 val useCaseModule = module {

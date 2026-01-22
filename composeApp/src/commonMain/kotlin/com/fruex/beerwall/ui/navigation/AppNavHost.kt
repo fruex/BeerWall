@@ -32,18 +32,12 @@ import org.koin.compose.viewmodel.koinViewModel
  * @param modifier Modyfikator układu.
  * @param navController Kontroler nawigacji.
  * @param startDestination Punkt startowy nawigacji.
- * @param scannedCardId Zeskanowane ID karty (stan) - TODO: Przenieść do CardsViewModel.
- * @param isNfcEnabled Flaga dostępności NFC (stan).
- * @param onStartNfcScanningClick Callback startu skanowania NFC.
  */
 @Composable
 fun AppNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = NavigationDestination.Main.route,
-    scannedCardId: String? = null,
-    isNfcEnabled: Boolean = true,
-    onStartNfcScanningClick: () -> Unit = {}
+    startDestination: String = NavigationDestination.Main.route
 ) {
     val googleAuthProvider = rememberGoogleAuthProvider()
 
@@ -169,12 +163,13 @@ fun AppNavHost(
         // Add Card screen
         composable(NavigationDestination.AddCard.route) {
             val cardsViewModel = koinViewModel<CardsViewModel>()
+            val uiState by cardsViewModel.uiState.collectAsState()
 
             AddCardScreen(
-                scannedCardId = scannedCardId,
-                isNfcEnabled = isNfcEnabled,
+                scannedCardId = uiState.scannedCardId,
+                isNfcEnabled = uiState.isNfcEnabled,
                 onBackClick = { navController.popBackStack() },
-                onStartScanning = onStartNfcScanningClick,
+                onStartScanning = { cardsViewModel.startScanning() },
                 onCardNameChanged = {},
                 onSaveCard = { name, cardId ->
                     cardsViewModel.onSaveCard(name, cardId)
