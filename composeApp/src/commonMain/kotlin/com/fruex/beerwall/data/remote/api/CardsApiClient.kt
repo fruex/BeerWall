@@ -5,7 +5,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import com.fruex.beerwall.LogSeverity
-import com.fruex.beerwall.auth.TokenManager
+import com.fruex.beerwall.data.local.TokenManager
 import com.fruex.beerwall.data.remote.ApiRoutes
 import com.fruex.beerwall.data.remote.BaseApiClient
 import com.fruex.beerwall.log

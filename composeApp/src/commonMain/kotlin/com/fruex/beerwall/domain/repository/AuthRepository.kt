@@ -1,7 +1,7 @@
 package com.fruex.beerwall.domain.repository
 
 import kotlinx.coroutines.flow.Flow
-import com.fruex.beerwall.auth.AuthTokens
+import com.fruex.beerwall.domain.model.AuthTokens
 // TODO: `AuthTokens` pochodzi z pakietu `auth`, który może nie być częścią warstwy domeny. Należy rozważyć przeniesienie modelu tokenów do `domain/model`.
 
 /**

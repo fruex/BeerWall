@@ -4,7 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import com.fruex.beerwall.BuildKonfig
-import com.fruex.beerwall.auth.TokenManager
+import com.fruex.beerwall.data.local.TokenManager
 import com.fruex.beerwall.getPlatform
 import com.fruex.beerwall.data.remote.common.ApiResponse
 

@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import com.fruex.beerwall.auth.AuthTokens
+import com.fruex.beerwall.domain.model.AuthTokens
 import com.fruex.beerwall.domain.repository.AuthRepository
 
 class FakeAuthRepository : AuthRepository {

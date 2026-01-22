@@ -2,8 +2,8 @@ package com.fruex.beerwall.di
 
 import com.fruex.beerwall.auth.ISessionManager
 import com.fruex.beerwall.auth.SessionManager
-import com.fruex.beerwall.auth.TokenManager
-import com.fruex.beerwall.auth.TokenManagerImpl
+import com.fruex.beerwall.data.local.TokenManager
+import com.fruex.beerwall.data.local.TokenManagerImpl
 import com.fruex.beerwall.data.remote.api.*
 import com.fruex.beerwall.data.repository.*
 import com.fruex.beerwall.domain.repository.*
