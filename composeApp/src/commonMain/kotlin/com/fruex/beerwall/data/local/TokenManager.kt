@@ -1,31 +1,11 @@
-package com.fruex.beerwall.auth
+package com.fruex.beerwall.data.local
 
 import com.fruex.beerwall.LogSeverity
+import com.fruex.beerwall.domain.model.AuthTokens
 import com.fruex.beerwall.getPlatform
 import com.fruex.beerwall.ui.models.UserProfile
-import kotlinx.serialization.Serializable
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
-
-/**
- * Model tokenów autoryzacyjnych aplikacji.
- *
- * @property token Token dostępu (JWT).
- * @property tokenExpires Czas wygaśnięcia tokenu dostępu.
- * @property refreshToken Token odświeżania.
- * @property refreshTokenExpires Czas wygaśnięcia tokenu odświeżania.
- * @property firstName Imię użytkownika (wyciągnięte z tokenu).
- * @property lastName Nazwisko użytkownika (wyciągnięte z tokenu).
- */
-@Serializable
-data class AuthTokens(
-    val token: String,
-    val tokenExpires: Long,
-    val refreshToken: String,
-    val refreshTokenExpires: Long,
-    val firstName: String? = null,
-    val lastName: String? = null
-)
 
 /**
  * Interfejs menedżera tokenów.
@@ -42,8 +22,6 @@ interface TokenManager {
     suspend fun clearTokens()
     suspend fun getUserProfile(): UserProfile?
 }
-
-// TODO: `TokenManager` jest interfejsem zdefiniowanym w `auth`, ale jego implementacja (`TokenManagerImpl`) oraz samo użycie sugeruje, że jest to Lokalne Źródło Danych (Local Data Source). Zgodnie z Clean Architecture, powinien znajdować się w warstwie `data` (np. `data/local` lub `data/repository`).
 
 /**
  * Oczekiwana implementacja platformowa menedżera tokenów.

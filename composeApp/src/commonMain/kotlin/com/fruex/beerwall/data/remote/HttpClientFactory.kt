@@ -6,7 +6,7 @@ import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import com.fruex.beerwall.LogSeverity
-import com.fruex.beerwall.auth.TokenManager
+import com.fruex.beerwall.data.local.TokenManager
 import com.fruex.beerwall.getPlatform
 import com.fruex.beerwall.log
 

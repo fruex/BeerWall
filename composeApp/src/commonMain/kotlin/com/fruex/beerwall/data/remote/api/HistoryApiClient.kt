@@ -2,7 +2,7 @@ package com.fruex.beerwall.data.remote.api
 
 import io.ktor.client.call.*
 import io.ktor.client.request.*
-import com.fruex.beerwall.auth.TokenManager
+import com.fruex.beerwall.data.local.TokenManager
 import com.fruex.beerwall.data.remote.ApiRoutes
 import com.fruex.beerwall.data.remote.BaseApiClient
 import com.fruex.beerwall.data.remote.dto.history.GetHistoryEnvelope
