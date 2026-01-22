@@ -4,6 +4,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import com.fruex.beerwall.domain.model.AuthTokens
 
 /**
  * Testy dla TokenManager sprawdzające podstawowe operacje na tokenach
