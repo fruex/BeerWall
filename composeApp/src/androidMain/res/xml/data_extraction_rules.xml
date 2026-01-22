@@ -2,8 +2,10 @@
 <data-extraction-rules>
     <cloud-backup>
         <exclude domain="file" path="datastore/auth_tokens.json" />
+        <exclude domain="file" path="datastore/google_user.json" />
     </cloud-backup>
     <device-transfer>
         <exclude domain="file" path="datastore/auth_tokens.json" />
+        <exclude domain="file" path="datastore/google_user.json" />
     </device-transfer>
 </data-extraction-rules>
