@@ -21,6 +21,12 @@ import com.fruex.beerwall.ui.models.UserCard
 import com.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+private val VirtualCardBackground = GoldPrimary.copy(alpha = 0.12f)
+private val VirtualCardBorderColor = GoldPrimary.copy(alpha = 0.3f)
+private val VirtualCardIconBackground = GoldPrimary.copy(alpha = 0.25f)
+private val VirtualCardIconBorderColor = GoldPrimary.copy(alpha = 0.4f)
+private val InfoCardIconBackground = GoldPrimary.copy(alpha = 0.2f)
+
 /**
  * Ekran zarządzania kartami.
  *
@@ -144,7 +150,7 @@ fun CardItemView(
         CardBackground
     } else {
         // Glass effect for virtual cards - transparent with golden tint
-        GoldPrimary.copy(alpha = 0.12f)
+        VirtualCardBackground
     }
 
     val cardModifier = if (card.isPhysical) {
@@ -155,7 +161,7 @@ fun CardItemView(
             .fillMaxWidth()
             .border(
                 width = 1.dp,
-                color = GoldPrimary.copy(alpha = 0.3f),
+                color = VirtualCardBorderColor,
                 shape = CardShape
             )
     }
@@ -183,7 +189,7 @@ fun CardItemView(
                             GoldPrimary
                         } else {
                             // Lighter gold for virtual cards
-                            GoldPrimary.copy(alpha = 0.25f)
+                            VirtualCardIconBackground
                         },
                         shape = IconBoxShape
                     )
@@ -191,7 +197,7 @@ fun CardItemView(
                         if (!card.isPhysical) {
                             Modifier.border(
                                 width = 1.dp,
-                                color = GoldPrimary.copy(alpha = 0.4f),
+                                color = VirtualCardIconBorderColor,
                                 shape = IconBoxShape
                             )
                         } else Modifier
@@ -444,7 +450,7 @@ fun NFCInfoCard() {
         icon = Icons.Default.Nfc,
         title = "Karty NFC",
         description = "Twoje fizyczne karty są połączone z Twoim kontem. Po prostu użyj dowolnej fizycznej karty przy kranie IgiBeer, aby nalać i zapłacić.",
-        iconBackground = GoldPrimary.copy(alpha = 0.2f)
+        iconBackground = InfoCardIconBackground
     )
 }
 
