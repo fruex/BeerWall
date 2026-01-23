@@ -7,3 +7,8 @@
 **Vulnerability:** While `auth_tokens.json` was excluded, `google_user.json` (containing ID Tokens and PII) was not.
 **Learning:** When adding new DataStore files (e.g. for Google Auth), developers might forget to update the backup rules XMLs.
 **Prevention:** Centralize DataStore file naming or creation to a factory that audits backup rules, or use a single encrypted store for all auth data.
+
+## 2025-05-23 - [AuthPlugin Endpoint Mismatch]
+**Vulnerability:** Mismatched endpoint definitions in `AuthPlugin` vs `ApiRoutes` caused `signIn` and `signUp` to be treated as non-public, potentially sending stale tokens to them.
+**Learning:** Hardcoding paths in multiple places (interceptor vs API client) leads to drift and logic errors.
+**Prevention:** Use single source of truth (constants) for API routes in interceptors.
