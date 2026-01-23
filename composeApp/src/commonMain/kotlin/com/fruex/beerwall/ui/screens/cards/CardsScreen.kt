@@ -266,8 +266,53 @@ fun CardDetailsDialog(
     onToggleStatus: () -> Unit,
     onDelete: () -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+
+    if (showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmation = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Warning,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error
+                )
+            },
+            title = {
+                Text(
+                    text = "Usunąć kartę?",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
+            },
+            text = {
+                Text(
+                    text = "Czy na pewno chcesz usunąć kartę \"${card.name}\"? Tej operacji nie można cofnąć.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = onDelete,
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Usuń")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmation = false }) {
+                    Text("Anuluj")
+                }
+            },
+            containerColor = CardBackground,
+            titleContentColor = TextPrimary,
+            textContentColor = TextPrimary
+        )
+    } else {
+        AlertDialog(
+            onDismissRequest = onDismiss,
         icon = {
             Icon(
                 imageVector = Icons.Default.CreditCard,
@@ -370,7 +415,7 @@ fun CardDetailsDialog(
                     // Delete Button (only for physical cards)
                     if (card.isPhysical) {
                         OutlinedButton(
-                            onClick = onDelete,
+                            onClick = { showDeleteConfirmation = true },
                             modifier = Modifier.fillMaxWidth().height(50.dp),
                             shape = ButtonShape,
                             colors = ButtonDefaults.outlinedButtonColors(
@@ -405,7 +450,8 @@ fun CardDetailsDialog(
         iconContentColor = GoldPrimary,
         titleContentColor = TextPrimary,
         textContentColor = TextPrimary
-    )
+        )
+    }
 }
 
 @Preview
