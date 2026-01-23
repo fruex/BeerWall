@@ -20,6 +20,8 @@ import com.fruex.beerwall.ui.models.PremisesBalance
 import com.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+private val IconBackgroundOverlay = DarkBackground.copy(alpha = 0.2f)
+
 /**
  * Ekran salda.
  *
@@ -121,7 +123,7 @@ fun BalanceCard(
                     .align(Alignment.TopEnd)
                     .size(48.dp)
                     .background(
-                        color = DarkBackground.copy(alpha = 0.2f),
+                        color = IconBackgroundOverlay,
                         shape = IconBoxShape
                     )
             ) {
