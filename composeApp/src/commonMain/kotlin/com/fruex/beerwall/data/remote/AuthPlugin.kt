@@ -38,11 +38,11 @@ class AuthPlugin private constructor(
 
         // Endpoints that should NOT have Bearer token attached
         private val publicEndpoints = setOf(
-            "/mobile/auth/googleSignIn",
-            "/mobile/auth/emailPasswordSignIn",
-            "/mobile/auth/register",
-            "/mobile/auth/forgotPassword",
-            "/mobile/auth/resetPassword"
+            ApiRoutes.Auth.GOOGLE_SIGN_IN,
+            ApiRoutes.Auth.SIGN_IN,
+            ApiRoutes.Auth.SIGN_UP,
+            ApiRoutes.Auth.FORGOT_PASSWORD,
+            ApiRoutes.Auth.RESET_PASSWORD
         )
 
         override fun prepare(block: Configuration.() -> Unit): AuthPlugin {
