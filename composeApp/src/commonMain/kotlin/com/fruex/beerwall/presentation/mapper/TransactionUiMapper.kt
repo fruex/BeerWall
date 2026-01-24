@@ -17,10 +17,9 @@ fun Transaction.toUi(): com.fruex.beerwall.ui.models.Transaction {
     return com.fruex.beerwall.ui.models.Transaction(
         transactionId = transactionId,
         commodityName = commodityName,
-        formattedTime = formattedTime,
-        grossPrice = grossPrice,
-        capacity = capacity,
-        premisesName = premisesName
+        formattedPrice = "$grossPrice zł",
+        formattedCapacity = "$capacity ml",
+        formattedDetails = "$premisesName o $formattedTime"
     )
 }
 
