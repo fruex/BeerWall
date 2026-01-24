@@ -52,6 +52,8 @@ class BlikPaymentTest {
         override suspend fun getRefreshTokenExpires(): Long? = null
         override suspend fun clearTokens() {}
         override suspend fun getUserProfile(): UserProfile? = null
+        override suspend fun isFirstLaunch(): Boolean = false
+        override suspend fun markFirstLaunchSeen() {}
     }
 
     private val fakePlatform = object : Platform {
