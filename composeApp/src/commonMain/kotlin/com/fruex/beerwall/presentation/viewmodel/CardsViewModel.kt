@@ -53,9 +53,16 @@ class CardsViewModel(
         }
     }
 
-    fun startScanning() {
+    fun startNfcListening() {
         viewModelScope.launch {
             nfcRepository.clearScannedCard()
+            nfcRepository.setScanning(true)
+        }
+    }
+
+    fun stopNfcListening() {
+        viewModelScope.launch {
+            nfcRepository.setScanning(false)
         }
     }
 

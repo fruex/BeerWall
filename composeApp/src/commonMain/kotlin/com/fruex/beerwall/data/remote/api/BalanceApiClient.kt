@@ -5,6 +5,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import com.fruex.beerwall.LogSeverity
+import com.fruex.beerwall.Platform
 import com.fruex.beerwall.data.local.TokenManager
 import com.fruex.beerwall.data.remote.ApiRoutes
 import com.fruex.beerwall.data.remote.BaseApiClient
@@ -13,14 +14,18 @@ import com.fruex.beerwall.data.remote.dto.balance.*
 import com.fruex.beerwall.data.remote.dto.operators.GetPaymentOperatorsEnvelope
 import com.fruex.beerwall.data.remote.dto.operators.PaymentOperatorResponse
 
+import io.ktor.client.HttpClient
+
 /**
  * Klient API do obsługi operacji finansowych (saldo, płatności).
  * Obsługuje pobieranie salda, doładowania konta oraz pobieranie metod płatności.
  */
 class BalanceApiClient(
     tokenManager: TokenManager,
-    onUnauthorized: (suspend () -> Unit)? = null
-) : BaseApiClient(tokenManager, onUnauthorized) {
+    onUnauthorized: (suspend () -> Unit)? = null,
+    httpClient: HttpClient? = null,
+    platform: Platform = com.fruex.beerwall.getPlatform()
+) : BaseApiClient(tokenManager, onUnauthorized, httpClient, platform) {
 
     /**
      * Pobiera salda użytkownika we wszystkich lokalach.
@@ -45,17 +50,18 @@ class BalanceApiClient(
     suspend fun topUp(
         premisesId: Int,
         paymentMethodId: Int,
-        balance: Double
+        balance: Double,
+        authorizationCode: String? = null
     ): Result<Unit> = try {
         platform.log("📤 TopUp Request", this, LogSeverity.INFO)
         val response = client.post("$baseUrl/${ApiRoutes.Payments.TOP_UP}") {
             addAuthToken()
             contentType(ContentType.Application.Json)
-            setBody(TopUpRequest(premisesId, paymentMethodId, balance))
+            setBody(TopUpRequest(premisesId, paymentMethodId, balance, authorizationCode))
         }
 
         when (response.status) {
-            HttpStatusCode.NoContent -> {
+            HttpStatusCode.NoContent, HttpStatusCode.OK -> {
                 platform.log("✅ TopUp Success", this, LogSeverity.INFO)
                 Result.success(Unit)
             }
@@ -66,7 +72,7 @@ class BalanceApiClient(
             else -> {
                 val bodyText = response.bodyAsText()
                 platform.log("❌ TopUp Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
-                Result.failure(Exception("Error topping up: ${response.status}"))
+                Result.failure(Exception(if (bodyText.isNotBlank()) bodyText else "Error topping up: ${response.status}"))
             }
         }
     } catch (e: Exception) {

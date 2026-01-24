@@ -14,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import com.fruex.beerwall.domain.repository.NfcRepository
 import com.fruex.beerwall.nfc.NfcCardReader
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
@@ -33,6 +34,14 @@ class MainActivity : ComponentActivity() {
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
         checkNfcStatus()
 
+        lifecycleScope.launch {
+            nfcRepository.isScanning.collect { isScanning ->
+                if (lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)) {
+                    updateForegroundDispatch(isScanning)
+                }
+            }
+        }
+
         setContent {
             App()
         }
@@ -41,7 +50,7 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         checkNfcStatus()
-        enableForegroundDispatch()
+        updateForegroundDispatch(nfcRepository.isScanning.value)
     }
 
     override fun onPause() {
@@ -61,6 +70,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun updateForegroundDispatch(isScanning: Boolean) {
+        if (isScanning) {
+            enableForegroundDispatch()
+        } else {
+            disableForegroundDispatch()
+        }
+    }
+
     private fun enableForegroundDispatch() {
         nfcAdapter?.let { adapter ->
             if (adapter.isEnabled) {
@@ -71,13 +88,21 @@ class MainActivity : ComponentActivity() {
                     this, 0, intent,
                     PendingIntent.FLAG_MUTABLE
                 )
-                adapter.enableForegroundDispatch(this, pendingIntent, null, null)
+                try {
+                    adapter.enableForegroundDispatch(this, pendingIntent, null, null)
+                } catch (e: Exception) {
+                    platform.log("Error enabling NFC foreground dispatch: ${e.message}", this, LogSeverity.ERROR)
+                }
             }
         }
     }
 
     private fun disableForegroundDispatch() {
-        nfcAdapter?.disableForegroundDispatch(this)
+        try {
+            nfcAdapter?.disableForegroundDispatch(this)
+        } catch (e: Exception) {
+            // Ignore if not enabled or other errors
+        }
     }
 
     private fun handleIntent(intent: Intent) {
@@ -92,12 +117,12 @@ class MainActivity : ComponentActivity() {
                 intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
             }
             tag?.let {
-                val scannedId = NfcCardReader.readCardId(it)
-                if (scannedId != null) {
-                    lifecycleScope.launch {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val scannedId = NfcCardReader.readCardId(it)
+                    if (scannedId != null) {
                         nfcRepository.setScannedCardId(scannedId)
+                        platform.log("Card scanned: $scannedId", this@MainActivity, LogSeverity.INFO)
                     }
-                    platform.log("Card scanned: $scannedId", this, LogSeverity.INFO)
                 }
             }
         }
