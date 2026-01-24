@@ -169,7 +169,8 @@ fun AppNavHost(
                 scannedCardId = uiState.scannedCardId,
                 isNfcEnabled = uiState.isNfcEnabled,
                 onBackClick = { navController.popBackStack() },
-                onStartScanning = { cardsViewModel.startScanning() },
+                onStartScanning = { cardsViewModel.startNfcListening() },
+                onStopScanning = { cardsViewModel.stopNfcListening() },
                 onCardNameChanged = {},
                 onSaveCard = { name, cardId ->
                     cardsViewModel.onSaveCard(name, cardId)
