@@ -42,7 +42,8 @@ class AuthPlugin private constructor(
             ApiRoutes.Auth.SIGN_IN,
             ApiRoutes.Auth.SIGN_UP,
             ApiRoutes.Auth.FORGOT_PASSWORD,
-            ApiRoutes.Auth.RESET_PASSWORD
+            ApiRoutes.Auth.RESET_PASSWORD,
+            ApiRoutes.Auth.REFRESH_TOKEN
         )
 
         override fun prepare(block: Configuration.() -> Unit): AuthPlugin {
