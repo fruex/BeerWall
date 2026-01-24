@@ -31,6 +31,8 @@ fun AddFundsScreen(
     availablePaymentMethods: List<PaymentMethod>,
     onBackClick: () -> Unit,
     onAddFunds: (paymentMethodId: Int, balance: Double, blikCode: String?) -> Unit,
+    onCancelTopUp: () -> Unit = {},
+    isLoading: Boolean = false,
     premisesName: String? = null,
 ) {
     var selectedAmount by rememberSaveable { mutableStateOf("") }
@@ -45,9 +47,54 @@ fun AddFundsScreen(
         }
     }
 
+    // Reset BLIK code when payment method changes
+    LaunchedEffect(selectedPaymentMethod) {
+        blikCode = ""
+    }
+
     val predefinedAmounts = listOf("10", "20", "50", "100", "200", "Inna")
     val finalAmount = if (selectedAmount == "Inna") customAmount else selectedAmount
     val isBlikCodeValid = blikCode.length == 6 && blikCode.all { it.isDigit() }
+    val isBlikSelected = selectedPaymentMethod?.name?.contains("BLIK", ignoreCase = true) == true
+    val isPaymentReady = finalAmount.toDoubleOrNull()?.let { it > 0 } == true &&
+            selectedPaymentMethod != null &&
+            (!isBlikSelected || isBlikCodeValid)
+
+    if (isLoading) {
+        AlertDialog(
+            onDismissRequest = { },
+            confirmButton = { },
+            dismissButton = {
+                TextButton(onClick = onCancelTopUp) {
+                    Text("Anuluj", color = GoldPrimary)
+                }
+            },
+            title = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator(color = GoldPrimary)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Łączenie z bankiem...",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = TextPrimary
+                    )
+                }
+            },
+            text = {
+                Text(
+                    text = "Proszę zaakceptować płatność w aplikacji bankowej.\nMożesz przerwać operację klikając Anuluj.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary,
+                    textAlign = TextAlign.Center
+                )
+            },
+            containerColor = CardBackground,
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
 
     BeerWallTheme {
         Column(
@@ -184,51 +231,51 @@ fun AddFundsScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // BLIK Code Input
-                Text(
-                    text = "Kod BLIK",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-
-                BeerWallTextField(
-                    value = blikCode,
-                    onValueChange = { newValue ->
-                        if (newValue.length <= 6 && newValue.all { it.isDigit() }) {
-                            blikCode = newValue
-                        }
-                    },
-                    placeholder = "000 000",
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number
-                    ),
-                    isError = blikCode.isNotEmpty() && !isBlikCodeValid,
-                    textAlign = TextAlign.Center
-                )
-
-                if (blikCode.isNotEmpty() && !isBlikCodeValid) {
-                    Spacer(modifier = Modifier.height(4.dp))
+                if (isBlikSelected) {
                     Text(
-                        text = "Kod BLIK musi składać się z 6 cyfr",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error
+                        text = "Kod BLIK",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
                     )
-                }
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                Spacer(modifier = Modifier.height(32.dp))
+                    BeerWallTextField(
+                        value = blikCode,
+                        onValueChange = { newValue ->
+                            if (newValue.length <= 6 && newValue.all { it.isDigit() }) {
+                                blikCode = newValue
+                            }
+                        },
+                        placeholder = "000 000",
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number
+                        ),
+                        isError = blikCode.isNotEmpty() && !isBlikCodeValid,
+                        textAlign = TextAlign.Center
+                    )
+
+                    if (blikCode.isNotEmpty() && !isBlikCodeValid) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Kod BLIK musi składać się z 6 cyfr",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
 
                 BeerWallButton(
                     text = "Dodaj ${finalAmount.ifBlank { "0.00" }} PLN",
                     onClick = {
                         finalAmount.toDoubleOrNull()?.let { balanceValue ->
-                            if (balanceValue > 0 && isBlikCodeValid && selectedPaymentMethod != null) {
-                                onAddFunds(selectedPaymentMethod!!.paymentMethodId, balanceValue, blikCode)
+                            if (isPaymentReady) {
+                                onAddFunds(selectedPaymentMethod!!.paymentMethodId, balanceValue, if (isBlikSelected) blikCode else null)
                             }
                         }
                     },
-                    enabled = finalAmount.toDoubleOrNull()?.let { it > 0 } == true &&
-                             isBlikCodeValid &&
-                             selectedPaymentMethod != null
+                    enabled = isPaymentReady
                 )
             }
         }
