@@ -37,6 +37,7 @@ object ApiRoutes {
         private const val BASE = "$MOBILE/payments"
         const val TOP_UP = "$BASE/topUp"
         const val OPERATORS = "$BASE/operators"
+        const val BLIK_WS = "$BASE/blik/ws"
     }
 
     /**

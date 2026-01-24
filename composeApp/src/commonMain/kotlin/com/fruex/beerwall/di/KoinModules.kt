@@ -50,6 +50,7 @@ val repositoryModule = module {
     single { TransactionRepositoryImpl(get()) } bind TransactionRepository::class
     single { SupportRepositoryImpl(get()) } bind SupportRepository::class
     singleOf(::NfcRepositoryImpl) bind NfcRepository::class
+    singleOf(::BlikRepositoryImpl) bind BlikRepository::class
 }
 
 val useCaseModule = module {

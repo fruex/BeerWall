@@ -4,6 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
+import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import com.fruex.beerwall.LogSeverity
@@ -32,6 +33,8 @@ object HttpClientFactory {
         install(ContentNegotiation) {
             json(json)
         }
+
+        install(WebSockets)
 
         install(HttpTimeout) {
             requestTimeoutMillis = 30_000
