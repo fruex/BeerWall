@@ -60,7 +60,7 @@ class AuthRepositoryImpl(
         refreshTokenExpires: Long,
         loginMethod: String
     ): AuthTokens {
-        platform.log("🔐 $loginMethod success, saving tokens...", this, LogSeverity.INFO)
+        platform.log("$loginMethod success, saving tokens...", this, LogSeverity.INFO)
 
         val tokens = createAuthTokens(
             token = token,
@@ -71,7 +71,7 @@ class AuthRepositoryImpl(
 
         tokenManager.saveTokens(tokens)
         sessionManager.setLoggedIn(true)
-        platform.log("✅ Tokens saved", this, LogSeverity.DEBUG)
+        platform.log("Tokens saved", this, LogSeverity.SUCCESS)
 
         return tokens
     }

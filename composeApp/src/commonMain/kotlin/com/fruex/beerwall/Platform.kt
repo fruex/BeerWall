@@ -1,7 +1,7 @@
 package com.fruex.beerwall
 
 enum class LogSeverity {
-    DEBUG, INFO, WARN, ERROR
+    DEBUG, INFO, WARN, ERROR, SUCCESS
 }
 
 interface Platform {

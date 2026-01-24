@@ -12,6 +12,7 @@ class IOSPlatform: Platform {
             LogSeverity.INFO -> "ℹ️ [INFO]"
             LogSeverity.WARN -> "⚠️ [WARN]"
             LogSeverity.ERROR -> "❌ [ERROR]"
+            LogSeverity.SUCCESS -> "✅ [SUCCESS]"
         }
         NSLog("$prefix [$tag] $message")
     }

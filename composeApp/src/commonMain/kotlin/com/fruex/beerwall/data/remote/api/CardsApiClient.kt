@@ -50,11 +50,11 @@ class CardsApiClient(
             Result.success(Unit)
         } else {
             val bodyText = response.bodyAsText()
-            platform.log("❌ Assign Card Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
+            platform.log("Assign Card Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
             Result.failure(Exception("Failed to assign card"))
         }
     } catch (e: Exception) {
-        platform.log("❌ Assign Card Exception: ${e.message}", this, LogSeverity.ERROR)
+        platform.log("Assign Card Exception: ${e.message}", this, LogSeverity.ERROR)
         Result.failure(e)
     }
 
@@ -78,11 +78,11 @@ class CardsApiClient(
             Result.success(CardActivationResponse(cardId, isActive, "Status updated"))
         } else {
             val bodyText = response.bodyAsText()
-            platform.log("❌ Set Card Status Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
+            platform.log("Set Card Status Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
             Result.failure(Exception("Failed to update card status: ${response.status}"))
         }
     } catch (e: Exception) {
-        platform.log("❌ Set Card Status Exception: ${e.message}", this, LogSeverity.ERROR)
+        platform.log("Set Card Status Exception: ${e.message}", this, LogSeverity.ERROR)
         Result.failure(e)
     }
 
@@ -104,7 +104,7 @@ class CardsApiClient(
             Result.failure(Exception("Failed to delete card: ${response.status}"))
         }
     } catch (e: Exception) {
-        platform.log("❌ Delete Card Exception: ${e.message}", this, LogSeverity.ERROR)
+        platform.log("Delete Card Exception: ${e.message}", this, LogSeverity.ERROR)
         Result.failure(e)
     }
 }

@@ -53,7 +53,7 @@ class BalanceApiClient(
         balance: Double,
         authorizationCode: String? = null
     ): Result<Unit> = try {
-        platform.log("📤 TopUp Request", this, LogSeverity.INFO)
+        platform.log("TopUp Request", this, LogSeverity.INFO)
         val response = client.post("$baseUrl/${ApiRoutes.Payments.TOP_UP}") {
             addAuthToken()
             contentType(ContentType.Application.Json)
@@ -62,21 +62,21 @@ class BalanceApiClient(
 
         when (response.status) {
             HttpStatusCode.NoContent -> {
-                platform.log("✅ TopUp Success", this, LogSeverity.INFO)
+                platform.log("TopUp Success", this, LogSeverity.SUCCESS)
                 Result.success(Unit)
             }
             HttpStatusCode.Unauthorized -> {
-                platform.log("❌ TopUp Unauthorized", this, LogSeverity.ERROR)
+                platform.log("TopUp Unauthorized", this, LogSeverity.ERROR)
                 Result.failure(Exception("Unauthorized"))
             }
             else -> {
                 val bodyText = response.bodyAsText()
-                platform.log("❌ TopUp Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
+                platform.log("TopUp Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
                 Result.failure(Exception(if (bodyText.isNotBlank()) bodyText else "Error topping up: ${response.status}"))
             }
         }
     } catch (e: Exception) {
-        platform.log("❌ TopUp Exception: ${e.message}", this, LogSeverity.ERROR)
+        platform.log("TopUp Exception: ${e.message}", this, LogSeverity.ERROR)
         Result.failure(e)
     }
 

@@ -36,12 +36,12 @@ data class GoogleUser(
     fun isGoogleTokenExpired(): Boolean {
         val platform = getPlatform()
         return try {
-            platform.log("🔍 Checking Google token expiration...", "GoogleAuth", LogSeverity.DEBUG)
+            platform.log("Checking Google token expiration...", "GoogleAuth", LogSeverity.DEBUG)
 
             // JWT ma format: header.payload.signature
             val parts = idToken.split(".")
             if (parts.size != 3) {
-                platform.log("❌ Invalid JWT format: expected 3 parts, got ${parts.size}", "GoogleAuth", LogSeverity.ERROR)
+                platform.log("Invalid JWT format: expected 3 parts, got ${parts.size}", "GoogleAuth", LogSeverity.ERROR)
                 return true
             }
 
@@ -56,18 +56,18 @@ data class GoogleUser(
                 3 -> payload += "="
             }
 
-            platform.log("📦 Decoding payload (length: ${payload.length})", "GoogleAuth", LogSeverity.DEBUG)
+            platform.log("Decoding payload (length: ${payload.length})", "GoogleAuth", LogSeverity.DEBUG)
 
             // Dekoduj payload
             val decodedPayload = Base64.Mime.decode(payload).decodeToString()
-            platform.log("✅ Decoded payload: ${decodedPayload.take(200)}...", "GoogleAuth", LogSeverity.DEBUG)
+            platform.log("Decoded payload: ${decodedPayload.take(200)}...", "GoogleAuth", LogSeverity.SUCCESS)
 
             // Wyciągnij wartość 'exp' z JSON
             val expMatch = """"exp"\s*:\s*(\d+)""".toRegex().find(decodedPayload)
             val expiration = expMatch?.groupValues?.get(1)?.toLongOrNull()
 
             if (expiration == null) {
-                platform.log("❌ Could not find 'exp' field in token", "GoogleAuth", LogSeverity.ERROR)
+                platform.log("Could not find 'exp' field in token", "GoogleAuth", LogSeverity.ERROR)
                 return true
             }
 
@@ -78,14 +78,14 @@ data class GoogleUser(
             val validForSeconds = expiration - currentTime
             val isExpired = currentTime >= (expiration - bufferSeconds)
 
-            platform.log("⏰ Current time: $currentTime", "GoogleAuth", LogSeverity.DEBUG)
-            platform.log("⏰ Token expires: $expiration", "GoogleAuth", LogSeverity.DEBUG)
-            platform.log("⏰ Valid for: ${validForSeconds / 60} minutes ($validForSeconds seconds)", "GoogleAuth", LogSeverity.DEBUG)
-            platform.log("⏰ Is expired: $isExpired", "GoogleAuth", LogSeverity.INFO)
+            platform.log("Current time: $currentTime", "GoogleAuth", LogSeverity.DEBUG)
+            platform.log("Token expires: $expiration", "GoogleAuth", LogSeverity.DEBUG)
+            platform.log("Valid for: ${validForSeconds / 60} minutes ($validForSeconds seconds)", "GoogleAuth", LogSeverity.DEBUG)
+            platform.log("Is expired: $isExpired", "GoogleAuth", LogSeverity.INFO)
 
             isExpired
         } catch (e: Exception) {
-            platform.log("❌ Error checking Google token expiration: ${e.message}", "GoogleAuth", LogSeverity.ERROR)
+            platform.log("Error checking Google token expiration: ${e.message}", "GoogleAuth", LogSeverity.ERROR)
             true // W razie błędu uznaj token za wygasły
         }
     }

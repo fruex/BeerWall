@@ -83,11 +83,11 @@ class AuthPlugin private constructor(
                         val currentToken = plugin.tokenManager.getToken()
                         if (currentToken != null && currentToken != initialToken) {
                             // Token already refreshed by another request
-                            platform.log("✅ Token already refreshed by another request - retrying", "AuthPlugin", LogSeverity.INFO)
+                            platform.log("Token already refreshed by another request - retrying", "AuthPlugin", LogSeverity.SUCCESS)
                             true
                         } else if (currentToken == null) {
                             // Tokens were cleared by another request that failed refresh
-                            platform.log("❌ Tokens were cleared by another request - refresh failed", "AuthPlugin", LogSeverity.ERROR)
+                            platform.log("Tokens were cleared by another request - refresh failed", "AuthPlugin", LogSeverity.ERROR)
                             false
                         } else {
                             plugin.refreshToken()
@@ -101,7 +101,7 @@ class AuthPlugin private constructor(
                         }
                         execute(request)
                     } else {
-                        platform.log("❌ Token refresh failed - calling onRefreshFailed", "AuthPlugin", LogSeverity.ERROR)
+                        platform.log("Token refresh failed - calling onRefreshFailed", "AuthPlugin", LogSeverity.ERROR)
                         plugin.onRefreshFailed()
                         originalCall
                     }
@@ -123,13 +123,13 @@ class AuthPlugin private constructor(
         if (tokenManager.isRefreshTokenExpired()) {
             val expires = tokenManager.getRefreshTokenExpires()
             val now = currentTimeSeconds()
-            platform.log("❌ Refresh token expired (expires: $expires, now: $now)", "AuthPlugin", LogSeverity.ERROR)
+            platform.log("Refresh token expired (expires: $expires, now: $now)", "AuthPlugin", LogSeverity.ERROR)
             return false
         }
 
         val refreshTokenValue = tokenManager.getRefreshToken()
         if (refreshTokenValue == null) {
-            platform.log("❌ No refresh token available", "AuthPlugin", LogSeverity.ERROR)
+            platform.log("No refresh token available", "AuthPlugin", LogSeverity.ERROR)
             return false
         }
 
@@ -166,20 +166,20 @@ class AuthPlugin private constructor(
                             lastName = lastName
                         )
                     )
-                    platform.log("✅ Token refreshed successfully", "AuthPlugin", LogSeverity.INFO)
+                    platform.log("Token refreshed successfully", "AuthPlugin", LogSeverity.SUCCESS)
                     true
                 }
                 HttpStatusCode.Unauthorized -> {
-                    platform.log("❌ Refresh token expired or invalid (401)", "AuthPlugin", LogSeverity.ERROR)
+                    platform.log("Refresh token expired or invalid (401)", "AuthPlugin", LogSeverity.ERROR)
                     false
                 }
                 else -> {
-                    platform.log("❌ Token refresh failed: ${response.status}", "AuthPlugin", LogSeverity.ERROR)
+                    platform.log("Token refresh failed: ${response.status}", "AuthPlugin", LogSeverity.ERROR)
                     false
                 }
             }
         } catch (e: Exception) {
-            platform.log("❌ Token refresh exception: ${e.message}", "AuthPlugin", LogSeverity.ERROR)
+            platform.log("Token refresh exception: ${e.message}", "AuthPlugin", LogSeverity.ERROR)
             false
         }
     }
