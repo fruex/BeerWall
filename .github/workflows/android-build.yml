@@ -28,7 +28,6 @@ jobs:
     - name: Decode Keystore
       run: |
         mkdir -p shared
-        echo "${{ secrets.DEBUG_KEYSTORE_BASE64_FROM_MAC }}" | base64 --decode > shared/debug.keystore
         if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
            echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 --decode > shared/release.keystore
         fi
