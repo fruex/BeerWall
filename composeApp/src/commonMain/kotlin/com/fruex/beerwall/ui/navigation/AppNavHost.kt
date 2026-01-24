@@ -152,8 +152,8 @@ fun AppNavHost(
             AddFundsScreen(
                 availablePaymentMethods = uiState.paymentMethods,
                 onBackClick = { navController.popBackStack() },
-                onAddFunds = { paymentMethodId, balance ->
-                    balanceViewModel.onAddFunds(premisesId, paymentMethodId, balance)
+                onAddFunds = { paymentMethodId, balance, blikCode ->
+                    balanceViewModel.onAddFunds(premisesId, paymentMethodId, balance, blikCode)
                     navController.popBackStack()
                 },
                 premisesName = premises?.premisesName

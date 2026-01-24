@@ -56,11 +56,11 @@ class BalanceViewModel(
         }
     }
 
-    fun onAddFunds(premisesId: Int, paymentMethodId: Int, balance: Double) {
+    fun onAddFunds(premisesId: Int, paymentMethodId: Int, balance: Double, authorizationCode: String? = null) {
         viewModelScope.launch {
-            _uiState.update { it.copy(errorMessage = null) }
+            _uiState.update { it.copy(errorMessage = null, isLoading = true) }
             try {
-                topUpBalanceUseCase(premisesId, paymentMethodId, balance)
+                topUpBalanceUseCase(premisesId, paymentMethodId, balance, authorizationCode)
                     .onSuccess {
                         // Odśwież saldo po udanym doładowaniu
                         refreshBalance()
@@ -70,6 +70,8 @@ class BalanceViewModel(
                     }
             } catch (e: Exception) {
                 _uiState.update { it.copy(errorMessage = "Nie udało się doładować konta: ${e.message}") }
+            } finally {
+                _uiState.update { it.copy(isLoading = false) }
             }
         }
     }
@@ -97,5 +99,6 @@ data class BalanceUiState(
     val balances: List<PremisesBalance> = emptyList(),
     val paymentMethods: List<PaymentMethod> = emptyList(),
     val isRefreshing: Boolean = false,
+    val isLoading: Boolean = false,
     val errorMessage: String? = null
 )
