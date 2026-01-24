@@ -1,6 +1,7 @@
 package com.fruex.beerwall.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -148,6 +149,13 @@ fun AppNavHost(
             val balanceViewModel = koinViewModel<BalanceViewModel>()
             val uiState by balanceViewModel.uiState.collectAsState()
             val premises = uiState.balances.find { it.premisesId == premisesId }
+
+            LaunchedEffect(uiState.isTopUpSuccess) {
+                if (uiState.isTopUpSuccess) {
+                    balanceViewModel.onTopUpSuccessConsumed()
+                    navController.popBackStack()
+                }
+            }
 
             AddFundsScreen(
                 availablePaymentMethods = uiState.paymentMethods,
