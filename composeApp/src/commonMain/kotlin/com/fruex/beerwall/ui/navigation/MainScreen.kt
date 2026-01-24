@@ -92,19 +92,9 @@ fun MainScreen(
     onChangePasswordClick: () -> Unit = {},
     onSupportClick: () -> Unit = {},
     onAboutClick: () -> Unit = {},
-    shouldRefreshBalance: Boolean = false,
-    onRefreshConsumed: () -> Unit = {},
 ) {
     // ViewModels for each tab
     val balanceViewModel = koinViewModel<BalanceViewModel>()
-
-    // Handle external refresh request
-    LaunchedEffect(shouldRefreshBalance) {
-        if (shouldRefreshBalance) {
-            balanceViewModel.refreshBalance()
-            onRefreshConsumed()
-        }
-    }
     val cardsViewModel = koinViewModel<CardsViewModel>()
     val historyViewModel = koinViewModel<HistoryViewModel>()
     val profileViewModel = koinViewModel<ProfileViewModel>()
@@ -126,6 +116,19 @@ fun MainScreen(
             BottomNavItem.Balance.route -> balanceViewModel.refreshBalance()
             BottomNavItem.History.route -> historyViewModel.refreshHistory()
             BottomNavItem.Cards.route -> cardsViewModel.refreshCards()
+        }
+    }
+
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner, selectedTab) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME && selectedTab == BottomNavItem.Balance.route) {
+                balanceViewModel.refreshBalance()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 
