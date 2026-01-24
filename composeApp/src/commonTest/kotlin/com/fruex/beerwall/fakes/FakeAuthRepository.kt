@@ -57,7 +57,7 @@ class FakeAuthRepository : AuthRepository {
         return Result.success(Unit)
     }
 
-    override suspend fun changePassword(newPassword: String): Result<Unit> {
+    override suspend fun changePassword(oldPassword: String, newPassword: String): Result<Unit> {
         if (shouldFail) return Result.failure(Exception(failureMessage))
         return Result.success(Unit)
     }
