@@ -152,10 +152,13 @@ fun AppNavHost(
             AddFundsScreen(
                 availablePaymentMethods = uiState.paymentMethods,
                 onBackClick = { navController.popBackStack() },
-                onAddFunds = { paymentMethodId, balance ->
-                    balanceViewModel.onAddFunds(premisesId, paymentMethodId, balance)
-                    navController.popBackStack()
+                onAddFunds = { paymentMethodId, balance, blikCode ->
+                    balanceViewModel.onAddFunds(premisesId, paymentMethodId, balance, blikCode)
                 },
+                onCancelTopUp = {
+                    balanceViewModel.onCancelTopUp()
+                },
+                isLoading = uiState.isLoading,
                 premisesName = premises?.premisesName
             )
         }
@@ -169,7 +172,8 @@ fun AppNavHost(
                 scannedCardId = uiState.scannedCardId,
                 isNfcEnabled = uiState.isNfcEnabled,
                 onBackClick = { navController.popBackStack() },
-                onStartScanning = { cardsViewModel.startScanning() },
+                onStartScanning = { cardsViewModel.startNfcListening() },
+                onStopScanning = { cardsViewModel.stopNfcListening() },
                 onCardNameChanged = {},
                 onSaveCard = { name, cardId ->
                     cardsViewModel.onSaveCard(name, cardId)
@@ -197,12 +201,18 @@ fun AppNavHost(
 
         composable(NavigationDestination.Support.route) {
             val profileViewModel = koinViewModel<ProfileViewModel>()
+            val uiState by profileViewModel.uiState.collectAsState()
 
             SupportScreen(
                 onBackClick = { navController.popBackStack() },
                 onSendMessage = { message ->
                     profileViewModel.onSendMessage(message)
-                    navController.popBackStack()
+                },
+                isLoading = uiState.isLoading,
+                errorMessage = uiState.errorMessage,
+                successMessage = uiState.successMessage,
+                onClearState = {
+                    profileViewModel.onClearMessages()
                 }
             )
         }

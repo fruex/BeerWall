@@ -16,9 +16,15 @@ class TopUpBalanceUseCase(
      * @param premisesId Identyfikator lokalu.
      * @param paymentMethodId Identyfikator metody płatności.
      * @param balance Kwota doładowania.
+     * @param authorizationCode Kod autoryzacyjny (np. BLIK).
      * @return [Result] typu Unit w przypadku sukcesu lub błąd.
      */
-    suspend operator fun invoke(premisesId: Int, paymentMethodId: Int, balance: Double): Result<Unit> {
-        return balanceRepository.topUp(premisesId, paymentMethodId, balance)
+    suspend operator fun invoke(
+        premisesId: Int,
+        paymentMethodId: Int,
+        balance: Double,
+        authorizationCode: String? = null
+    ): Result<Unit> {
+        return balanceRepository.topUp(premisesId, paymentMethodId, balance, authorizationCode)
     }
 }

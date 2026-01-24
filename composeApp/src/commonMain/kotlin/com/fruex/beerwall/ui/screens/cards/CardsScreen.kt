@@ -50,7 +50,7 @@ fun CardsScreen(
     onDeleteCard: (String) -> Unit,
 ) {
     // ⚡ Bolt Optimization: Hoist dialog state out of LazyColumn to prevent
-    // creating state per item and decouple dialog from item lifecycle.
+    // creating state per item and decouple dialog from the item lifecycle.
     var selectedCard by remember { mutableStateOf<UserCard?>(null) }
 
     PullToRefreshBox(
@@ -223,21 +223,18 @@ fun CardItemView(
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = if (card.isActive) Icons.Default.CheckCircle else Icons.Default.Cancel,
-                        contentDescription = null,
-                        tint = if (card.isActive) Success else TextSecondary,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Text(
-                        text = if (card.isActive) "Aktywna" else "Nieaktywna",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = if (card.isActive) Success else TextSecondary
-                    )
+                if (card.isPhysical) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = if (card.isActive) Icons.Default.CheckCircle else Icons.Default.Cancel,
+                            contentDescription = null,
+                            tint = if (card.isActive) Success else TextSecondary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
                 }
             }
 
