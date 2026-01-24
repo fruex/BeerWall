@@ -86,7 +86,7 @@ fun ProfileScreen(
                 BeerMug(
                     fillLevel = fillLevel.value,
                     tiltAngle = tiltAngle,
-                    modifier = Modifier.size(120.dp, 160.dp)
+                    modifier = Modifier.size(80.dp, 160.dp)
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
