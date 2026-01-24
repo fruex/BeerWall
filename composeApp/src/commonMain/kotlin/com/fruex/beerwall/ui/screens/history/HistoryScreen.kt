@@ -155,7 +155,7 @@ fun TransactionItem(transaction: Transaction) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "${transaction.premisesName} o ${transaction.formattedTime}",
+                    text = transaction.formattedDetails,
                     style = MaterialTheme.typography.bodySmall,
                     color = TextSecondary
                 )
@@ -163,14 +163,14 @@ fun TransactionItem(transaction: Transaction) {
 
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "${transaction.grossPrice} zł",
+                    text = transaction.formattedPrice,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = GoldPrimary
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "${transaction.capacity} ml",
+                    text = transaction.formattedCapacity,
                     style = MaterialTheme.typography.bodySmall,
                     color = TextSecondary
                 )
@@ -217,18 +217,16 @@ fun HistoryScreenPreview() {
                         Transaction(
                             transactionId = 1,
                             commodityName = "Piwo Jasne",
-                            grossPrice = -12.50,
-                            capacity = 500,
-                            formattedTime = "18:30",
-                            premisesName = "Pub Warszawski"
+                            formattedPrice = "-12.50 zł",
+                            formattedCapacity = "500 ml",
+                            formattedDetails = "Pub Warszawski o 18:30"
                         ),
                         Transaction(
                             transactionId = 2,
                             commodityName = "Piwo ciemne",
-                            grossPrice = -12.50,
-                            capacity = 330,
-                            formattedTime = "18:00",
-                            premisesName = "Pub Warszawski"
+                            formattedPrice = "-12.50 zł",
+                            formattedCapacity = "330 ml",
+                            formattedDetails = "Pub Warszawski o 18:00"
                         )
                     )
                 ),
@@ -238,10 +236,9 @@ fun HistoryScreenPreview() {
                         Transaction(
                             transactionId = 3,
                             commodityName = "Piwo Ciemne",
-                            grossPrice = -15.00,
-                            capacity = 500,
-                            formattedTime = "20:15",
-                            premisesName = "Pub Krakowski"
+                            formattedPrice = "-15.00 zł",
+                            formattedCapacity = "500 ml",
+                            formattedDetails = "Pub Krakowski o 20:15"
                         )
                     )
                 )
