@@ -105,6 +105,7 @@ fun MainScreen(
     val cardsState by cardsViewModel.uiState.collectAsState()
     val historyState by historyViewModel.uiState.collectAsState()
     val authState by authViewModel.uiState.collectAsState()
+    val tiltAngle by profileViewModel.tiltAngle.collectAsState()
 
     val googleAuthProvider = rememberGoogleAuthProvider()
 
@@ -133,6 +134,7 @@ fun MainScreen(
         isHistoryRefreshing = historyState.isRefreshing,
         onHistoryRefresh = { historyViewModel.refreshHistory() },
         userProfile = authState.userProfile,
+        tiltAngle = tiltAngle,
         onLogoutClick = {
             authViewModel.handleLogout(googleAuthProvider)
             onLogoutClick()
@@ -162,6 +164,7 @@ fun MainScreenContent(
     isHistoryRefreshing: Boolean,
     onHistoryRefresh: () -> Unit,
     userProfile: UserProfile?,
+    tiltAngle: Float,
     onLogoutClick: () -> Unit,
     onAddFundsClick: (premisesId: Int) -> Unit,
     onAddLocationClick: () -> Unit,
@@ -246,6 +249,7 @@ fun MainScreenContent(
                     if (userProfile != null) {
                         ProfileScreen(
                             userProfile = userProfile,
+                            tiltAngle = tiltAngle,
                             onLogoutClick = onLogoutClick,
                             onChangePasswordClick = onChangePasswordClick,
                             onSupportClick = onSupportClick,
@@ -297,6 +301,7 @@ fun MainScreenPreview() {
             isHistoryRefreshing = false,
             onHistoryRefresh = {},
             userProfile = UserProfile(name = "Jan Kowalski"),
+            tiltAngle = 0f,
             onLogoutClick = {},
             onAddFundsClick = {},
             onAddLocationClick = {},
