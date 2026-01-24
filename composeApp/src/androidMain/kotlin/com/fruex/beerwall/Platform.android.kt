@@ -7,15 +7,7 @@ class AndroidPlatform : Platform {
     override val name: String = "Android ${Build.VERSION.SDK_INT}"
     
     override fun log(message: String, tag: String, severity: LogSeverity) {
-        val prefix = when (severity) {
-            LogSeverity.DEBUG -> "🔹 [DEBUG]"
-            LogSeverity.INFO -> "ℹ️ [INFO]"
-            LogSeverity.WARN -> "⚠️ [WARN]"
-            LogSeverity.ERROR -> "❌ [ERROR]"
-            LogSeverity.SUCCESS -> "✅ [SUCCESS]"
-        }
-
-        val formattedMessage = "$prefix $message"
+        val formattedMessage = "${severity.prefix} $message"
 
         when (severity) {
             LogSeverity.DEBUG -> Log.d(tag, formattedMessage)

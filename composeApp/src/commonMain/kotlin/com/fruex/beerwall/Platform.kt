@@ -1,7 +1,16 @@
 package com.fruex.beerwall
 
 enum class LogSeverity {
-    DEBUG, INFO, WARN, ERROR, SUCCESS
+    DEBUG, INFO, WARN, ERROR, SUCCESS;
+
+    val prefix: String
+        get() = when (this) {
+            DEBUG -> "🔹 [DEBUG]"
+            INFO -> "ℹ️ [INFO]"
+            WARN -> "⚠️ [WARN]"
+            ERROR -> "❌ [ERROR]"
+            SUCCESS -> "✅ [SUCCESS]"
+        }
 }
 
 interface Platform {
