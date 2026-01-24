@@ -18,6 +18,7 @@
 
 # Ktor
 -keep class io.ktor.** { *; }
+-dontwarn java.lang.management.**
 
 # Coroutines
 -dontwarn kotlinx.coroutines.**
