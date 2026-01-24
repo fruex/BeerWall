@@ -9,6 +9,13 @@ plugins {
     alias(libs.plugins.buildkonfig)
 }
 
+val appVersion = providers.exec {
+    commandLine("git", "describe", "--tags", "--always")
+    isIgnoreExitValue = true
+}.standardOutput.asText.get().trim().let {
+    if (it.isBlank()) "1.0.0" else it
+}
+
 kotlin {
     androidTarget {
         compilerOptions {
@@ -89,7 +96,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
-        versionName = project.findProperty("versionName")?.toString() ?: "1.0"
+        versionName = appVersion
     }
     packaging {
         resources {
@@ -120,6 +127,7 @@ buildkonfig {
         buildConfigField(com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING, "BUILD_TYPE", "debug")
         buildConfigField(com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN, "DEBUG", "true")
         buildConfigField(com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING, "BASE_URL", "http://api-debug.igibeer.pl:7000")
+        buildConfigField(com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING, "APP_VERSION", appVersion)
     }
 
     defaultConfigs("release") {
