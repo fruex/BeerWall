@@ -1,6 +1,7 @@
 package com.fruex.beerwall.data.remote
 
 import io.ktor.client.*
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.kotlinx.json.*
@@ -30,6 +31,12 @@ object HttpClientFactory {
     ): HttpClient = HttpClient {
         install(ContentNegotiation) {
             json(json)
+        }
+
+        install(HttpTimeout) {
+            requestTimeoutMillis = 30_000
+            connectTimeoutMillis = 15_000
+            socketTimeoutMillis = 30_000
         }
 
         // Auth plugin - automatically refreshes token on 401
