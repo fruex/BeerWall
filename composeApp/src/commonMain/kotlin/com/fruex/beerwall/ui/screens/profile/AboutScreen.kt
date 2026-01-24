@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.fruex.beerwall.BuildKonfig
 import com.fruex.beerwall.ui.theme.BeerWallTheme
 import com.fruex.beerwall.ui.theme.CardBackground
 import com.fruex.beerwall.ui.theme.DarkBackground
@@ -74,7 +75,7 @@ fun AboutScreen(
                     )
 
                     Text(
-                        text = "Wersja 1.0.0",
+                        text = "Wersja ${BuildKonfig.APP_VERSION}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = TextSecondary
                     )
