@@ -30,13 +30,12 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun AddFundsScreen(
     availablePaymentMethods: List<PaymentMethod>,
     onBackClick: () -> Unit,
-    onAddFunds: (paymentMethodId: Int, balance: Double) -> Unit,
+    onAddFunds: (paymentMethodId: Int, balance: Double, blikCode: String?) -> Unit,
     premisesName: String? = null,
 ) {
     var selectedAmount by rememberSaveable { mutableStateOf("") }
     var customAmount by rememberSaveable { mutableStateOf("") }
     var blikCode by rememberSaveable { mutableStateOf("") }
-    var isProcessing by remember { mutableStateOf(false) }
     var selectedPaymentMethod by remember { mutableStateOf<PaymentMethod?>(null) }
 
     // Auto-select first payment method when available
@@ -49,46 +48,6 @@ fun AddFundsScreen(
     val predefinedAmounts = listOf("10", "20", "50", "100", "200", "Inna")
     val finalAmount = if (selectedAmount == "Inna") customAmount else selectedAmount
     val isBlikCodeValid = blikCode.length == 6 && blikCode.all { it.isDigit() }
-
-    if (isProcessing) {
-        LaunchedEffect(Unit) {
-            kotlinx.coroutines.delay(5000)
-            finalAmount.toDoubleOrNull()?.let { balanceValue ->
-                selectedPaymentMethod?.let { method ->
-                    onAddFunds(method.paymentMethodId, balanceValue)
-                }
-            }
-            isProcessing = false
-        }
-
-        AlertDialog(
-            onDismissRequest = { },
-            confirmButton = { },
-            title = {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    CircularProgressIndicator(color = GoldPrimary)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "Łączenie z bankiem...",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = TextPrimary
-                    )
-                }
-            },
-            text = {
-                Text(
-                    text = "Proszę zaakceptować płatność w aplikacji bankowej.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
-                )
-            },
-            containerColor = CardBackground,
-            shape = RoundedCornerShape(16.dp)
-        )
-    }
 
     BeerWallTheme {
         Column(
@@ -263,14 +222,13 @@ fun AddFundsScreen(
                     onClick = {
                         finalAmount.toDoubleOrNull()?.let { balanceValue ->
                             if (balanceValue > 0 && isBlikCodeValid && selectedPaymentMethod != null) {
-                                isProcessing = true
+                                onAddFunds(selectedPaymentMethod!!.paymentMethodId, balanceValue, blikCode)
                             }
                         }
                     },
                     enabled = finalAmount.toDoubleOrNull()?.let { it > 0 } == true &&
                              isBlikCodeValid &&
-                             selectedPaymentMethod != null &&
-                             !isProcessing
+                             selectedPaymentMethod != null
                 )
             }
         }
@@ -393,7 +351,7 @@ fun AddFundsScreenPreview() {
                 )
             ),
             onBackClick = {},
-            onAddFunds = { _, _ -> }
+            onAddFunds = { _, _, _ -> }
         )
     }
 }

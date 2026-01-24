@@ -22,7 +22,7 @@ class FakeBalanceRepository : BalanceRepository {
         return Result.success(fakeBalances)
     }
 
-    override suspend fun topUp(premisesId: Int, paymentMethodId: Int, balance: Double): Result<Unit> {
+    override suspend fun topUp(premisesId: Int, paymentMethodId: Int, balance: Double, authorizationCode: String?): Result<Unit> {
         if (shouldFail) return Result.failure(Exception(failureMessage))
         // Symulacja aktualizacji lokalnego stanu
         val index = fakeBalances.indexOfFirst { it.premisesId == premisesId }
