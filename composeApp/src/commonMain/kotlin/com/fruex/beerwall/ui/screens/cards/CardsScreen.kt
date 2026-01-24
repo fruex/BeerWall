@@ -50,7 +50,7 @@ fun CardsScreen(
     onDeleteCard: (String) -> Unit,
 ) {
     // ⚡ Bolt Optimization: Hoist dialog state out of LazyColumn to prevent
-    // creating state per item and decouple dialog from item lifecycle.
+    // creating state per item and decouple dialog from the item lifecycle.
     var selectedCard by remember { mutableStateOf<UserCard?>(null) }
 
     PullToRefreshBox(
