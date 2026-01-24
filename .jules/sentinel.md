@@ -12,3 +12,8 @@
 **Vulnerability:** Mismatched endpoint definitions in `AuthPlugin` vs `ApiRoutes` caused `signIn` and `signUp` to be treated as non-public, potentially sending stale tokens to them.
 **Learning:** Hardcoding paths in multiple places (interceptor vs API client) leads to drift and logic errors.
 **Prevention:** Use single source of truth (constants) for API routes in interceptors.
+
+## 2025-05-23 - [Missing API Timeouts]
+**Vulnerability:** HTTP clients lacked timeout configuration, potentially leading to indefinite hanging (DoS risk) if the server is unreachable.
+**Learning:** Default Ktor client timeouts are often infinite or very long. Explicit configuration is needed for resilience.
+**Prevention:** Install `HttpTimeout` plugin with reasonable values in the central `HttpClientFactory`.
