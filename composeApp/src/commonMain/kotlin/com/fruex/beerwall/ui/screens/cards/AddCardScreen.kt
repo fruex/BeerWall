@@ -37,6 +37,7 @@ fun AddCardScreen(
     isNfcEnabled: Boolean,
     onBackClick: () -> Unit,
     onStartScanning: () -> Unit,
+    onStopScanning: () -> Unit,
     onCardNameChanged: (String) -> Unit,
     onSaveCard: (name: String, cardId: String) -> Unit,
 ) {
@@ -44,8 +45,11 @@ fun AddCardScreen(
     val canSave = scannedCardId != null
     val focusManager = LocalFocusManager.current
 
-    LaunchedEffect(Unit) {
+    DisposableEffect(Unit) {
         onStartScanning()
+        onDispose {
+            onStopScanning()
+        }
     }
 
     BeerWallTheme {
@@ -187,18 +191,35 @@ fun AddCardScreen(
 
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        Text(
-                            text = if (scannedCardId != null) {
-                                "Karta została pomyślnie zeskanowana $scannedCardId"
-                            } else if (isNfcEnabled) {
-                                "Przytrzymaj kartę NFC blisko urządzenia, aby ją zarejestrować"
-                            } else {
-                                "Włącz moduł NFC w ustawieniach"
-                            },
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = DarkBackground.copy(alpha = 0.8f),
-                            textAlign = TextAlign.Center
-                        )
+                        if (scannedCardId != null) {
+                            Text(
+                                text = "Karta została pomyślnie zeskanowana",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = DarkBackground.copy(alpha = 0.8f),
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "ID: $scannedCardId",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = DarkBackground.copy(alpha = 0.5f),
+                                textAlign = TextAlign.Center
+                            )
+                        } else if (isNfcEnabled) {
+                            Text(
+                                text = "Przytrzymaj kartę NFC blisko urządzenia, aby ją zarejestrować",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = DarkBackground.copy(alpha = 0.8f),
+                                textAlign = TextAlign.Center
+                            )
+                        } else {
+                            Text(
+                                text = "Włącz moduł NFC w ustawieniach",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = DarkBackground.copy(alpha = 0.8f),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
 
@@ -268,6 +289,7 @@ fun AddCardScreenPreview() {
             isNfcEnabled = true,
             onBackClick = {},
             onStartScanning = {},
+            onStopScanning = {},
             onCardNameChanged = {},
             onSaveCard = { _, _ -> }
         )

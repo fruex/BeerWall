@@ -13,12 +13,19 @@ class NfcRepositoryImpl : NfcRepository {
     private val _isNfcEnabled = MutableStateFlow(false)
     override val isNfcEnabled: StateFlow<Boolean> = _isNfcEnabled.asStateFlow()
 
+    private val _isScanning = MutableStateFlow(false)
+    override val isScanning: StateFlow<Boolean> = _isScanning.asStateFlow()
+
     override suspend fun setScannedCardId(cardId: String?) {
         _scannedCardId.value = cardId
     }
 
     override suspend fun setNfcEnabled(isEnabled: Boolean) {
         _isNfcEnabled.value = isEnabled
+    }
+
+    override suspend fun setScanning(isActive: Boolean) {
+        _isScanning.value = isActive
     }
 
     override suspend fun clearScannedCard() {

@@ -28,6 +28,7 @@ object ApiRoutes {
         const val BALANCE = "$BASE/balance"
         const val HISTORY = "$BASE/history"
         const val RESET_PASSWORD = "$BASE/resetPassword"
+        const val FEEDBACK = "$BASE/feedback"
     }
 
     /**
