@@ -25,10 +25,10 @@ data class UserCard(
 data class Transaction(
     val transactionId: Int,
     val commodityName: String,
-    val formattedTime: String,
-    val grossPrice: Double,
-    val capacity: Int,
-    val premisesName: String
+    // Pre-formatted strings to avoid allocation during lazy list rendering
+    val formattedPrice: String,
+    val formattedCapacity: String,
+    val formattedDetails: String
 )
 
 @Immutable
