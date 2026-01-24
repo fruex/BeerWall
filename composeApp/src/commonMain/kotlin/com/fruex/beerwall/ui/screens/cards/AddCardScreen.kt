@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -18,7 +20,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.ui.components.*
@@ -37,6 +42,7 @@ fun AddCardScreen(
 ) {
     var cardName by rememberSaveable { mutableStateOf("") }
     val canSave = scannedCardId != null
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(Unit) {
         onStartScanning()
@@ -136,7 +142,19 @@ fun AddCardScreen(
                         onCardNameChanged(it)
                     },
                     placeholder = "np. Moja karta, Karta służbowa",
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            if (scannedCardId != null) {
+                                onSaveCard(cardName.ifBlank { "Karta NFC" }, scannedCardId)
+                            }
+                            focusManager.clearFocus()
+                        }
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
