@@ -115,6 +115,10 @@ class BalanceViewModel(
     fun onClearError() {
         _uiState.update { it.copy(errorMessage = null) }
     }
+
+    fun onTopUpSuccessConsumed() {
+        _uiState.update { it.copy(isTopUpSuccess = false) }
+    }
 }
 
 data class BalanceUiState(

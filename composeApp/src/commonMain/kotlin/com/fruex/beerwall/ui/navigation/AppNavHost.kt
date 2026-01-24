@@ -152,6 +152,7 @@ fun AppNavHost(
 
             LaunchedEffect(uiState.isTopUpSuccess) {
                 if (uiState.isTopUpSuccess) {
+                    balanceViewModel.onTopUpSuccessConsumed()
                     navController.popBackStack()
                 }
             }
