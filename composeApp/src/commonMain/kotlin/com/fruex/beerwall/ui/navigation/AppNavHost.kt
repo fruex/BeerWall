@@ -154,8 +154,11 @@ fun AppNavHost(
                 onBackClick = { navController.popBackStack() },
                 onAddFunds = { paymentMethodId, balance, blikCode ->
                     balanceViewModel.onAddFunds(premisesId, paymentMethodId, balance, blikCode)
-                    navController.popBackStack()
                 },
+                onCancelTopUp = {
+                    balanceViewModel.onCancelTopUp()
+                },
+                isLoading = uiState.isLoading,
                 premisesName = premises?.premisesName
             )
         }
