@@ -61,7 +61,7 @@ class BalanceApiClient(
         }
 
         when (response.status) {
-            HttpStatusCode.NoContent -> {
+            HttpStatusCode.NoContent, HttpStatusCode.OK -> {
                 platform.log("✅ TopUp Success", this, LogSeverity.INFO)
                 Result.success(Unit)
             }

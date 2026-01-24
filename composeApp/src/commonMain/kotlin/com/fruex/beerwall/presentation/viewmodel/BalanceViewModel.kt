@@ -56,8 +56,11 @@ class BalanceViewModel(
         }
     }
 
+    private var topUpJob: kotlinx.coroutines.Job? = null
+
     fun onAddFunds(premisesId: Int, paymentMethodId: Int, balance: Double, authorizationCode: String? = null) {
-        viewModelScope.launch {
+        topUpJob?.cancel()
+        topUpJob = viewModelScope.launch {
             _uiState.update { it.copy(errorMessage = null, isLoading = true) }
             try {
                 topUpBalanceUseCase(premisesId, paymentMethodId, balance, authorizationCode)
@@ -66,13 +69,31 @@ class BalanceViewModel(
                         refreshBalance()
                     }
                     .onFailure { error ->
-                        _uiState.update { it.copy(errorMessage = "Nie udało się doładować konta: ${error.message}") }
+                        val mappedError = mapTopUpError(error.message)
+                        _uiState.update { it.copy(errorMessage = mappedError) }
                     }
             } catch (e: Exception) {
+                // Ignore cancellation exceptions
+                if (e is kotlinx.coroutines.CancellationException) throw e
                 _uiState.update { it.copy(errorMessage = "Nie udało się doładować konta: ${e.message}") }
             } finally {
                 _uiState.update { it.copy(isLoading = false) }
             }
+        }
+    }
+
+    fun onCancelTopUp() {
+        topUpJob?.cancel()
+        _uiState.update { it.copy(isLoading = false) }
+    }
+
+    private fun mapTopUpError(message: String?): String {
+        return when (message) {
+            "ABANDONED" -> "Płatność porzucona"
+            "ERROR" -> "Błąd płatności"
+            "EXPIRED" -> "Płatność wygasła"
+            "REJECTED" -> "Płatność odrzucona"
+            else -> message ?: "Nieznany błąd płatności"
         }
     }
 
