@@ -259,7 +259,7 @@ fun CardDetailsDialog(
                 imageVector = Icons.Default.CreditCard,
                 contentDescription = null,
                 tint = GoldPrimary,
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(36.dp)
             )
         },
         title = {
