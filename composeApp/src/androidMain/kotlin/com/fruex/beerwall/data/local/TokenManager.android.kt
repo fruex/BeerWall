@@ -19,7 +19,10 @@ import java.io.InputStream
 import java.io.OutputStream
 
 @kotlinx.serialization.Serializable
-private data class TokenSession(val tokens: AuthTokens? = null)
+private data class TokenSession(
+    val tokens: AuthTokens? = null,
+    val isFirstLaunch: Boolean = true
+)
 
 private object TokenSerializer : Serializer<TokenSession> {
     override val defaultValue: TokenSession = TokenSession()
@@ -71,7 +74,7 @@ actual class TokenManagerImpl(private val context: Context) : TokenManager {
     
     actual override suspend fun saveTokens(tokens: AuthTokens) {
         try {
-            context.tokenDataStore.updateData { it.copy(tokens = tokens) }
+            context.tokenDataStore.updateData { it.copy(tokens = tokens, isFirstLaunch = false) }
             platform.log("Tokens saved successfully", this, LogSeverity.INFO)
         } catch (e: CancellationException) {
             throw e
@@ -188,6 +191,24 @@ actual class TokenManagerImpl(private val context: Context) : TokenManager {
         } catch (e: Exception) {
             platform.log("Error getting user profile: ${e.message}", this, LogSeverity.ERROR)
             null
+        }
+    }
+
+    actual override suspend fun isFirstLaunch(): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val session = context.tokenDataStore.data.first()
+            session.isFirstLaunch
+        } catch (e: Exception) {
+            platform.log("Error checking first launch: ${e.message}", this, LogSeverity.ERROR)
+            true // Default to true on error to be safe (or false? Safe is usually treating as new user)
+        }
+    }
+
+    actual override suspend fun markFirstLaunchSeen() {
+        try {
+            context.tokenDataStore.updateData { it.copy(isFirstLaunch = false) }
+        } catch (e: Exception) {
+            platform.log("Error marking first launch seen: ${e.message}", this, LogSeverity.ERROR)
         }
     }
 }
