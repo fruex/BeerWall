@@ -92,7 +92,7 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Text(
-                    text = "dobrze Tobie idzie, do kolejnego poziomu pozostało już tylko 7 piw.",
+                    text = "Dobrze Tobie idzie, do kolejnego poziomu pozostało już tylko 7 piw.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 16.dp),
