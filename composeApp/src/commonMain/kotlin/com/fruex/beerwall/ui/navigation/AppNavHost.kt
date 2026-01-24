@@ -1,6 +1,7 @@
 package com.fruex.beerwall.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -97,8 +98,14 @@ fun AppNavHost(
         }
 
         // Main screen with bottom navigation
-        composable(NavigationDestination.Main.route) {
+        composable(NavigationDestination.Main.route) { backStackEntry ->
+            val refreshBalance = backStackEntry.savedStateHandle.get<Boolean>("refresh_balance") ?: false
+
             MainScreen(
+                shouldRefreshBalance = refreshBalance,
+                onRefreshConsumed = {
+                    backStackEntry.savedStateHandle["refresh_balance"] = false
+                },
                 onAddFundsClick = { premisesId ->
                     navController.navigate("${NavigationDestination.AddFunds.route}/$premisesId") {
                         launchSingleTop = true
@@ -148,6 +155,13 @@ fun AppNavHost(
             val balanceViewModel = koinViewModel<BalanceViewModel>()
             val uiState by balanceViewModel.uiState.collectAsState()
             val premises = uiState.balances.find { it.premisesId == premisesId }
+
+            LaunchedEffect(uiState.isTopUpSuccess) {
+                if (uiState.isTopUpSuccess) {
+                    navController.previousBackStackEntry?.savedStateHandle?.set("refresh_balance", true)
+                    navController.popBackStack()
+                }
+            }
 
             AddFundsScreen(
                 availablePaymentMethods = uiState.paymentMethods,
