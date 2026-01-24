@@ -67,6 +67,7 @@ class BalanceViewModel(
                     .onSuccess {
                         // Odśwież saldo po udanym doładowaniu
                         refreshBalance()
+                        _uiState.update { it.copy(isTopUpSuccess = true) }
                     }
                     .onFailure { error ->
                         val mappedError = mapTopUpError(error.message)
@@ -114,6 +115,10 @@ class BalanceViewModel(
     fun onClearError() {
         _uiState.update { it.copy(errorMessage = null) }
     }
+
+    fun onTopUpSuccessConsumed() {
+        _uiState.update { it.copy(isTopUpSuccess = false) }
+    }
 }
 
 data class BalanceUiState(
@@ -121,5 +126,6 @@ data class BalanceUiState(
     val paymentMethods: List<PaymentMethod> = emptyList(),
     val isRefreshing: Boolean = false,
     val isLoading: Boolean = false,
+    val isTopUpSuccess: Boolean = false,
     val errorMessage: String? = null
 )

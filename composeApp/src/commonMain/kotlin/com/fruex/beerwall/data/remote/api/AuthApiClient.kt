@@ -171,14 +171,15 @@ class AuthApiClient(
     /**
      * Zmienia hasło zalogowanego użytkownika.
      *
+     * @param oldPassword Stare hasło użytkownika.
      * @param newPassword Nowe hasło użytkownika.
      * @return Result pusty w przypadku sukcesu lub błąd.
      */
-    suspend fun changePassword(newPassword: String): Result<Unit> = try {
+    suspend fun changePassword(oldPassword: String, newPassword: String): Result<Unit> = try {
         platform.log("Change Password Request", this, LogSeverity.INFO)
         val response = client.post("$baseUrl/${ApiRoutes.Users.RESET_PASSWORD}") {
             contentType(ContentType.Application.Json)
-            setBody(ChangePasswordRequest(newPassword))
+            setBody(ChangePasswordRequest(oldPassword, newPassword))
         }
 
         if (response.status == HttpStatusCode.NoContent || response.status == HttpStatusCode.OK) {

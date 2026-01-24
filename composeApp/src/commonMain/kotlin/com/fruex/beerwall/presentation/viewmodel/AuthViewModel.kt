@@ -205,11 +205,11 @@ class AuthViewModel(
         }
     }
 
-    fun handleChangePassword(newPassword: String, onSuccess: () -> Unit) {
+    fun handleChangePassword(oldPassword: String, newPassword: String, onSuccess: () -> Unit) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             try {
-                changePasswordUseCase(newPassword)
+                changePasswordUseCase(oldPassword, newPassword)
                     .onSuccess {
                         onSuccess()
                     }

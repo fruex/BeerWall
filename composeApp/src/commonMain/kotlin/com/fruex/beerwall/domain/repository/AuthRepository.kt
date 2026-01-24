@@ -70,10 +70,11 @@ interface AuthRepository {
     /**
      * Zmienia hasło zalogowanego użytkownika.
      *
+     * @param oldPassword Stare hasło.
      * @param newPassword Nowe hasło.
      * @return [Result] typu Unit w przypadku sukcesu lub błąd.
      */
-    suspend fun changePassword(newPassword: String): Result<Unit>
+    suspend fun changePassword(oldPassword: String, newPassword: String): Result<Unit>
 
     /**
      * Odświeża tokeny sesji.

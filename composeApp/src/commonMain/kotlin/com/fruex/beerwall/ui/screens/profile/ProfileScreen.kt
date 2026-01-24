@@ -86,10 +86,18 @@ fun ProfileScreen(
                 BeerMug(
                     fillLevel = fillLevel.value,
                     tiltAngle = tiltAngle,
-                    modifier = Modifier.size(120.dp, 160.dp)
+                    modifier = Modifier.size(80.dp, 160.dp)
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
+
+                Text(
+                    text = "Dobrze Tobie idzie, do kolejnego poziomu pozostało już tylko 7 piw.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
             }
         }
 

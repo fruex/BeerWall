@@ -80,10 +80,9 @@ fun BeerMug(
             val pivotY = surfaceY
 
             // Convert radians to degrees for Canvas rotate
-            // tiltAngle > 0 (tilted right) -> Liquid should stay horizontal, so it rotates -tiltAngle relative to glass?
-            // If phone tilts right (clockwise), the liquid surface (relative to phone) rotates counter-clockwise.
-            // So rotate by -tiltAngle.
-            val degrees = -(tiltAngle * 180 / PI).toFloat()
+            // tiltAngle > 0 (tilted right) -> Liquid follows gravity and tilts right
+            // tiltAngle < 0 (tilted left) -> Liquid follows gravity and tilts left
+            val degrees = (tiltAngle * 180 / PI).toFloat()
 
             rotate(degrees = degrees, pivot = Offset(pivotX, pivotY)) {
                 // Draw Beer
