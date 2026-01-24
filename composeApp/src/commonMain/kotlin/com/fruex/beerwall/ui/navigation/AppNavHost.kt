@@ -198,12 +198,18 @@ fun AppNavHost(
 
         composable(NavigationDestination.Support.route) {
             val profileViewModel = koinViewModel<ProfileViewModel>()
+            val uiState by profileViewModel.uiState.collectAsState()
 
             SupportScreen(
                 onBackClick = { navController.popBackStack() },
                 onSendMessage = { message ->
                     profileViewModel.onSendMessage(message)
-                    navController.popBackStack()
+                },
+                isLoading = uiState.isLoading,
+                errorMessage = uiState.errorMessage,
+                successMessage = uiState.successMessage,
+                onClearState = {
+                    profileViewModel.onClearMessages()
                 }
             )
         }
