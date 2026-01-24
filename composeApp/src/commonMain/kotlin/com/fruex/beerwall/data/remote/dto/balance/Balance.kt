@@ -37,5 +37,6 @@ typealias GetBalanceEnvelope = ApiEnvelope<List<BalanceResponse>>
 data class TopUpRequest(
     val premisesId: Int,
     val paymentMethodId: Int,
-    val amount: Double
+    val amount: Double,
+    val authorizationCode: String? = null
 )
