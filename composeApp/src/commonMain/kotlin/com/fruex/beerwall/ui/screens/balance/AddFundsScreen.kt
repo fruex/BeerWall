@@ -38,18 +38,17 @@ fun AddFundsScreen(
     var selectedAmount by rememberSaveable { mutableStateOf("") }
     var customAmount by rememberSaveable { mutableStateOf("") }
     var blikCode by rememberSaveable { mutableStateOf("") }
-    var selectedPaymentMethod by remember { mutableStateOf<PaymentMethod?>(null) }
+    var selectedPaymentMethodId by rememberSaveable { mutableStateOf<Int?>(null) }
+
+    val selectedPaymentMethod = remember(selectedPaymentMethodId, availablePaymentMethods) {
+        availablePaymentMethods.find { it.paymentMethodId == selectedPaymentMethodId }
+    }
 
     // Auto-select first payment method when available
     LaunchedEffect(availablePaymentMethods) {
-        if (selectedPaymentMethod == null && availablePaymentMethods.isNotEmpty()) {
-            selectedPaymentMethod = availablePaymentMethods.first()
+        if (selectedPaymentMethodId == null && availablePaymentMethods.isNotEmpty()) {
+            selectedPaymentMethodId = availablePaymentMethods.first().paymentMethodId
         }
-    }
-
-    // Reset BLIK code when payment method changes
-    LaunchedEffect(selectedPaymentMethod) {
-        blikCode = ""
     }
 
     val predefinedAmounts = listOf("10", "20", "50", "100", "200", "Inna")
@@ -84,12 +83,23 @@ fun AddFundsScreen(
                 }
             },
             text = {
-                Text(
-                    text = "Proszę zaakceptować płatność w aplikacji bankowej.\nMożesz przerwać operację klikając Anuluj.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary,
-                    textAlign = TextAlign.Center
-                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "Proszę zaakceptować płatność w aplikacji bankowej.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    HorizontalDivider(color = TextSecondary.copy(alpha = 0.2f))
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Możesz przerwać operację klikając Anuluj.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary,
+                        textAlign = TextAlign.Center
+                    )
+                }
             },
             containerColor = CardBackground,
             shape = RoundedCornerShape(16.dp)
@@ -158,7 +168,12 @@ fun AddFundsScreen(
                     PaymentMethodCard(
                         paymentMethod = method,
                         isSelected = selectedPaymentMethod?.paymentMethodId == method.paymentMethodId,
-                        onClick = { selectedPaymentMethod = method }
+                        onClick = {
+                            if (selectedPaymentMethodId != method.paymentMethodId) {
+                                selectedPaymentMethodId = method.paymentMethodId
+                                blikCode = ""
+                            }
+                        }
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                 }
@@ -271,7 +286,7 @@ fun AddFundsScreen(
                     onClick = {
                         finalAmount.toDoubleOrNull()?.let { balanceValue ->
                             if (isPaymentReady) {
-                                onAddFunds(selectedPaymentMethod!!.paymentMethodId, balanceValue, if (isBlikSelected) blikCode else null)
+                                onAddFunds(checkNotNull(selectedPaymentMethod).paymentMethodId, balanceValue, if (isBlikSelected) blikCode else null)
                             }
                         }
                     },
