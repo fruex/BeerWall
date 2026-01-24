@@ -1,4 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+import java.io.FileInputStream
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -88,17 +90,49 @@ kotlin {
     }
 }
 
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace = "com.fruex.beerwall"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.fruex.beerwall"
+        applicationId = "pl.igibeer.beerwall"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = appVersion
     }
+
+    signingConfigs {
+        create("release") {
+            val envStoreFile = System.getenv("STORE_FILE")
+            val propStoreFile = keystoreProperties["storeFile"] as? String
+
+            if (propStoreFile != null && rootProject.file(propStoreFile).exists()) {
+                storeFile = rootProject.file(propStoreFile)
+                storePassword = keystoreProperties["storePassword"] as String
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+            } else if (envStoreFile != null && rootProject.file(envStoreFile).exists()) {
+                 storeFile = rootProject.file(envStoreFile)
+                 storePassword = System.getenv("RELEASE_STORE_PASSWORD")
+                 keyAlias = System.getenv("RELEASE_KEY_ALIAS")
+                 keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+            } else {
+                // Fallback to debug keystore for safe local release builds
+                storeFile = rootProject.file("shared/debug.keystore")
+                storePassword = "android"
+                keyAlias = "androiddebugkey"
+                keyPassword = "android"
+            }
+        }
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -106,6 +140,7 @@ android {
     }
     buildTypes {
         getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
