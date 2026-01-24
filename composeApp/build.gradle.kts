@@ -83,6 +83,7 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.koin.test)
+            implementation(libs.ktor.client.mock)
         }
     }
 }

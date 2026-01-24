@@ -4,6 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import com.fruex.beerwall.BuildKonfig
+import com.fruex.beerwall.Platform
 import com.fruex.beerwall.data.local.TokenManager
 import com.fruex.beerwall.getPlatform
 import com.fruex.beerwall.data.remote.common.ApiResponse
@@ -14,9 +15,11 @@ import com.fruex.beerwall.data.remote.common.ApiResponse
  */
 abstract class BaseApiClient(
     protected val tokenManager: TokenManager,
-    private val onUnauthorized: (suspend () -> Unit)?
+    private val onUnauthorized: (suspend () -> Unit)?,
+    httpClient: HttpClient? = null,
+    protected val platform: Platform = getPlatform()
 ) {
-    private var _client: HttpClient? = null
+    private var _client: HttpClient? = httpClient
     protected val client: HttpClient
         get() {
             if (_client == null) {
@@ -26,7 +29,6 @@ abstract class BaseApiClient(
         }
 
     protected val json = HttpClientFactory.json
-    protected val platform = getPlatform()
     protected val baseUrl: String = BuildKonfig.BASE_URL
 
     /**

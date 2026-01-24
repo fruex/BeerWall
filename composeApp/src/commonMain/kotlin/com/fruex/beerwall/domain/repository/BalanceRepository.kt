@@ -20,9 +20,10 @@ interface BalanceRepository {
      * @param premisesId Identyfikator lokalu.
      * @param paymentMethodId Identyfikator metody płatności.
      * @param balance Kwota doładowania.
+     * @param authorizationCode Kod autoryzacyjny (np. BLIK).
      * @return [Result] typu Unit w przypadku sukcesu lub błąd.
      */
-    suspend fun topUp(premisesId: Int, paymentMethodId: Int, balance: Double): Result<Unit>
+    suspend fun topUp(premisesId: Int, paymentMethodId: Int, balance: Double, authorizationCode: String? = null): Result<Unit>
 
     /**
      * Pobiera listę dostępnych operatorów płatności.
