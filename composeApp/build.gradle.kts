@@ -1,4 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+import java.io.FileInputStream
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -88,17 +90,33 @@ kotlin {
     }
 }
 
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace = "com.fruex.beerwall"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.fruex.beerwall"
+        applicationId = "pl.igibeer.beerwall"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = appVersion
     }
+
+    signingConfigs {
+        create("release") {
+            storeFile = if (keystoreProperties.containsKey("storeFile")) rootProject.file(keystoreProperties["storeFile"]) else rootProject.file(System.getenv("STORE_FILE") ?: "shared/release.keystore")
+            storePassword = keystoreProperties["storePassword"] as? String ?: System.getenv("RELEASE_STORE_PASSWORD")
+            keyAlias = keystoreProperties["keyAlias"] as? String ?: System.getenv("RELEASE_KEY_ALIAS")
+            keyPassword = keystoreProperties["keyPassword"] as? String ?: System.getenv("RELEASE_KEY_PASSWORD")
+        }
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -106,6 +124,7 @@ android {
     }
     buildTypes {
         getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
