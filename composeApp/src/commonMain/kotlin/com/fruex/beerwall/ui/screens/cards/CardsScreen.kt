@@ -222,12 +222,6 @@ fun CardItemView(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = card.cardGuid,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
-                )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -266,53 +260,8 @@ fun CardDetailsDialog(
     onToggleStatus: () -> Unit,
     onDelete: () -> Unit
 ) {
-    var showDeleteConfirmation by remember { mutableStateOf(false) }
-
-    if (showDeleteConfirmation) {
-        AlertDialog(
-            onDismissRequest = { showDeleteConfirmation = false },
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.Warning,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.error
-                )
-            },
-            title = {
-                Text(
-                    text = "Usunąć kartę?",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold
-                )
-            },
-            text = {
-                Text(
-                    text = "Czy na pewno chcesz usunąć kartę \"${card.name}\"? Tej operacji nie można cofnąć.",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = onDelete,
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error
-                    )
-                ) {
-                    Text("Usuń")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteConfirmation = false }) {
-                    Text("Anuluj")
-                }
-            },
-            containerColor = CardBackground,
-            titleContentColor = TextPrimary,
-            textContentColor = TextPrimary
-        )
-    } else {
-        AlertDialog(
-            onDismissRequest = onDismiss,
+    AlertDialog(
+        onDismissRequest = onDismiss,
         icon = {
             Icon(
                 imageVector = Icons.Default.CreditCard,
@@ -332,24 +281,6 @@ fun CardDetailsDialog(
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Card ID
-//                Row(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    horizontalArrangement = Arrangement.SpaceBetween,
-//                    verticalAlignment = Alignment.CenterVertically
-//                ) {
-//                    Text(
-//                        text = "ID karty",
-//                        style = MaterialTheme.typography.bodyMedium,
-//                        color = TextSecondary
-//                    )
-//                    Text(
-//                        text = card.cardGuid,
-//                        style = MaterialTheme.typography.bodyMedium,
-//                        fontWeight = FontWeight.Medium
-//                    )
-//                }
-
                 // Card Type
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -368,75 +299,52 @@ fun CardDetailsDialog(
                     )
                 }
 
-                // Card Status
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Status",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
-                    )
+                // Card Status - Only for physical cards
+                if (card.isPhysical) {
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = if (card.isActive) Icons.Default.CheckCircle else Icons.Default.Cancel,
-                            contentDescription = null,
-                            tint = if (card.isActive) Success else TextSecondary,
-                            modifier = Modifier.size(16.dp)
-                        )
                         Text(
-                            text = if (card.isActive) "Aktywna" else "Nieaktywna",
+                            text = "Status",
                             style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Medium,
-                            color = if (card.isActive) Success else TextSecondary
+                            color = TextSecondary
                         )
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = if (card.isActive) Icons.Default.CheckCircle else Icons.Default.Cancel,
+                                contentDescription = null,
+                                tint = if (card.isActive) Success else TextSecondary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = if (card.isActive) "Aktywna" else "Nieaktywna",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium,
+                                color = if (card.isActive) Success else TextSecondary
+                            )
+                        }
                     }
                 }
 
-                HorizontalDivider(color = TextSecondary.copy(alpha = 0.2f))
+                // Actions - Only for physical cards
+                if (card.isPhysical) {
+                    HorizontalDivider(color = TextSecondary.copy(alpha = 0.2f))
 
-                // Actions
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    // Toggle Status Button
-                    BeerWallButton(
-                        text = if (card.isActive) "Wyłącz kartę" else "Włącz kartę",
-                        onClick = onToggleStatus,
-                        icon = if (card.isActive) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                        modifier = Modifier.height(50.dp)
-                    )
-
-                    // Delete Button (only for physical cards)
-                    if (card.isPhysical) {
-                        OutlinedButton(
-                            onClick = { showDeleteConfirmation = true },
-                            modifier = Modifier.fillMaxWidth().height(50.dp),
-                            shape = ButtonShape,
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = TextSecondary
-                            ),
-                            border = androidx.compose.foundation.BorderStroke(
-                                1.dp,
-                                TextSecondary.copy(alpha = 0.3f)
-                            )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "Usuń kartę",
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        // Toggle Status Button
+                        BeerWallButton(
+                            text = if (card.isActive) "Zablokuj kartę" else "Odblokuj kartę",
+                            onClick = onToggleStatus,
+                            icon = if (card.isActive) Icons.Default.Block else Icons.Default.LockOpen,
+                            modifier = Modifier.height(50.dp)
+                        )
                     }
                 }
             }
@@ -450,8 +358,7 @@ fun CardDetailsDialog(
         iconContentColor = GoldPrimary,
         titleContentColor = TextPrimary,
         textContentColor = TextPrimary
-        )
-    }
+    )
 }
 
 @Preview
