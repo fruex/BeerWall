@@ -92,9 +92,19 @@ fun MainScreen(
     onChangePasswordClick: () -> Unit = {},
     onSupportClick: () -> Unit = {},
     onAboutClick: () -> Unit = {},
+    shouldRefreshBalance: Boolean = false,
+    onRefreshConsumed: () -> Unit = {},
 ) {
     // ViewModels for each tab
     val balanceViewModel = koinViewModel<BalanceViewModel>()
+
+    // Handle external refresh request
+    LaunchedEffect(shouldRefreshBalance) {
+        if (shouldRefreshBalance) {
+            balanceViewModel.refreshBalance()
+            onRefreshConsumed()
+        }
+    }
     val cardsViewModel = koinViewModel<CardsViewModel>()
     val historyViewModel = koinViewModel<HistoryViewModel>()
     val profileViewModel = koinViewModel<ProfileViewModel>()
