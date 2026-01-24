@@ -13,7 +13,8 @@ fun TransactionResponse.toDomain(): Transaction {
         commodityName = commodityName,
         startDateTime = LocalDateTime.parse(startDateTime),
         grossPrice = grossPrice,
-        capacity = capacity
+        capacity = capacity,
+        premisesName = premisesName
     )
 }
 

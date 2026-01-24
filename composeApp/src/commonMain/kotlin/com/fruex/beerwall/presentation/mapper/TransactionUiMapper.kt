@@ -19,7 +19,8 @@ fun Transaction.toUi(): com.fruex.beerwall.ui.models.Transaction {
         commodityName = commodityName,
         formattedTime = formattedTime,
         grossPrice = grossPrice,
-        capacity = capacity
+        capacity = capacity,
+        premisesName = premisesName
     )
 }
 

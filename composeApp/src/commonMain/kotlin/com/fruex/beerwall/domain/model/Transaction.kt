@@ -10,11 +10,13 @@ import kotlinx.datetime.LocalDateTime
  * @property startDateTime Data i czas rozpoczęcia transakcji.
  * @property grossPrice Cena brutto transakcji.
  * @property capacity Ilość (pojemność) związana z transakcją (np. mililitry piwa).
+ * @property premisesName Nazwa lokalu.
  */
 data class Transaction(
     val transactionId: Int,
     val commodityName: String,
     val startDateTime: LocalDateTime,
     val grossPrice: Double,
-    val capacity: Double
+    val capacity: Int,
+    val premisesName: String
 )
