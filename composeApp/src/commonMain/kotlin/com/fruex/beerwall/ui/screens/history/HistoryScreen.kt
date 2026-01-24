@@ -224,9 +224,9 @@ fun HistoryScreenPreview() {
                         ),
                         Transaction(
                             transactionId = 2,
-                            commodityName = "Doładowanie",
-                            grossPrice = 50.00,
-                            capacity = 0,
+                            commodityName = "Piwo ciemne",
+                            grossPrice = -12.50,
+                            capacity = 330,
                             formattedTime = "18:00",
                             premisesName = "Pub Warszawski"
                         )
