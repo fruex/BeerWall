@@ -12,6 +12,7 @@ actual class TokenManagerImpl : TokenManager {
     
     actual override suspend fun saveTokens(tokens: AuthTokens) {
         this.tokens = tokens
+        _isFirstLaunch = false
         // TODO: Implement secure storage for iOS (Keychain)
     }
 
@@ -76,5 +77,17 @@ actual class TokenManagerImpl : TokenManager {
         } else {
             null
         }
+    }
+
+    private var _isFirstLaunch = true
+
+    actual override suspend fun isFirstLaunch(): Boolean {
+        // TODO: Implement persistent storage for iOS
+        return _isFirstLaunch
+    }
+
+    actual override suspend fun markFirstLaunchSeen() {
+        // TODO: Implement persistent storage for iOS
+        _isFirstLaunch = false
     }
 }
