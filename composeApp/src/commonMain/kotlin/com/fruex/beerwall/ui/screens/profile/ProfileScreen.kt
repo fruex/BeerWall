@@ -1,9 +1,10 @@
 package com.fruex.beerwall.ui.screens.profile
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -14,11 +15,14 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.ui.components.AppHeader
+import com.fruex.beerwall.ui.components.BeerMug
 import com.fruex.beerwall.ui.models.UserProfile
 import com.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -26,9 +30,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 /**
  * Ekran profilu użytkownika.
  *
- * Wyświetla dane użytkownika oraz opcje ustawień.
+ * Wyświetla animowany kufel piwa oraz opcje ustawień.
  *
- * @param userProfile Dane profilu użytkownika.
+ * @param userProfile Dane profilu użytkownika (nieużywane w UI, zachowane dla kompatybilności).
+ * @param tiltAngle Kąt nachylenia urządzenia.
  * @param onLogoutClick Callback wylogowania.
  * @param onChangePasswordClick Callback zmiany hasła.
  * @param onSupportClick Callback pomocy.
@@ -37,11 +42,21 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun ProfileScreen(
     userProfile: UserProfile,
+    tiltAngle: Float,
     onLogoutClick: () -> Unit,
     onChangePasswordClick: () -> Unit,
     onSupportClick: () -> Unit,
     onAboutClick: () -> Unit,
 ) {
+    val fillLevel = remember { Animatable(0f) }
+
+    LaunchedEffect(Unit) {
+        fillLevel.animateTo(
+            targetValue = 0.5f,
+            animationSpec = tween(durationMillis = 1500)
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -53,7 +68,7 @@ fun ProfileScreen(
         // Header
         AppHeader()
 
-        // Profile Card
+        // Profile Card (Beer Mug)
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(24.dp),
@@ -67,19 +82,14 @@ fun ProfileScreen(
                     .padding(32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Avatar
-                DefaultAvatar(
-                    initials = userProfile.initials,
-                    modifier = Modifier.size(100.dp)
+                // Beer Mug Animation
+                BeerMug(
+                    fillLevel = fillLevel.value,
+                    tiltAngle = tiltAngle,
+                    modifier = Modifier.size(120.dp, 160.dp)
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
-
-                Text(
-                    text = userProfile.name,
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
-                )
             }
         }
 
@@ -159,38 +169,6 @@ fun ProfileScreen(
 }
 
 @Composable
-fun StatRow(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    label: String,
-    value: String,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = GoldPrimary,
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            color = TextSecondary,
-            modifier = Modifier.weight(1f)
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = GoldPrimary
-        )
-    }
-}
-
-@Composable
 fun SettingsItem(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     label: String,
@@ -227,28 +205,6 @@ fun SettingsItem(
     }
 }
 
-@Composable
-private fun DefaultAvatar(
-    initials: String,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .background(
-                color = GoldPrimary,
-                shape = CircleShape
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = initials,
-            style = MaterialTheme.typography.displayMedium,
-            fontWeight = FontWeight.Bold,
-            color = DarkBackground
-        )
-    }
-}
-
 @Preview
 @Composable
 fun ProfileScreenPreview() {
@@ -257,6 +213,7 @@ fun ProfileScreenPreview() {
             userProfile = UserProfile(
                 name = "Jan Kowalski"
             ),
+            tiltAngle = 0f,
             onLogoutClick = {},
             onChangePasswordClick = {},
             onSupportClick = {},
