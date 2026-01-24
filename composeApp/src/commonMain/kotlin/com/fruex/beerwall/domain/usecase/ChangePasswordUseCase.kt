@@ -8,7 +8,7 @@ import com.fruex.beerwall.domain.repository.AuthRepository
 class ChangePasswordUseCase(
     private val authRepository: AuthRepository
 ) {
-    suspend operator fun invoke(newPassword: String): Result<Unit> {
-        return authRepository.changePassword(newPassword)
+    suspend operator fun invoke(oldPassword: String, newPassword: String): Result<Unit> {
+        return authRepository.changePassword(oldPassword, newPassword)
     }
 }

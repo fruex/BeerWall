@@ -152,8 +152,8 @@ class AuthRepositoryImpl(
         return authApiClient.resetPassword(email, resetCode, newPassword)
     }
 
-    override suspend fun changePassword(newPassword: String): Result<Unit> {
-        return authApiClient.changePassword(newPassword)
+    override suspend fun changePassword(oldPassword: String, newPassword: String): Result<Unit> {
+        return authApiClient.changePassword(oldPassword, newPassword)
     }
 
     override suspend fun refreshToken(): Result<AuthTokens> {
