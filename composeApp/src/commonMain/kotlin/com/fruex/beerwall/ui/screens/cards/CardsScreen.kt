@@ -293,8 +293,38 @@ fun CardDetailsDialog(
                     )
                 }
 
-                // Actions - Only for physical cards
+                // Status and Actions - Only for physical cards
                 if (card.isPhysical) {
+                    // Status Row
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Status",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = TextSecondary
+                        )
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = if (card.isActive) Icons.Default.CheckCircle else Icons.Default.Cancel,
+                                contentDescription = null,
+                                tint = if (card.isActive) Success else TextSecondary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                text = if (card.isActive) "Aktywna" else "Nieaktywna",
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Medium,
+                                color = if (card.isActive) Success else TextSecondary
+                            )
+                        }
+                    }
+
                     HorizontalDivider(color = TextSecondary.copy(alpha = 0.2f))
 
                     // Toggle Status Button
