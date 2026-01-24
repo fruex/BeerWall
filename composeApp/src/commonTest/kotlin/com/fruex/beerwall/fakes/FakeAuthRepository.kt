@@ -5,11 +5,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import com.fruex.beerwall.domain.model.AuthTokens
+import com.fruex.beerwall.domain.model.SessionStatus
 import com.fruex.beerwall.domain.repository.AuthRepository
 
 class FakeAuthRepository : AuthRepository {
     var shouldFail = false
     var failureMessage = "Błąd autoryzacji"
+    var forcedSessionStatus: SessionStatus = SessionStatus.Guest
 
     private val _sessionState = MutableStateFlow(false)
     private val fakeTokens = AuthTokens(
@@ -22,6 +24,11 @@ class FakeAuthRepository : AuthRepository {
     )
 
     override fun observeSessionState(): Flow<Boolean> = _sessionState.asStateFlow()
+
+    override suspend fun checkSessionStatus(): SessionStatus {
+        if (shouldFail) throw Exception(failureMessage)
+        return forcedSessionStatus
+    }
 
     override suspend fun googleSignIn(idToken: String): Result<AuthTokens> {
         if (shouldFail) return Result.failure(Exception(failureMessage))
