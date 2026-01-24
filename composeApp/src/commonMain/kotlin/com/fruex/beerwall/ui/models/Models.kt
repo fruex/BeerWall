@@ -27,7 +27,8 @@ data class Transaction(
     val commodityName: String,
     val formattedTime: String,
     val grossPrice: Double,
-    val capacity: Double
+    val capacity: Int,
+    val premisesName: String
 )
 
 @Immutable
