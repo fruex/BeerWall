@@ -98,14 +98,8 @@ fun AppNavHost(
         }
 
         // Main screen with bottom navigation
-        composable(NavigationDestination.Main.route) { backStackEntry ->
-            val refreshBalance = backStackEntry.savedStateHandle.get<Boolean>("refresh_balance") ?: false
-
+        composable(NavigationDestination.Main.route) {
             MainScreen(
-                shouldRefreshBalance = refreshBalance,
-                onRefreshConsumed = {
-                    backStackEntry.savedStateHandle["refresh_balance"] = false
-                },
                 onAddFundsClick = { premisesId ->
                     navController.navigate("${NavigationDestination.AddFunds.route}/$premisesId") {
                         launchSingleTop = true
@@ -158,7 +152,6 @@ fun AppNavHost(
 
             LaunchedEffect(uiState.isTopUpSuccess) {
                 if (uiState.isTopUpSuccess) {
-                    navController.previousBackStackEntry?.savedStateHandle?.set("refresh_balance", true)
                     navController.popBackStack()
                 }
             }
