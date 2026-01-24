@@ -131,10 +131,6 @@ fun CardsScreen(
             onToggleStatus = {
                 onToggleCardStatus(card.cardGuid)
                 selectedCard = null
-            },
-            onDelete = {
-                onDeleteCard(card.cardGuid)
-                selectedCard = null
             }
         )
     }
@@ -254,8 +250,7 @@ fun CardItemView(
 fun CardDetailsDialog(
     card: UserCard,
     onDismiss: () -> Unit,
-    onToggleStatus: () -> Unit,
-    onDelete: () -> Unit
+    onToggleStatus: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -264,7 +259,7 @@ fun CardDetailsDialog(
                 imageVector = Icons.Default.CreditCard,
                 contentDescription = null,
                 tint = GoldPrimary,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(36.dp)
             )
         },
         title = {
@@ -276,9 +271,10 @@ fun CardDetailsDialog(
         },
         text = {
             Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                // Card Type
+                // Card Type Info
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -286,18 +282,20 @@ fun CardDetailsDialog(
                 ) {
                     Text(
                         text = "Typ",
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodyLarge,
                         color = TextSecondary
                     )
                     Text(
                         text = if (card.isPhysical) "Karta fizyczna" else "Karta wirtualna",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Medium
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium,
+                        color = TextPrimary
                     )
                 }
 
-                // Card Status - Only for physical cards
+                // Status and Actions - Only for physical cards
                 if (card.isPhysical) {
+                    // Status Row
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -305,56 +303,56 @@ fun CardDetailsDialog(
                     ) {
                         Text(
                             text = "Status",
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodyLarge,
                             color = TextSecondary
                         )
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
                                 imageVector = if (card.isActive) Icons.Default.CheckCircle else Icons.Default.Cancel,
                                 contentDescription = null,
                                 tint = if (card.isActive) Success else TextSecondary,
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(20.dp)
                             )
                             Text(
                                 text = if (card.isActive) "Aktywna" else "Nieaktywna",
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = MaterialTheme.typography.bodyLarge,
                                 fontWeight = FontWeight.Medium,
                                 color = if (card.isActive) Success else TextSecondary
                             )
                         }
                     }
-                }
 
-                // Actions - Only for physical cards
-                if (card.isPhysical) {
                     HorizontalDivider(color = TextSecondary.copy(alpha = 0.2f))
 
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        // Toggle Status Button
-                        BeerWallButton(
-                            text = if (card.isActive) "Zablokuj kartę" else "Odblokuj kartę",
-                            onClick = onToggleStatus,
-                            icon = if (card.isActive) Icons.Default.Block else Icons.Default.LockOpen,
-                            modifier = Modifier.height(50.dp)
-                        )
-                    }
+                    // Toggle Status Button
+                    BeerWallButton(
+                        text = if (card.isActive) "Zablokuj kartę" else "Odblokuj kartę",
+                        onClick = onToggleStatus,
+                        icon = if (card.isActive) Icons.Default.Block else Icons.Default.LockOpen,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                    )
                 }
             }
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Zamknij", color = GoldPrimary)
+                Text(
+                    text = "Zamknij",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = GoldPrimary
+                )
             }
         },
         containerColor = CardBackground,
         iconContentColor = GoldPrimary,
         titleContentColor = TextPrimary,
-        textContentColor = TextPrimary
+        textContentColor = TextPrimary,
+        shape = MaterialTheme.shapes.extraLarge
     )
 }
 
@@ -370,8 +368,7 @@ fun CardDetailsDialogPhysicalPreview() {
                 isPhysical = true
             ),
             onDismiss = {},
-            onToggleStatus = {},
-            onDelete = {}
+            onToggleStatus = {}
         )
     }
 }
@@ -388,8 +385,7 @@ fun CardDetailsDialogVirtualPreview() {
                 isPhysical = false
             ),
             onDismiss = {},
-            onToggleStatus = {},
-            onDelete = {}
+            onToggleStatus = {}
         )
     }
 }
