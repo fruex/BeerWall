@@ -2,25 +2,38 @@ package com.fruex.beerwall.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fruex.beerwall.domain.usecase.SendMessageUseCase
+import com.fruex.beerwall.ui.sensor.DeviceOrientationSensor
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import com.fruex.beerwall.domain.usecase.SendMessageUseCase
 
 /**
  * ViewModel odpowiedzialny za profil użytkownika i support.
  *
  * Zarządza:
  * - Wysyłaniem wiadomości do supportu
+ * - Obsługą czujników (tilt)
  */
 class ProfileViewModel(
-    private val sendMessageUseCase: SendMessageUseCase
+    private val sendMessageUseCase: SendMessageUseCase,
+    deviceOrientationSensor: DeviceOrientationSensor
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
+
+    // Expose tilt angle from sensor
+    val tiltAngle: StateFlow<Float> = deviceOrientationSensor.roll
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0f
+        )
 
     fun onSendMessage(message: String) {
         viewModelScope.launch {
