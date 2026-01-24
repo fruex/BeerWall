@@ -189,8 +189,8 @@ fun AppNavHost(
 
             ChangePasswordScreen(
                 onBackClick = { navController.popBackStack() },
-                onChangePassword = { newPassword ->
-                    authViewModel.handleChangePassword(newPassword) {
+                onChangePassword = { oldPassword, newPassword ->
+                    authViewModel.handleChangePassword(oldPassword, newPassword) {
                         navController.popBackStack()
                     }
                 },
