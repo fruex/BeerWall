@@ -155,7 +155,7 @@ fun TransactionItem(transaction: Transaction) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = transaction.formattedTime,
+                    text = "${transaction.premisesName} o ${transaction.formattedTime}",
                     style = MaterialTheme.typography.bodySmall,
                     color = TextSecondary
                 )
@@ -218,15 +218,17 @@ fun HistoryScreenPreview() {
                             transactionId = 1,
                             commodityName = "Piwo Jasne",
                             grossPrice = -12.50,
-                            capacity = 500.00,
-                            formattedTime = "18:30"
+                            capacity = 500,
+                            formattedTime = "18:30",
+                            premisesName = "Pub Warszawski"
                         ),
                         Transaction(
                             transactionId = 2,
                             commodityName = "Doładowanie",
                             grossPrice = 50.00,
-                            capacity = 0.00,
-                            formattedTime = "18:00"
+                            capacity = 0,
+                            formattedTime = "18:00",
+                            premisesName = "Pub Warszawski"
                         )
                     )
                 ),
@@ -237,8 +239,9 @@ fun HistoryScreenPreview() {
                             transactionId = 3,
                             commodityName = "Piwo Ciemne",
                             grossPrice = -15.00,
-                            capacity = 500.00,
-                            formattedTime = "20:15"
+                            capacity = 500,
+                            formattedTime = "20:15",
+                            premisesName = "Pub Krakowski"
                         )
                     )
                 )

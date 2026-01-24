@@ -11,6 +11,7 @@ import com.fruex.beerwall.data.remote.common.ApiEnvelope
  * @property startDateTime Data i czas rozpoczęcia transakcji (ISO 8601).
  * @property grossPrice Cena brutto.
  * @property capacity Ilość/pojemność (np. w mililitrach).
+ * @property premisesName Nazwa lokalu.
  */
 @Serializable
 data class TransactionResponse(
@@ -18,7 +19,8 @@ data class TransactionResponse(
     val commodityName: String,
     val startDateTime: String,
     val grossPrice: Double,
-    val capacity: Double
+    val capacity: Int,
+    val premisesName: String
 )
 
 /**
