@@ -83,7 +83,7 @@ class BlikPaymentTest {
     }
 
     @Test
-    fun `test blik 111 111 - payment success`() = runTest {
+    fun test_blik_111_111_payment_success() = runTest {
         val client = createMockClient { request ->
             val body = request.getBodyAsString()
             if (body.contains("111111")) {
@@ -100,7 +100,7 @@ class BlikPaymentTest {
     }
 
     @Test
-    fun `test blik 222 222 - payment timeout`() = runTest {
+    fun test_blik_222_222_payment_timeout() = runTest {
         val client = createMockClient { request ->
             val body = request.getBodyAsString()
             if (body.contains("222222")) {
@@ -118,7 +118,7 @@ class BlikPaymentTest {
     }
 
     @Test
-    fun `test blik 333 333 - payment rejected (auth failed)`() = runTest {
+    fun test_blik_333_333_payment_rejected_auth_failed() = runTest {
         val client = createMockClient { request ->
             val body = request.getBodyAsString()
             if (body.contains("333333")) {
@@ -136,7 +136,7 @@ class BlikPaymentTest {
     }
 
     @Test
-    fun `test blik 333 334 - payment expired`() = runTest {
+    fun test_blik_333_334_payment_expired() = runTest {
         val client = createMockClient { request ->
             val body = request.getBodyAsString()
             if (body.contains("333334")) {
@@ -154,7 +154,7 @@ class BlikPaymentTest {
     }
 
     @Test
-    fun `test blik 333 335 - payment rejected (code used)`() = runTest {
+    fun test_blik_333_335_payment_rejected_code_used() = runTest {
         val client = createMockClient { request ->
             val body = request.getBodyAsString()
             if (body.contains("333335")) {
@@ -172,7 +172,7 @@ class BlikPaymentTest {
     }
 
     @Test
-    fun `test blik 333 336 - payment error (other)`() = runTest {
+    fun test_blik_333_336_payment_error_other() = runTest {
         val client = createMockClient { request ->
             val body = request.getBodyAsString()
             if (body.contains("333336")) {
@@ -190,7 +190,7 @@ class BlikPaymentTest {
     }
 
     @Test
-    fun `test blik 444 444 - payment error after pending`() = runTest {
+    fun test_blik_444_444_payment_error_after_pending() = runTest {
         val client = createMockClient { request ->
             val body = request.getBodyAsString()
             if (body.contains("444444")) {
