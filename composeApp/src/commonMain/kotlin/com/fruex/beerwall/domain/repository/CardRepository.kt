@@ -3,39 +3,40 @@ package com.fruex.beerwall.domain.repository
 import com.fruex.beerwall.domain.model.Card
 
 /**
- * Interfejs repozytorium do zarządzania kartami użytkownika.
+ * Interfejs repozytorium kart.
  */
 interface CardRepository {
     /**
-     * Pobiera listę kart przypisanych do użytkownika.
+     * Pobiera listę kart użytkownika.
      *
-     * @return [Result] zawierający listę obiektów [Card] lub błąd.
+     * @return [Result] zawierający listę kart lub błąd.
      */
     suspend fun getCards(): Result<List<Card>>
 
     /**
-     * Zmienia status aktywności karty (blokuje/odblokowuje).
+     * Aktualizuje dane karty (status aktywności, opis).
      *
      * @param cardId Identyfikator karty.
+     * @param description Opis karty.
      * @param isActive Nowy status aktywności (true = aktywna).
-     * @return [Result] zawierający nowy status lub błąd.
+     * @return [Result] pusty w przypadku sukcesu lub błąd.
      */
-    suspend fun toggleCardStatus(cardId: String, isActive: Boolean): Result<Boolean>
+    suspend fun updateCard(cardId: String, description: String, isActive: Boolean): Result<Unit>
 
     /**
-     * Przypisuje nową kartę do konta użytkownika.
+     * Przypisuje nową kartę do użytkownika.
      *
-     * @param guid Unikalny identyfikator karty (GUID).
-     * @param description Opis karty nadany przez użytkownika.
-     * @return [Result] typu Unit w przypadku sukcesu lub błąd.
+     * @param guid GUID karty.
+     * @param description Opis karty.
+     * @return [Result] pusty w przypadku sukcesu lub błąd.
      */
     suspend fun assignCard(guid: String, description: String): Result<Unit>
 
     /**
-     * Usuwa kartę z konta użytkownika.
+     * Usuwa kartę użytkownika.
      *
-     * @param guid Unikalny identyfikator karty (GUID) do usunięcia.
-     * @return [Result] typu Unit w przypadku sukcesu lub błąd.
+     * @param guid GUID karty.
+     * @return [Result] pusty w przypadku sukcesu lub błąd.
      */
     suspend fun deleteCard(guid: String): Result<Unit>
 }

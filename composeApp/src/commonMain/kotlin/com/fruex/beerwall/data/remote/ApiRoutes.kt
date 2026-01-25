@@ -14,7 +14,7 @@ object ApiRoutes {
         private const val BASE = "$MOBILE/auth"
         const val GOOGLE_SIGN_IN = "$BASE/googleSignIn"
         const val SIGN_IN = "$BASE/signIn"
-        const val SIGN_UP = "$BASE/signUp"
+        const val REGISTER = "$BASE/register"
         const val FORGOT_PASSWORD = "$BASE/forgotPassword"
         const val RESET_PASSWORD = "$BASE/resetPassword"
         const val REFRESH_TOKEN = "$BASE/refreshToken"

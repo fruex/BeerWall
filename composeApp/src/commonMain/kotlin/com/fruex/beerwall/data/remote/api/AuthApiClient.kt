@@ -1,15 +1,15 @@
 package com.fruex.beerwall.data.remote.api
 
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
 import com.fruex.beerwall.LogSeverity
 import com.fruex.beerwall.data.local.TokenManager
 import com.fruex.beerwall.data.remote.ApiRoutes
 import com.fruex.beerwall.data.remote.BaseApiClient
-import com.fruex.beerwall.log
 import com.fruex.beerwall.data.remote.dto.auth.*
+import com.fruex.beerwall.log
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 
 /**
  * Klient API do obsługi operacji uwierzytelniania.
@@ -100,7 +100,7 @@ class AuthApiClient(
      */
     suspend fun register(email: String, password: String): Result<Unit> = try {
         platform.log("📤 Register Request", this, LogSeverity.INFO)
-        val response = client.post("$baseUrl/${ApiRoutes.Auth.SIGN_UP}") {
+        val response = client.post("$baseUrl/${ApiRoutes.Auth.REGISTER}") {
             contentType(ContentType.Application.Json)
             setBody(RegisterRequest(email, password))
         }

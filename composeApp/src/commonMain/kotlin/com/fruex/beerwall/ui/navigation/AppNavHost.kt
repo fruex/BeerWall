@@ -182,9 +182,8 @@ fun AppNavHost(
                 onBackClick = { navController.popBackStack() },
                 onStartScanning = { cardsViewModel.startNfcListening() },
                 onStopScanning = { cardsViewModel.stopNfcListening() },
-                onCardNameChanged = {},
-                onSaveCard = { name, cardId ->
-                    cardsViewModel.onSaveCard(name, cardId)
+                onSaveCard = { cardId, description ->
+                    cardsViewModel.onSaveCard(cardId, description)
                     navController.popBackStack()
                 }
             )

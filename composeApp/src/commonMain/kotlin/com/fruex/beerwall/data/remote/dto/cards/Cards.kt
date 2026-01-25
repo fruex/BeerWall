@@ -20,31 +20,17 @@ data class CardResponse(
 )
 
 /**
- * DTO żądania aktywacji/dezaktywacji karty.
+ * DTO żądania aktualizacji karty.
  *
  * @property guid Unikalny identyfikator (GUID) karty.
  * @property isActive True, aby aktywować; False, aby dezaktywować.
- * @property description Opis karty (opcjonalny).
+ * @property description Opis karty.
  */
 @Serializable
-data class CardActivationRequest(
+data class UpdateCardRequest(
     val guid: String,
-    val isActive: Boolean,
-    val description: String? = null
-)
-
-/**
- * DTO odpowiedzi na aktywację/dezaktywację karty.
- *
- * @property cardGuid Unikalny identyfikator (GUID) karty.
- * @property isActive Aktualny status aktywności.
- * @property status Opis statusu operacji.
- */
-@Serializable
-data class CardActivationResponse(
-    val cardGuid: String,
-    val isActive: Boolean,
-    val status: String
+    val description: String,
+    val isActive: Boolean
 )
 
 /**

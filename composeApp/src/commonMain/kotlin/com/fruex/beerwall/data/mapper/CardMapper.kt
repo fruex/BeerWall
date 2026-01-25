@@ -9,7 +9,7 @@ import com.fruex.beerwall.data.remote.dto.cards.CardResponse
 fun CardResponse.toDomain(): Card {
     return Card(
         cardGuid = cardGuid,
-        name = description,
+        description = description,
         isActive = isActive,
         isPhysical = isPhysical
     )

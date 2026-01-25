@@ -26,7 +26,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.fruex.beerwall.ui.components.*
+import com.fruex.beerwall.ui.components.BeerWallButton
+import com.fruex.beerwall.ui.components.BeerWallInfoCard
+import com.fruex.beerwall.ui.components.BeerWallTextField
 import com.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -38,8 +40,7 @@ fun AddCardScreen(
     onBackClick: () -> Unit,
     onStartScanning: () -> Unit,
     onStopScanning: () -> Unit,
-    onCardNameChanged: (String) -> Unit,
-    onSaveCard: (name: String, cardId: String) -> Unit,
+    onSaveCard: (cardId: String, description: String) -> Unit,
 ) {
     var cardName by rememberSaveable { mutableStateOf("") }
     val canSave = scannedCardId != null
@@ -80,7 +81,7 @@ fun AddCardScreen(
                         onClick = {
                             scannedCardId?.let { cardId ->
                                 if (canSave) {
-                                    onSaveCard(cardName.ifBlank { "Karta NFC" }, cardId)
+                                    onSaveCard(cardId, cardName.ifBlank { "Karta NFC" })
                                 }
                             }
                         },
@@ -143,7 +144,6 @@ fun AddCardScreen(
                     value = cardName,
                     onValueChange = {
                         cardName = it
-                        onCardNameChanged(it)
                     },
                     placeholder = "np. Moja karta, Karta służbowa",
                     modifier = Modifier.fillMaxWidth(),
@@ -154,7 +154,7 @@ fun AddCardScreen(
                     keyboardActions = KeyboardActions(
                         onDone = {
                             if (scannedCardId != null) {
-                                onSaveCard(cardName.ifBlank { "Karta NFC" }, scannedCardId)
+                                onSaveCard(scannedCardId, cardName.ifBlank { "Karta NFC" })
                             }
                             focusManager.clearFocus()
                         }
@@ -238,8 +238,8 @@ fun AddCardScreen(
                         text = "Zapisz kartę",
                         onClick = {
                             onSaveCard(
-                                cardName.ifBlank { "Karta NFC" },
-                                scannedCardId
+                                scannedCardId,
+                                cardName.ifBlank { "Karta NFC" }
                             )
                         }
                     )
@@ -290,7 +290,6 @@ fun AddCardScreenPreview() {
             onBackClick = {},
             onStartScanning = {},
             onStopScanning = {},
-            onCardNameChanged = {},
             onSaveCard = { _, _ -> }
         )
     }

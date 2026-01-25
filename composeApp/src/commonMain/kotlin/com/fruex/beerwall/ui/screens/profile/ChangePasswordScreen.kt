@@ -9,11 +9,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.fruex.beerwall.domain.validation.PasswordValidator
 import com.fruex.beerwall.ui.components.BeerWallButton
 import com.fruex.beerwall.ui.components.BeerWallTextField
 import com.fruex.beerwall.ui.theme.BeerWallTheme
@@ -32,19 +34,13 @@ fun ChangePasswordScreen(
     var newPassword by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
 
-    // Password Policy:
-    // Min 6 chars, 1 digit, 1 lowercase, 1 uppercase, 1 special char.
-    // Unique chars: >= 1 (always true if length > 0)
-    val hasDigit = newPassword.any { it.isDigit() }
-    val hasLowerCase = newPassword.any { it.isLowerCase() }
-    val hasUpperCase = newPassword.any { it.isUpperCase() }
-    // NonAlphanumeric: anything that is not a letter or digit
-    val hasSpecialChar = newPassword.any { !it.isLetterOrDigit() }
-    val isLengthValid = newPassword.length >= 6
+    // Password Policy using shared validator
+    val passwordValidation = remember(newPassword) { PasswordValidator.validate(newPassword) }
+    
     val passwordsMatch = newPassword.isNotBlank() && newPassword == confirmPassword
     val isOldPasswordValid = oldPassword.isNotEmpty()
 
-    val isValid = isLengthValid && hasDigit && hasLowerCase && hasUpperCase && hasSpecialChar && passwordsMatch && isOldPasswordValid
+    val isValid = passwordValidation.isValid && passwordsMatch && isOldPasswordValid
 
     Scaffold(
         topBar = {
@@ -110,7 +106,7 @@ fun ChangePasswordScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            if (newPassword.isNotEmpty() && !isValid) {
+            if (newPassword.isNotEmpty() && !passwordValidation.isValid) {
                 Text(
                     text = "Hasło musi mieć min. 6 znaków, zawierać małą i wielką literę, cyfrę oraz znak specjalny.",
                     style = MaterialTheme.typography.bodySmall,

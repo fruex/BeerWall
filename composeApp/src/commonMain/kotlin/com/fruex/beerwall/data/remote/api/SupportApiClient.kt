@@ -1,17 +1,17 @@
 package com.fruex.beerwall.data.remote.api
 
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
 import com.fruex.beerwall.LogSeverity
 import com.fruex.beerwall.Platform
 import com.fruex.beerwall.data.local.TokenManager
 import com.fruex.beerwall.data.remote.ApiRoutes
 import com.fruex.beerwall.data.remote.BaseApiClient
-import com.fruex.beerwall.log
-import com.fruex.beerwall.getPlatform
 import com.fruex.beerwall.data.remote.dto.user.FeedbackRequest
-import io.ktor.client.HttpClient
+import com.fruex.beerwall.getPlatform
+import com.fruex.beerwall.log
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 
 /**
  * Klient API do obsługi wsparcia użytkownika.
@@ -50,7 +50,7 @@ class SupportApiClient(
             else -> {
                 val bodyText = response.bodyAsText()
                 platform.log("❌ Send Feedback Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
-                Result.failure(Exception(if (bodyText.isNotBlank()) bodyText else "Error sending feedback: ${response.status}"))
+                Result.failure(Exception(bodyText.ifBlank { "Error sending feedback: ${response.status}" }))
             }
         }
     } catch (e: Exception) {

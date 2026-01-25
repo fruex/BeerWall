@@ -37,7 +37,6 @@ private val InfoCardIconBackground = GoldPrimary.copy(alpha = 0.2f)
  * @param onRefresh Callback odświeżania.
  * @param onAddCardClick Callback do dodawania karty.
  * @param onToggleCardStatus Callback zmiany statusu karty.
- * @param onDeleteCard Callback usuwania karty.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,7 +46,6 @@ fun CardsScreen(
     onRefresh: () -> Unit = {},
     onAddCardClick: () -> Unit,
     onToggleCardStatus: (String) -> Unit,
-    onDeleteCard: (String) -> Unit,
 ) {
     // ⚡ Bolt Optimization: Hoist dialog state out of LazyColumn to prevent
     // creating state per item and decouple dialog from the item lifecycle.
@@ -214,7 +212,7 @@ fun CardItemView(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = card.name,
+                    text = card.description,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -269,7 +267,7 @@ fun CardDetailsDialog(
         },
         title = {
             Text(
-                text = card.name,
+                text = card.description,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold
             )
@@ -368,7 +366,7 @@ fun CardDetailsDialogPhysicalPreview() {
         CardDetailsDialog(
             card = UserCard(
                 cardGuid = "1234567890",
-                name = "Moja karta fizyczna",
+                description = "Moja karta fizyczna",
                 isActive = true,
                 isPhysical = true
             ),
@@ -385,7 +383,7 @@ fun CardDetailsDialogVirtualPreview() {
         CardDetailsDialog(
             card = UserCard(
                 cardGuid = "0987654321",
-                name = "Karta wirtualna",
+                description = "Karta wirtualna",
                 isActive = false,
                 isPhysical = false
             ),
@@ -413,20 +411,19 @@ fun CardsScreenPreview() {
             cards = listOf(
                 UserCard(
                     cardGuid = "0987654321",
-                    name = "Karta wirtualna",
+                    description = "Karta wirtualna",
                     isActive = false,
                     isPhysical = false
                 ),
                 UserCard(
                     cardGuid = "1234567890",
-                    name = "Moja karta",
+                    description = "Moja karta",
                     isActive = true,
                     isPhysical = true
                 )
             ),
             onAddCardClick = {},
-            onToggleCardStatus = {},
-            onDeleteCard = {}
+            onToggleCardStatus = {}
         )
     }
 }
