@@ -36,6 +36,11 @@ fun HistoryScreen(
     isRefreshing: Boolean = false,
     onRefresh: () -> Unit = {}
 ) {
+    // ⚡ Bolt Optimization: Hoist CardColors to prevent allocation per item in LazyColumn
+    val transactionCardColors = CardDefaults.cardColors(
+        containerColor = CardBackground
+    )
+
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
@@ -104,7 +109,10 @@ fun HistoryScreen(
                         key = { it.transactionId },
                         contentType = { "transaction" }
                     ) { transaction ->
-                        TransactionItem(transaction)
+                        TransactionItem(
+                            transaction = transaction,
+                            colors = transactionCardColors
+                        )
                     }
                 }
             }
@@ -113,13 +121,16 @@ fun HistoryScreen(
 }
 
 @Composable
-fun TransactionItem(transaction: Transaction) {
+fun TransactionItem(
+    transaction: Transaction,
+    colors: CardColors = CardDefaults.cardColors(
+        containerColor = CardBackground
+    )
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = CardShape,
-        colors = CardDefaults.cardColors(
-            containerColor = CardBackground
-        )
+        colors = colors
     ) {
         Row(
             modifier = Modifier
