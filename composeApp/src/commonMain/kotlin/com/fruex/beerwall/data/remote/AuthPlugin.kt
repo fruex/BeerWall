@@ -1,9 +1,15 @@
 package com.fruex.beerwall.data.remote
 
+import com.fruex.beerwall.LogSeverity
+import com.fruex.beerwall.data.local.TokenManager
+import com.fruex.beerwall.data.local.currentTimeSeconds
+import com.fruex.beerwall.data.local.decodeTokenPayload
+import com.fruex.beerwall.data.local.ensureTimestamp
+import com.fruex.beerwall.domain.model.AuthTokens
+import com.fruex.beerwall.getPlatform
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
-import io.ktor.client.plugins.api.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -12,14 +18,6 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import com.fruex.beerwall.LogSeverity
-import com.fruex.beerwall.domain.model.AuthTokens
-import com.fruex.beerwall.data.local.TokenManager
-import com.fruex.beerwall.data.local.ensureTimestamp
-import com.fruex.beerwall.data.local.currentTimeSeconds
-import com.fruex.beerwall.data.local.decodeTokenPayload
-import com.fruex.beerwall.getPlatform
-import com.fruex.beerwall.log
 
 /**
  * Ktor plugin for automatic token refresh on 401 Unauthorized.
@@ -40,9 +38,8 @@ class AuthPlugin private constructor(
         private val publicEndpoints = setOf(
             ApiRoutes.Auth.GOOGLE_SIGN_IN,
             ApiRoutes.Auth.SIGN_IN,
-            ApiRoutes.Auth.SIGN_UP,
+            ApiRoutes.Auth.REGISTER,
             ApiRoutes.Auth.FORGOT_PASSWORD,
-            ApiRoutes.Auth.RESET_PASSWORD,
             ApiRoutes.Auth.REFRESH_TOKEN
         )
 

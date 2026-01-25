@@ -1,15 +1,15 @@
 package com.fruex.beerwall.data.remote.api
 
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
 import com.fruex.beerwall.LogSeverity
 import com.fruex.beerwall.data.local.TokenManager
 import com.fruex.beerwall.data.remote.ApiRoutes
 import com.fruex.beerwall.data.remote.BaseApiClient
-import com.fruex.beerwall.log
 import com.fruex.beerwall.data.remote.dto.cards.*
+import com.fruex.beerwall.log
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 
 /**
  * Klient API do obsługi operacji na kartach.
@@ -59,30 +59,29 @@ class CardsApiClient(
     }
 
     /**
-     * Zmienia status aktywności karty.
+     * Aktualizuje dane karty (status, opis).
      *
      * @param cardId ID karty (GUID).
+     * @param description Opis karty.
      * @param isActive Nowy status aktywności (true = aktywna).
-     * @return Result zawierający [CardActivationResponse] lub błąd.
+     * @return Result pusty w przypadku sukcesu lub błąd.
      */
-    suspend fun setCardStatus(cardId: String, isActive: Boolean): Result<CardActivationResponse> = try {
+    suspend fun updateCard(cardId: String, description: String, isActive: Boolean): Result<Unit> = try {
         val response = client.put("$baseUrl/${ApiRoutes.Cards.CARDS}") {
             addAuthToken()
             contentType(ContentType.Application.Json)
-            setBody(CardActivationRequest(guid = cardId, isActive = isActive))
+            setBody(UpdateCardRequest(guid = cardId, isActive = isActive, description = description))
         }
 
         if (response.status == HttpStatusCode.NoContent) {
-            // Swagger zwraca 204 No Content dla PUT /mobile/cards, więc nie ma body.
-            // Zwracamy sztuczny obiekt odpowiedzi, ponieważ metoda oczekuje CardActivationResponse.
-            Result.success(CardActivationResponse(cardId, isActive, "Status updated"))
+            Result.success(Unit)
         } else {
             val bodyText = response.bodyAsText()
-            platform.log("❌ Set Card Status Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
-            Result.failure(Exception("Failed to update card status: ${response.status}"))
+            platform.log("❌ Update Card Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
+            Result.failure(Exception("Failed to update card: ${response.status}"))
         }
     } catch (e: Exception) {
-        platform.log("❌ Set Card Status Exception: ${e.message}", this, LogSeverity.ERROR)
+        platform.log("❌ Update Card Exception: ${e.message}", this, LogSeverity.ERROR)
         Result.failure(e)
     }
 

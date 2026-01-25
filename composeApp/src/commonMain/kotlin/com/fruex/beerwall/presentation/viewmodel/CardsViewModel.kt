@@ -2,18 +2,17 @@ package com.fruex.beerwall.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fruex.beerwall.domain.repository.NfcRepository
+import com.fruex.beerwall.domain.usecase.AssignCardUseCase
+import com.fruex.beerwall.domain.usecase.GetCardsUseCase
+import com.fruex.beerwall.domain.usecase.UpdateCardUseCase
+import com.fruex.beerwall.presentation.mapper.toUi
+import com.fruex.beerwall.ui.models.UserCard
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import com.fruex.beerwall.domain.repository.NfcRepository
-import com.fruex.beerwall.domain.usecase.AssignCardUseCase
-import com.fruex.beerwall.domain.usecase.DeleteCardUseCase
-import com.fruex.beerwall.domain.usecase.GetCardsUseCase
-import com.fruex.beerwall.domain.usecase.ToggleCardStatusUseCase
-import com.fruex.beerwall.presentation.mapper.toUi
-import com.fruex.beerwall.ui.models.UserCard
 
 /**
  * ViewModel odpowiedzialny za zarządzanie kartami NFC użytkownika.
@@ -22,13 +21,11 @@ import com.fruex.beerwall.ui.models.UserCard
  * - Pobieraniem listy kart
  * - Przełączaniem statusu karty (aktywna/nieaktywna)
  * - Dodawaniem nowych kart
- * - Usuwaniem kart
  */
 class CardsViewModel(
     private val getCardsUseCase: GetCardsUseCase,
-    private val toggleCardStatusUseCase: ToggleCardStatusUseCase,
+    private val updateCardUseCase: UpdateCardUseCase,
     private val assignCardUseCase: AssignCardUseCase,
-    private val deleteCardUseCase: DeleteCardUseCase,
     private val nfcRepository: NfcRepository
 ) : ViewModel() {
 
@@ -90,9 +87,10 @@ class CardsViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(errorMessage = null) }
             try {
-                toggleCardStatusUseCase(cardId, !card.isActive)
-                    .onSuccess { isActive ->
-                        updateCardStatus(cardId, isActive)
+                val newStatus = !card.isActive
+                updateCardUseCase(cardId, card.description, newStatus)
+                    .onSuccess {
+                        updateCardStatus(cardId, newStatus)
                     }
                     .onFailure { error ->
                         _uiState.update { it.copy(errorMessage = "Nie udało się zmienić statusu karty: ${error.message}") }
@@ -103,30 +101,11 @@ class CardsViewModel(
         }
     }
 
-    fun onDeleteCard(cardId: String) {
+    fun onSaveCard(cardId: String, description: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true, errorMessage = null) }
             try {
-                deleteCardUseCase(cardId)
-                    .onSuccess {
-                        refreshCards()
-                    }
-                    .onFailure { error ->
-                        _uiState.update { it.copy(errorMessage = "Nie udało się usunąć karty: ${error.message}") }
-                    }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(errorMessage = "Nie udało się usunąć karty: ${e.message}") }
-            } finally {
-                _uiState.update { it.copy(isRefreshing = false) }
-            }
-        }
-    }
-
-    fun onSaveCard(name: String, cardId: String) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isRefreshing = true, errorMessage = null) }
-            try {
-                assignCardUseCase(cardId, name)
+                assignCardUseCase(cardId, description)
                     .onSuccess {
                         refreshCards()
                     }
@@ -148,10 +127,6 @@ class CardsViewModel(
             }
             currentState.copy(cards = updatedCards)
         }
-    }
-
-    fun onClearError() {
-        _uiState.update { it.copy(errorMessage = null) }
     }
 }
 

@@ -1,10 +1,6 @@
 package com.fruex.beerwall.ui.navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.History
@@ -142,7 +138,6 @@ fun MainScreen(
         isCardsRefreshing = cardsState.isRefreshing,
         onCardsRefresh = { cardsViewModel.refreshCards() },
         onToggleCardStatus = { cardsViewModel.onToggleCardStatus(it) },
-        onDeleteCard = { cardsViewModel.onDeleteCard(it) },
         transactionGroups = historyState.transactionGroups,
         isHistoryRefreshing = historyState.isRefreshing,
         onHistoryRefresh = { historyViewModel.refreshHistory() },
@@ -172,7 +167,6 @@ fun MainScreenContent(
     isCardsRefreshing: Boolean,
     onCardsRefresh: () -> Unit,
     onToggleCardStatus: (String) -> Unit,
-    onDeleteCard: (String) -> Unit,
     transactionGroups: List<DailyTransactions>,
     isHistoryRefreshing: Boolean,
     onHistoryRefresh: () -> Unit,
@@ -247,8 +241,7 @@ fun MainScreenContent(
                         isRefreshing = isCardsRefreshing,
                         onRefresh = onCardsRefresh,
                         onAddCardClick = onAddCardClick,
-                        onToggleCardStatus = onToggleCardStatus,
-                        onDeleteCard = onDeleteCard
+                        onToggleCardStatus = onToggleCardStatus
                     )
                 }
                 BottomNavItem.History.route -> {
@@ -309,7 +302,6 @@ fun MainScreenPreview() {
             isCardsRefreshing = false,
             onCardsRefresh = {},
             onToggleCardStatus = {},
-            onDeleteCard = {},
             transactionGroups = emptyList(),
             isHistoryRefreshing = false,
             onHistoryRefresh = {},

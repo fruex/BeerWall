@@ -71,9 +71,8 @@ val useCaseModule = module {
 
     // Cards
     singleOf(::GetCardsUseCase)
-    singleOf(::ToggleCardStatusUseCase)
+    singleOf(::UpdateCardUseCase)
     singleOf(::AssignCardUseCase)
-    singleOf(::DeleteCardUseCase)
 
     // Transactions
     singleOf(::GetTransactionsUseCase)

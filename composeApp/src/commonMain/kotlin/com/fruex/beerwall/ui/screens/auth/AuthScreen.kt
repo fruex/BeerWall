@@ -33,6 +33,7 @@ import beerwall.composeapp.generated.resources.Res
 import beerwall.composeapp.generated.resources.ic_apple
 import beerwall.composeapp.generated.resources.ic_facebook
 import beerwall.composeapp.generated.resources.ic_google
+import com.fruex.beerwall.domain.validation.PasswordValidator
 import com.fruex.beerwall.ui.components.*
 import com.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -73,6 +74,10 @@ fun AuthScreen(
     val focusManager = LocalFocusManager.current
     val emailFocusRequester = remember { FocusRequester() }
     val passwordFocusRequester = remember { FocusRequester() }
+
+    // Walidacja hasła tylko dla rejestracji
+    val passwordValidation = remember(password) { PasswordValidator.validate(password) }
+    val isPasswordValid = if (isLogin) password.isNotBlank() else passwordValidation.isValid
 
     LaunchedEffect(showEmailAuth) {
         if (showEmailAuth) {
@@ -220,7 +225,7 @@ fun AuthScreen(
                         ),
                         keyboardActions = KeyboardActions(
                             onDone = {
-                                if (password.isNotBlank()) {
+                                if (isPasswordValid) {
                                     focusManager.clearFocus()
                                     onAuthClick(email, password)
                                 }
@@ -240,12 +245,22 @@ fun AuthScreen(
                         enabled = !isLoading
                     )
 
+                    // Wyświetlanie wymagań hasła tylko przy rejestracji i gdy hasło nie jest puste
+                    if (!isLogin && password.isNotEmpty() && !passwordValidation.isValid) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Hasło musi mieć min. 6 znaków, zawierać małą i wielką literę, cyfrę oraz znak specjalny.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+
                     Spacer(modifier = Modifier.height(24.dp))
 
                     BeerWallButton(
                         text = if (isLogin) "Zaloguj" else "Utwórz konto",
                         onClick = { onAuthClick(email, password) },
-                        enabled = password.isNotBlank() && !isLoading
+                        enabled = isPasswordValid && !isLoading
                     )
 
                     // Forgot Password Button (only for login)

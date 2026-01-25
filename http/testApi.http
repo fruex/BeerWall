@@ -3,6 +3,18 @@
 @beerwall_apitest_HostAddress = http://api-debug.igibeer.pl:7000
 @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjExMTExMTExLTExMTEtMTExMS0xMTExLTExMTExMTExMTExMSIsImp0aSI6Ijk2NDgwMGJkLTJkNWQtNDFmZC05ZWQxLTMwNDQxODY1YWY5ZiIsInJvbGVzIjoiTW9iaWxlIiwiZmlyc3ROYW1lIjoiTW9iaWxlIiwibGFzdE5hbWUiOiJVc2VyIiwiZXhwIjoxNzY5MzMwMzYxLCJpc3MiOiJJZ2lCZWVyIiwiYXVkIjoiTW9iaWxlIn0.CEfUAcwvpKuBWRW_hBkeGtz9E7scWZP9c4H5dCGmXPY
 
+### Register
+POST {{beerwall_apitest_HostAddress}}/mobile/auth/register
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "adrian.botor1@gmail.com",
+  "password": "Haslo123#",
+  "firstName": "string",
+  "lastName": "string"
+}
+
 ### 1. SignIn - Login i automatycznie zapisz token
 # @name signin
 POST {{beerwall_apitest_HostAddress}}/mobile/auth/signIn
