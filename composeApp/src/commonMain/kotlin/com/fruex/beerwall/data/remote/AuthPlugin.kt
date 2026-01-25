@@ -53,6 +53,8 @@ class AuthPlugin private constructor(
 
         override fun install(plugin: AuthPlugin, scope: HttpClient) {
             val platform = getPlatform()
+            // Validate host to prevent token leakage
+            val apiHost = Url(com.fruex.beerwall.BuildKonfig.BASE_URL).host
 
             scope.plugin(HttpSend).intercept { request ->
                 val initialToken = plugin.tokenManager.getToken()
@@ -62,8 +64,11 @@ class AuthPlugin private constructor(
                     request.url.encodedPath.endsWith(endpoint)
                 }
 
-                // Add token to request only if not a public endpoint
-                if (!isPublicEndpoint) {
+                // Check if the request is to our API host
+                val isApiHost = request.url.host == apiHost
+
+                // Add token to request only if it is API host AND not a public endpoint
+                if (isApiHost && !isPublicEndpoint) {
                     initialToken?.let { token ->
                         request.headers[HttpHeaders.Authorization] = "Bearer $token"
                     }
