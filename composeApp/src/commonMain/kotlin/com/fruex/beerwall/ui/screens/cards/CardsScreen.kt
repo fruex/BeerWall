@@ -230,6 +230,11 @@ fun CardItemView(
                             tint = if (card.isActive) Success else TextSecondary,
                             modifier = Modifier.size(16.dp)
                         )
+                        Text(
+                            text = if (card.isActive) "Aktywna" else "Nieaktywna",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (card.isActive) Success else TextSecondary
+                        )
                     }
                 }
             }
