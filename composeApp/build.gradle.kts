@@ -110,10 +110,26 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = if (keystoreProperties.containsKey("storeFile")) rootProject.file(keystoreProperties["storeFile"]) else rootProject.file(System.getenv("STORE_FILE") ?: "shared/release.keystore")
-            storePassword = keystoreProperties["storePassword"] as? String ?: System.getenv("RELEASE_STORE_PASSWORD")
-            keyAlias = keystoreProperties["keyAlias"] as? String ?: System.getenv("RELEASE_KEY_ALIAS")
-            keyPassword = keystoreProperties["keyPassword"] as? String ?: System.getenv("RELEASE_KEY_PASSWORD")
+            val envStoreFile = System.getenv("STORE_FILE")
+            val propStoreFile = keystoreProperties["storeFile"] as? String
+
+            if (propStoreFile != null && rootProject.file(propStoreFile).exists()) {
+                storeFile = rootProject.file(propStoreFile)
+                storePassword = keystoreProperties["storePassword"] as String
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+            } else if (envStoreFile != null && rootProject.file(envStoreFile).exists()) {
+                 storeFile = rootProject.file(envStoreFile)
+                 storePassword = System.getenv("RELEASE_STORE_PASSWORD")
+                 keyAlias = System.getenv("RELEASE_KEY_ALIAS")
+                 keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+            } else {
+                // Fallback to debug keystore for safe local release builds
+                storeFile = rootProject.file("shared/debug.keystore")
+                storePassword = "android"
+                keyAlias = "androiddebugkey"
+                keyPassword = "android"
+            }
         }
     }
 
@@ -156,4 +172,3 @@ buildkonfig {
         buildConfigField(com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING, "BASE_URL", "https://api.igibeer.pl")
     }
 }
-

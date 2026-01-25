@@ -28,9 +28,13 @@ jobs:
     - name: Decode Keystore
       run: |
         mkdir -p shared
+        echo "${{ secrets.DEBUG_KEYSTORE_BASE64_FROM_MAC }}" | base64 --decode > shared/debug.keystore
         if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
            echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 --decode > shared/release.keystore
         fi
+      env:
+        DEBUG_KEYSTORE_BASE64_FROM_MAC: ${{ secrets.DEBUG_KEYSTORE_BASE64_FROM_MAC }}
+        RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -40,6 +44,7 @@ jobs:
         RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
         RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
         RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        STORE_FILE: shared/release.keystore
       run: |
         if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
            ./gradlew :composeApp:assembleRelease :composeApp:bundleRelease -PversionName=${{ github.ref_name }}

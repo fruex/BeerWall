@@ -53,7 +53,7 @@ object HttpClientFactory {
                     platform.log(message, "KtorClient", LogSeverity.DEBUG)
                 }
             }
-            level = LogLevel.HEADERS
+            level = LogLevel.ALL
             filter { request ->
                 request.url.host.contains("igibeer")
             }
