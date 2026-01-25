@@ -3,6 +3,7 @@ package com.fruex.beerwall.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fruex.beerwall.domain.model.AuthTokens
+import com.fruex.beerwall.domain.model.SessionStatus
 import com.fruex.beerwall.auth.GoogleAuthProvider
 import com.fruex.beerwall.data.local.TokenManager
 import com.fruex.beerwall.domain.usecase.*
@@ -67,15 +68,45 @@ class AuthViewModel(
         viewModelScope.launch {
             try {
                 checkSessionUseCase()
-                    .onSuccess { isLoggedIn ->
-                        _uiState.update {
-                            it.copy(
-                                isLoggedIn = isLoggedIn,
-                                isCheckingSession = false
-                            )
-                        }
-                        if (isLoggedIn) {
-                            loadUserProfile()
+                    .onSuccess { status ->
+                        when (status) {
+                            SessionStatus.Authenticated -> {
+                                tokenManager.markFirstLaunchSeen()
+                                _uiState.update {
+                                    it.copy(
+                                        isLoggedIn = true,
+                                        isCheckingSession = false
+                                    )
+                                }
+                                loadUserProfile()
+                            }
+                            SessionStatus.Expired -> {
+                                _uiState.update {
+                                    it.copy(
+                                        isLoggedIn = false,
+                                        isCheckingSession = false,
+                                        errorMessage = "Sesja wygasła. Zaloguj się ponownie."
+                                    )
+                                }
+                            }
+                            SessionStatus.FirstLaunch -> {
+                                tokenManager.markFirstLaunchSeen()
+                                _uiState.update {
+                                    it.copy(
+                                        isLoggedIn = false,
+                                        isCheckingSession = false,
+                                        errorMessage = "Witaj w aplikacji!"
+                                    )
+                                }
+                            }
+                            SessionStatus.Guest -> {
+                                _uiState.update {
+                                    it.copy(
+                                        isLoggedIn = false,
+                                        isCheckingSession = false
+                                    )
+                                }
+                            }
                         }
                     }
                     .onFailure {
@@ -174,11 +205,11 @@ class AuthViewModel(
         }
     }
 
-    fun handleChangePassword(newPassword: String, onSuccess: () -> Unit) {
+    fun handleChangePassword(oldPassword: String, newPassword: String, onSuccess: () -> Unit) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             try {
-                changePasswordUseCase(newPassword)
+                changePasswordUseCase(oldPassword, newPassword)
                     .onSuccess {
                         onSuccess()
                     }

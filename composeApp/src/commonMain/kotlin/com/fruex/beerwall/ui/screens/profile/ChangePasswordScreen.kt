@@ -24,10 +24,11 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun ChangePasswordScreen(
     onBackClick: () -> Unit,
-    onChangePassword: (newPassword: String) -> Unit,
+    onChangePassword: (oldPassword: String, newPassword: String) -> Unit,
     isLoading: Boolean = false,
     errorMessage: String? = null
 ) {
+    var oldPassword by rememberSaveable { mutableStateOf("") }
     var newPassword by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
 
@@ -41,8 +42,9 @@ fun ChangePasswordScreen(
     val hasSpecialChar = newPassword.any { !it.isLetterOrDigit() }
     val isLengthValid = newPassword.length >= 6
     val passwordsMatch = newPassword.isNotBlank() && newPassword == confirmPassword
+    val isOldPasswordValid = oldPassword.isNotEmpty()
 
-    val isValid = isLengthValid && hasDigit && hasLowerCase && hasUpperCase && hasSpecialChar && passwordsMatch
+    val isValid = isLengthValid && hasDigit && hasLowerCase && hasUpperCase && hasSpecialChar && passwordsMatch && isOldPasswordValid
 
     Scaffold(
         topBar = {
@@ -77,12 +79,20 @@ fun ChangePasswordScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "Wprowadź nowe hasło",
+                text = "Wprowadź stare i nowe hasło",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(8.dp))
+
+            BeerWallTextField(
+                value = oldPassword,
+                onValueChange = { oldPassword = it },
+                placeholder = "Stare hasło",
+                isPassword = true,
+                modifier = Modifier.fillMaxWidth()
+            )
 
             BeerWallTextField(
                 value = newPassword,
@@ -120,7 +130,7 @@ fun ChangePasswordScreen(
 
             BeerWallButton(
                 text = if (isLoading) "Zmieniam..." else "Zmień hasło",
-                onClick = { onChangePassword(newPassword) },
+                onClick = { onChangePassword(oldPassword, newPassword) },
                 enabled = isValid && !isLoading
             )
         }
@@ -133,7 +143,7 @@ fun ChangePasswordScreenPreview() {
     BeerWallTheme {
         ChangePasswordScreen(
             onBackClick = {},
-            onChangePassword = { _ -> }
+            onChangePassword = { _, _ -> }
         )
     }
 }

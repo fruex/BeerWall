@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.ui.components.BeerWallButton
 import com.fruex.beerwall.ui.theme.BeerWallTheme
@@ -24,11 +25,38 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun SupportScreen(
     onBackClick: () -> Unit,
     onSendMessage: (message: String) -> Unit,
+    isLoading: Boolean = false,
+    errorMessage: String? = null,
+    successMessage: String? = null,
+    onClearState: () -> Unit = {}
 ) {
     var message by rememberSaveable { mutableStateOf("") }
-    var isSending by remember { mutableStateOf(false) }
-    var showSuccessMessage by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            onClearState()
+        }
+    }
+
+    LaunchedEffect(successMessage) {
+        successMessage?.let {
+            message = "" // Clear input field
+            // Show snackbar, wait, then navigate back
+            val job = launch {
+                snackbarHostState.showSnackbar(it)
+            }
+            delay(2000)
+            job.cancel() // Dismiss snackbar if still visible
+            onBackClick()
+        }
+    }
+
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -52,6 +80,7 @@ fun SupportScreen(
                 )
             )
         },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         containerColor = DarkBackground
     ) { paddingValues ->
         Column(
@@ -68,29 +97,22 @@ fun SupportScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            if (showSuccessMessage) {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
-                ) {
-                    Text(
-                        text = "✓ Wiadomość została wysłana do zespołu wsparcia BeerWall",
-                        modifier = Modifier.padding(16.dp),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
-            }
-
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = message,
-                onValueChange = { message = it },
+                onValueChange = {
+                    if (it.length <= 200) message = it
+                },
                 placeholder = {
                     Text("Opisz swój problem lub pytanie...")
+                },
+                supportingText = {
+                    Text(
+                        text = "${message.length}/200",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.End
+                    )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -99,27 +121,19 @@ fun SupportScreen(
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
-                )
+                ),
+                enabled = !isLoading
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             BeerWallButton(
-                text = if (isSending) "Wysyłanie..." else "Wyślij wiadomość",
+                text = if (isLoading) "Wysyłanie..." else "Wyślij wiadomość",
                 onClick = {
-                    scope.launch {
-                        isSending = true
-                        showSuccessMessage = false
-                        delay(1500)
-                        onSendMessage(message)
-                        message = ""
-                        isSending = false
-                        showSuccessMessage = true
-                        delay(5000)
-                        showSuccessMessage = false
-                    }
+                    onSendMessage(message)
                 },
-                enabled = message.isNotBlank() && !isSending,
+                enabled = message.isNotBlank() && !isLoading,
+                isLoading = isLoading,
                 icon = Icons.AutoMirrored.Filled.Send
             )
         }
