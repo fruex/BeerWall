@@ -1,7 +1,7 @@
 #@beerwall_apitest_HostAddress = http://localhost:5254/api
 #@beerwall_apitest_HostAddress = https://beerwall-apitest-cjcfgfehh9grhne5.polandcentral-01.azurewebsites.net/api
 @beerwall_apitest_HostAddress = http://api-debug.igibeer.pl:7000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjExMTExMTExLTExMTEtMTExMS0xMTExLTExMTExMTExMTExMSIsImp0aSI6IjM3OTVlMmE3LTE3YmItNGM1My1iODg1LTQ1OGIxMmIzZWFjMiIsInJvbGVzIjoiTW9iaWxlIiwiZmlyc3ROYW1lIjoiTW9iaWxlIiwibGFzdE5hbWUiOiJVc2VyIiwiZXhwIjoxNzY4Mzg5NzE0LCJpc3MiOiJJZ2lCZWVyIiwiYXVkIjoiTW9iaWxlIn0.73zHJL5mmCU89bz9yjxziDiOsoYuWTshAUHNSVehAvc
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjExMTExMTExLTExMTEtMTExMS0xMTExLTExMTExMTExMTExMSIsImp0aSI6Ijk2NDgwMGJkLTJkNWQtNDFmZC05ZWQxLTMwNDQxODY1YWY5ZiIsInJvbGVzIjoiTW9iaWxlIiwiZmlyc3ROYW1lIjoiTW9iaWxlIiwibGFzdE5hbWUiOiJVc2VyIiwiZXhwIjoxNzY5MzMwMzYxLCJpc3MiOiJJZ2lCZWVyIiwiYXVkIjoiTW9iaWxlIn0.CEfUAcwvpKuBWRW_hBkeGtz9E7scWZP9c4H5dCGmXPY
 
 ### 1. SignIn - Login i automatycznie zapisz token
 # @name signin
@@ -64,8 +64,19 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "cardId": "550e8400-e29b-41d4-a716-446655440000",
+  "cardId": "36373864-6136-3661-2d31-6135302d3465",
   "activate": true
+}
+
+### 5. AssignCard
+PUT {{beerwall_apitest_HostAddress}}/mobile/cards/assign
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "cardId": "36373864-6136-3661-2d31-6135302d3465",
+  "description": "Karta NFC"
 }
 
 ### 6. GetHistory - Pobierz historię transakcji
