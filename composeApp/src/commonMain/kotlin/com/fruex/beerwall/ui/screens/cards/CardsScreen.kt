@@ -202,7 +202,7 @@ fun CardItemView(
             ) {
                 Icon(
                     imageVector = Icons.Default.CreditCard,
-                    contentDescription = null,
+                    contentDescription = if (card.isPhysical) "Karta fizyczna" else "Karta wirtualna",
                     tint = if (card.isPhysical) DarkBackground else GoldPrimary,
                     modifier = Modifier.size(28.dp)
                 )
@@ -226,7 +226,7 @@ fun CardItemView(
                     ) {
                         Icon(
                             imageVector = if (card.isActive) Icons.Default.CheckCircle else Icons.Default.Cancel,
-                            contentDescription = null,
+                            contentDescription = if (card.isActive) "Status: Aktywna" else "Status: Zablokowana",
                             tint = if (card.isActive) Success else TextSecondary,
                             modifier = Modifier.size(16.dp)
                         )
@@ -257,7 +257,7 @@ fun CardDetailsDialog(
         icon = {
             Icon(
                 imageVector = Icons.Default.CreditCard,
-                contentDescription = null,
+                contentDescription = "Szczegóły karty",
                 tint = GoldPrimary,
                 modifier = Modifier.size(36.dp)
             )
