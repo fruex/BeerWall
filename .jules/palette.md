@@ -5,3 +5,7 @@
 ## 2026-01-23 - Enhanced Keyboard Interactions
 **Learning:** Users naturally expect the "Done" key on the soft keyboard to submit simple forms. Explicitly handling `ImeAction.Done` via `KeyboardActions` creates a seamless flow, removing the friction of manually hiding the keyboard to find a submit button.
 **Action:** Always configure `keyboardOptions` (especially `ImeAction`) and `keyboardActions` for text inputs, ensuring the "Enter" key performs the primary positive action.
+
+## 2026-01-25 - Icon-Only Status Indicators
+**Learning:** In `CardItemView`, status icons (check/cancel) were displayed without any accompanying text to prevent layout overflow, but lacked `contentDescription`, making them invisible to screen readers.
+**Action:** Always verify that icon-only status indicators have dynamic `contentDescription`s reflecting their state (e.g., "Active" vs "Blocked").
