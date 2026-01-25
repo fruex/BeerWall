@@ -89,4 +89,36 @@ class AuthPluginTest {
         assertEquals("Bearer $VALID_REFRESH_TOKEN", capturedAuthorizationHeader,
             "AuthPlugin overwrote the Refresh Token with the Access Token!")
     }
+
+    @Test
+    fun `external domain request should NOT have Authorization header attached`() = runTest {
+        var capturedAuthorizationHeader: String? = null
+
+        val client = createMockClientWithAuthPlugin { request ->
+            capturedAuthorizationHeader = request.headers[HttpHeaders.Authorization]
+            respond("{}", HttpStatusCode.OK)
+        }
+
+        // Request to an external domain
+        client.get("https://google.com/search")
+
+        assertEquals(null, capturedAuthorizationHeader, "Auth token leaked to external domain!")
+    }
+
+    @Test
+    fun `api domain request should have Authorization header attached`() = runTest {
+        var capturedAuthorizationHeader: String? = null
+
+        val client = createMockClientWithAuthPlugin { request ->
+            capturedAuthorizationHeader = request.headers[HttpHeaders.Authorization]
+            respond("{}", HttpStatusCode.OK)
+        }
+
+        // Request to API domain (but not a public endpoint)
+        // Ensure path does NOT match public endpoints
+        val apiUrl = "${com.fruex.beerwall.BuildKonfig.BASE_URL}/mobile/users/profile"
+        client.get(apiUrl)
+
+        assertEquals("Bearer $EXPIRED_ACCESS_TOKEN", capturedAuthorizationHeader, "Auth token missing for API domain!")
+    }
 }
