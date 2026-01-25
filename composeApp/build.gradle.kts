@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import java.util.Properties
 import java.io.FileInputStream
+import java.util.*
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -109,6 +109,12 @@ android {
     }
 
     signingConfigs {
+        getByName("debug") {
+            storeFile = rootProject.file("shared/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
         create("release") {
             val envStoreFile = System.getenv("STORE_FILE")
             val propStoreFile = keystoreProperties["storeFile"] as? String
