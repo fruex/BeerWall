@@ -60,11 +60,10 @@ class BalanceApiClient(
             setBody(TopUpRequest(premisesId, paymentMethodId, balance, authorizationCode))
         }
 
-        when (response.status) {
-            HttpStatusCode.NoContent -> {
-                platform.log("✅ TopUp Success", this, LogSeverity.INFO)
-                Result.success(Unit)
-            }
+        if (response.status.isSuccess()) {
+            platform.log("✅ TopUp Success", this, LogSeverity.INFO)
+            Result.success(Unit)
+        } else when (response.status) {
             HttpStatusCode.Unauthorized -> {
                 platform.log("❌ TopUp Unauthorized", this, LogSeverity.ERROR)
                 Result.failure(Exception("Unauthorized"))

@@ -119,6 +119,19 @@ fun MainScreen(
         }
     }
 
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner, selectedTab) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME && selectedTab == BottomNavItem.Balance.route) {
+                balanceViewModel.refreshBalance()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
     MainScreenContent(
         selectedTab = selectedTab,
         onTabSelected = { selectedTab = it },

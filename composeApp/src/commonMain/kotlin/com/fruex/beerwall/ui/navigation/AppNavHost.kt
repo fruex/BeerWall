@@ -1,6 +1,7 @@
 package com.fruex.beerwall.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -149,13 +150,23 @@ fun AppNavHost(
             val uiState by balanceViewModel.uiState.collectAsState()
             val premises = uiState.balances.find { it.premisesId == premisesId }
 
+            LaunchedEffect(uiState.isTopUpSuccess) {
+                if (uiState.isTopUpSuccess) {
+                    balanceViewModel.onTopUpSuccessConsumed()
+                    navController.popBackStack()
+                }
+            }
+
             AddFundsScreen(
                 availablePaymentMethods = uiState.paymentMethods,
                 onBackClick = { navController.popBackStack() },
                 onAddFunds = { paymentMethodId, balance, blikCode ->
                     balanceViewModel.onAddFunds(premisesId, paymentMethodId, balance, blikCode)
-                    navController.popBackStack()
                 },
+                onCancelTopUp = {
+                    balanceViewModel.onCancelTopUp()
+                },
+                isLoading = uiState.isLoading,
                 premisesName = premises?.premisesName
             )
         }
@@ -186,8 +197,8 @@ fun AppNavHost(
 
             ChangePasswordScreen(
                 onBackClick = { navController.popBackStack() },
-                onChangePassword = { newPassword ->
-                    authViewModel.handleChangePassword(newPassword) {
+                onChangePassword = { oldPassword, newPassword ->
+                    authViewModel.handleChangePassword(oldPassword, newPassword) {
                         navController.popBackStack()
                     }
                 },
@@ -198,12 +209,18 @@ fun AppNavHost(
 
         composable(NavigationDestination.Support.route) {
             val profileViewModel = koinViewModel<ProfileViewModel>()
+            val uiState by profileViewModel.uiState.collectAsState()
 
             SupportScreen(
                 onBackClick = { navController.popBackStack() },
                 onSendMessage = { message ->
                     profileViewModel.onSendMessage(message)
-                    navController.popBackStack()
+                },
+                isLoading = uiState.isLoading,
+                errorMessage = uiState.errorMessage,
+                successMessage = uiState.successMessage,
+                onClearState = {
+                    profileViewModel.onClearMessages()
                 }
             )
         }

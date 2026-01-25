@@ -172,4 +172,3 @@ buildkonfig {
         buildConfigField(com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING, "BASE_URL", "https://api.igibeer.pl")
     }
 }
-

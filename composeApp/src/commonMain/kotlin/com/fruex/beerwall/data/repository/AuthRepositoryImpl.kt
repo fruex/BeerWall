@@ -3,6 +3,7 @@ package com.fruex.beerwall.data.repository
 import kotlinx.coroutines.flow.Flow
 import com.fruex.beerwall.LogSeverity
 import com.fruex.beerwall.domain.model.AuthTokens
+import com.fruex.beerwall.domain.model.SessionStatus
 import com.fruex.beerwall.auth.ISessionManager
 import com.fruex.beerwall.data.local.TokenManager
 import com.fruex.beerwall.data.local.ensureTimestamp
@@ -25,6 +26,45 @@ class AuthRepositoryImpl(
     private val sessionManager: ISessionManager
 ) : AuthRepository {
     private val platform = getPlatform()
+
+    override suspend fun checkSessionStatus(): SessionStatus {
+        val refreshToken = tokenManager.getRefreshToken()
+
+        // Brak tokenów - użytkownik niezalogowany
+        if (refreshToken == null) {
+            val isFirstLaunch = tokenManager.isFirstLaunch()
+            return if (isFirstLaunch) {
+                SessionStatus.FirstLaunch
+            } else {
+                SessionStatus.Guest
+            }
+        }
+
+        // Sprawdź czy refresh token nie wygasł
+        if (tokenManager.isRefreshTokenExpired()) {
+            platform.log("Refresh token expired - session expired", this, LogSeverity.INFO)
+            tokenManager.clearTokens()
+            return SessionStatus.Expired
+        }
+
+        // Jeśli access token wygasł ale refresh token jest ważny, spróbuj odświeżyć
+        if (tokenManager.isTokenExpired()) {
+            val refreshResult = refreshToken()
+            if (refreshResult.isSuccess) {
+                sessionManager.setLoggedIn(true)
+                return SessionStatus.Authenticated
+            } else {
+                // Odświeżanie nie powiodło się (np. token unieważniony po stronie serwera)
+                platform.log("Token refresh failed during session check", this, LogSeverity.WARN)
+                tokenManager.clearTokens()
+                return SessionStatus.Expired
+            }
+        }
+
+        // Wszystko ok
+        sessionManager.setLoggedIn(true)
+        return SessionStatus.Authenticated
+    }
 
     override fun observeSessionState(): Flow<Boolean> = sessionManager.isUserLoggedIn
 
@@ -112,8 +152,8 @@ class AuthRepositoryImpl(
         return authApiClient.resetPassword(email, resetCode, newPassword)
     }
 
-    override suspend fun changePassword(newPassword: String): Result<Unit> {
-        return authApiClient.changePassword(newPassword)
+    override suspend fun changePassword(oldPassword: String, newPassword: String): Result<Unit> {
+        return authApiClient.changePassword(oldPassword, newPassword)
     }
 
     override suspend fun refreshToken(): Result<AuthTokens> {

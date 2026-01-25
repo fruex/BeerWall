@@ -21,6 +21,8 @@ interface TokenManager {
     suspend fun getRefreshTokenExpires(): Long?
     suspend fun clearTokens()
     suspend fun getUserProfile(): UserProfile?
+    suspend fun isFirstLaunch(): Boolean
+    suspend fun markFirstLaunchSeen()
 }
 
 /**
@@ -36,6 +38,8 @@ expect class TokenManagerImpl : TokenManager {
     override suspend fun getRefreshTokenExpires(): Long?
     override suspend fun clearTokens()
     override suspend fun getUserProfile(): UserProfile?
+    override suspend fun isFirstLaunch(): Boolean
+    override suspend fun markFirstLaunchSeen()
 }
 
 /**
