@@ -33,6 +33,7 @@ import beerwall.composeapp.generated.resources.Res
 import beerwall.composeapp.generated.resources.ic_apple
 import beerwall.composeapp.generated.resources.ic_facebook
 import beerwall.composeapp.generated.resources.ic_google
+import com.fruex.beerwall.domain.validation.EmailValidator
 import com.fruex.beerwall.domain.validation.PasswordValidator
 import com.fruex.beerwall.ui.components.*
 import com.fruex.beerwall.ui.theme.*
@@ -78,6 +79,9 @@ fun AuthScreen(
     // Walidacja hasła tylko dla rejestracji
     val passwordValidation = remember(password) { PasswordValidator.validate(password) }
     val isPasswordValid = if (isLogin) password.isNotBlank() else passwordValidation.isValid
+
+    // Walidacja email
+    val isEmailValid = remember(email) { EmailValidator.validate(email) }
 
     LaunchedEffect(showEmailAuth) {
         if (showEmailAuth) {
@@ -193,7 +197,7 @@ fun AuthScreen(
                     ),
                     keyboardActions = KeyboardActions(
                         onNext = {
-                            if (email.isNotBlank()) {
+                            if (isEmailValid) {
                                 showPasswordStep = true
                             }
                         }
@@ -203,13 +207,22 @@ fun AuthScreen(
                     enabled = !isLoading && !showPasswordStep
                 )
 
+                if (email.isNotEmpty() && !isEmailValid) {
+                    Text(
+                        text = "Niepoprawny format adresu e-mail",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+
                 if (!showPasswordStep) {
                     Spacer(modifier = Modifier.height(24.dp))
 
                     BeerWallButton(
                         text = if (isLogin) "Zaloguj" else "Dalej",
                         onClick = { showPasswordStep = true },
-                        enabled = email.isNotBlank() && !isLoading
+                        enabled = isEmailValid && !isLoading
                     )
                 } else {
                     Spacer(modifier = Modifier.height(16.dp))
@@ -260,7 +273,7 @@ fun AuthScreen(
                     BeerWallButton(
                         text = if (isLogin) "Zaloguj" else "Utwórz konto",
                         onClick = { onAuthClick(email, password) },
-                        enabled = isPasswordValid && !isLoading
+                        enabled = isPasswordValid && isEmailValid && !isLoading
                     )
 
                     // Forgot Password Button (only for login)
