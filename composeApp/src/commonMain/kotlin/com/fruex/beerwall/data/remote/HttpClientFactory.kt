@@ -6,6 +6,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
+import com.fruex.beerwall.BuildKonfig
 import com.fruex.beerwall.LogSeverity
 import com.fruex.beerwall.data.local.TokenManager
 import com.fruex.beerwall.getPlatform
@@ -47,17 +48,19 @@ object HttpClientFactory {
             }
         }
 
-        install(Logging) {
-            logger = object : Logger {
-                override fun log(message: String) {
-                    platform.log(message, "KtorClient", LogSeverity.DEBUG)
+        if (BuildKonfig.DEBUG) {
+            install(Logging) {
+                logger = object : Logger {
+                    override fun log(message: String) {
+                        platform.log(message, "KtorClient", LogSeverity.DEBUG)
+                    }
                 }
+                level = LogLevel.ALL
+                filter { request ->
+                    request.url.host.contains("igibeer")
+                }
+                sanitizeHeader { header -> header == io.ktor.http.HttpHeaders.Authorization }
             }
-            level = LogLevel.ALL
-            filter { request ->
-                request.url.host.contains("igibeer")
-            }
-            sanitizeHeader { header -> header == io.ktor.http.HttpHeaders.Authorization }
         }
     }
 }

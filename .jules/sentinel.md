@@ -17,3 +17,8 @@
 **Vulnerability:** HTTP clients lacked timeout configuration, potentially leading to indefinite hanging (DoS risk) if the server is unreachable.
 **Learning:** Default Ktor client timeouts are often infinite or very long. Explicit configuration is needed for resilience.
 **Prevention:** Install `HttpTimeout` plugin with reasonable values in the central `HttpClientFactory`.
+
+## 2026-01-26 - [Unrestricted HTTP Logging in Production]
+**Vulnerability:** Ktor HTTP Client logging (`LogLevel.ALL`) was enabled unconditionally, causing sensitive data (passwords, tokens) to be written to system logs (Logcat) in release builds.
+**Learning:** Ktor's `install(Logging)` does not automatically respect build types. It must be explicitly wrapped in a debug check.
+**Prevention:** Always condition logging plugins on `BuildKonfig.DEBUG` or `BuildConfig.DEBUG`.
