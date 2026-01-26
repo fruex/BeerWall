@@ -4,10 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fruex.beerwall.domain.model.AuthTokens
 import com.fruex.beerwall.domain.model.SessionStatus
-import com.fruex.beerwall.auth.GoogleAuthProvider
-import com.fruex.beerwall.data.local.TokenManager
+import com.fruex.beerwall.domain.auth.GoogleAuthProvider
 import com.fruex.beerwall.domain.usecase.*
-import com.fruex.beerwall.ui.models.UserProfile
+import com.fruex.beerwall.domain.model.UserProfile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,7 +33,8 @@ class AuthViewModel(
     private val checkSessionUseCase: CheckSessionUseCase,
     private val observeSessionStateUseCase: ObserveSessionStateUseCase,
     private val logoutUseCase: LogoutUseCase,
-    private val tokenManager: TokenManager
+    private val getUserProfileUseCase: GetUserProfileUseCase,
+    private val markFirstLaunchSeenUseCase: MarkFirstLaunchSeenUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -71,7 +71,7 @@ class AuthViewModel(
                     .onSuccess { status ->
                         when (status) {
                             SessionStatus.Authenticated -> {
-                                tokenManager.markFirstLaunchSeen()
+                                markFirstLaunchSeenUseCase()
                                 _uiState.update {
                                     it.copy(
                                         isLoggedIn = true,
@@ -90,7 +90,7 @@ class AuthViewModel(
                                 }
                             }
                             SessionStatus.FirstLaunch -> {
-                                tokenManager.markFirstLaunchSeen()
+                                markFirstLaunchSeenUseCase()
                                 _uiState.update {
                                     it.copy(
                                         isLoggedIn = false,
@@ -273,7 +273,7 @@ class AuthViewModel(
 
     private fun loadUserProfile() {
         viewModelScope.launch {
-            val userProfile = tokenManager.getUserProfile()
+            val userProfile = getUserProfileUseCase()
             if (userProfile != null) {
                 _uiState.update { currentState ->
                     currentState.copy(userProfile = userProfile)

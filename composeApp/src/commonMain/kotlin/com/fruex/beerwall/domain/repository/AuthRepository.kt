@@ -3,7 +3,7 @@ package com.fruex.beerwall.domain.repository
 import kotlinx.coroutines.flow.Flow
 import com.fruex.beerwall.domain.model.AuthTokens
 import com.fruex.beerwall.domain.model.SessionStatus
-// TODO: `AuthTokens` pochodzi z pakietu `auth`, który może nie być częścią warstwy domeny. Należy rozważyć przeniesienie modelu tokenów do `domain/model`.
+import com.fruex.beerwall.domain.model.UserProfile
 
 /**
  * Interfejs repozytorium do obsługi uwierzytelniania i zarządzania sesją użytkownika.
@@ -94,4 +94,14 @@ interface AuthRepository {
      * Wylogowuje użytkownika, czyszcząc dane sesji.
      */
     suspend fun logout()
+
+    /**
+     * Pobiera profil zalogowanego użytkownika.
+     */
+    suspend fun getUserProfile(): UserProfile?
+
+    /**
+     * Oznacza, że użytkownik widział już ekran pierwszego uruchomienia.
+     */
+    suspend fun markFirstLaunchSeen()
 }
