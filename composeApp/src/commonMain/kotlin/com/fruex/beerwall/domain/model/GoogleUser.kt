@@ -1,6 +1,5 @@
-package com.fruex.beerwall.auth
+package com.fruex.beerwall.domain.model
 
-import androidx.compose.runtime.Composable
 import kotlinx.serialization.Serializable
 import com.fruex.beerwall.LogSeverity
 import com.fruex.beerwall.getPlatform
@@ -90,15 +89,3 @@ data class GoogleUser(
         }
     }
 }
-
-/**
- * Interfejs dostawcy autoryzacji Google.
- */
-interface GoogleAuthProvider {
-    suspend fun signIn(): GoogleUser?
-    suspend fun signOut()
-    suspend fun getSignedInUser(): GoogleUser?
-}
-
-@Composable
-expect fun rememberGoogleAuthProvider(): GoogleAuthProvider

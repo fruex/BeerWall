@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.ui.components.AppHeader
 import com.fruex.beerwall.ui.components.BeerMug
-import com.fruex.beerwall.ui.models.UserProfile
+import com.fruex.beerwall.domain.model.UserProfile
 import com.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
