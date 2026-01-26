@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -33,6 +34,7 @@ import beerwall.composeapp.generated.resources.Res
 import beerwall.composeapp.generated.resources.ic_apple
 import beerwall.composeapp.generated.resources.ic_facebook
 import beerwall.composeapp.generated.resources.ic_google
+import com.fruex.beerwall.domain.validation.EmailValidator
 import com.fruex.beerwall.domain.validation.PasswordValidator
 import com.fruex.beerwall.ui.components.*
 import com.fruex.beerwall.ui.theme.*
@@ -79,6 +81,9 @@ fun AuthScreen(
     val passwordValidation = remember(password) { PasswordValidator.validate(password) }
     val isPasswordValid = if (isLogin) password.isNotBlank() else passwordValidation.isValid
 
+    // Walidacja email
+    val isEmailValid = remember(email) { EmailValidator.validate(email) }
+
     LaunchedEffect(showEmailAuth) {
         if (showEmailAuth) {
             emailFocusRequester.requestFocus()
@@ -117,24 +122,6 @@ fun AuthScreen(
             )
 
             Spacer(modifier = Modifier.height(40.dp))
-
-            // Error message
-            errorMessage?.let { error ->
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer
-                    )
-                ) {
-                    Text(
-                        text = error,
-                        modifier = Modifier.padding(16.dp),
-                        color = MaterialTheme.colorScheme.onErrorContainer,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-            }
 
             // Google Button
             SocialLoginButton(
@@ -193,15 +180,25 @@ fun AuthScreen(
                     ),
                     keyboardActions = KeyboardActions(
                         onNext = {
-                            if (email.isNotBlank()) {
+                            if (isEmailValid) {
                                 showPasswordStep = true
                             }
                         }
                     ),
                     modifier = Modifier.fillMaxWidth(),
                     inputModifier = Modifier.focusRequester(emailFocusRequester),
-                    enabled = !isLoading && !showPasswordStep
+                    enabled = !isLoading && !showPasswordStep,
+                    contentType = if (isLogin) ContentType.Username else ContentType.EmailAddress
                 )
+
+                if (email.isNotEmpty() && !isEmailValid) {
+                    Text(
+                        text = "Niepoprawny format adresu e-mail",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
 
                 if (!showPasswordStep) {
                     Spacer(modifier = Modifier.height(24.dp))
@@ -209,7 +206,7 @@ fun AuthScreen(
                     BeerWallButton(
                         text = if (isLogin) "Zaloguj" else "Dalej",
                         onClick = { showPasswordStep = true },
-                        enabled = email.isNotBlank() && !isLoading
+                        enabled = isEmailValid && !isLoading
                     )
                 } else {
                     Spacer(modifier = Modifier.height(16.dp))
@@ -242,7 +239,8 @@ fun AuthScreen(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         inputModifier = Modifier.focusRequester(passwordFocusRequester),
-                        enabled = !isLoading
+                        enabled = !isLoading,
+                        contentType = if (isLogin) ContentType.Password else ContentType.NewPassword
                     )
 
                     // Wyświetlanie wymagań hasła tylko przy rejestracji i gdy hasło nie jest puste
@@ -260,7 +258,7 @@ fun AuthScreen(
                     BeerWallButton(
                         text = if (isLogin) "Zaloguj" else "Utwórz konto",
                         onClick = { onAuthClick(email, password) },
-                        enabled = isPasswordValid && !isLoading
+                        enabled = isPasswordValid && isEmailValid && !isLoading
                     )
 
                     // Forgot Password Button (only for login)

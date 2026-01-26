@@ -41,6 +41,11 @@ fun BalanceScreen(
     onAddFundsClick: (premisesId: Int) -> Unit,
     onAddLocationClick: () -> Unit,
 ) {
+    // ⚡ Bolt Optimization: Hoist CardColors to prevent allocation per item in LazyColumn
+    val balanceCardColors = CardDefaults.cardColors(
+        containerColor = GoldPrimary
+    )
+
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
@@ -82,7 +87,8 @@ fun BalanceScreen(
                     premisesName = premisesBalance.premisesName,
                     balance = premisesBalance.balance,
                     loyaltyPoints = premisesBalance.loyaltyPoints,
-                    onAddFundsClick = { onAddFundsClick(premisesBalance.premisesId) }
+                    onAddFundsClick = { onAddFundsClick(premisesBalance.premisesId) },
+                    colors = balanceCardColors
                 )
             }
 
@@ -102,13 +108,14 @@ fun BalanceCard(
     balance: Double,
     loyaltyPoints: Int,
     onAddFundsClick: () -> Unit,
+    colors: CardColors = CardDefaults.cardColors(
+        containerColor = GoldPrimary
+    )
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = CardShape,
-        colors = CardDefaults.cardColors(
-            containerColor = GoldPrimary
-        )
+        colors = colors
     ) {
         Box(
             modifier = Modifier

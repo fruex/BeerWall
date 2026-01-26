@@ -31,7 +31,7 @@ class SupportApiClient(
      * @return Result pusty w przypadku sukcesu.
      */
     suspend fun sendMessage(message: String): Result<Unit> = try {
-        platform.log("📤 Send Feedback Request", this, LogSeverity.INFO)
+        platform.log("Send Feedback Request", this, LogSeverity.INFO)
         val response = client.post("$baseUrl/${ApiRoutes.Users.FEEDBACK}") {
             addAuthToken()
             contentType(ContentType.Application.Json)
@@ -40,21 +40,21 @@ class SupportApiClient(
 
         when (response.status) {
             HttpStatusCode.NoContent -> {
-                platform.log("✅ Send Feedback Success", this, LogSeverity.INFO)
+                platform.log("Send Feedback Success", this, LogSeverity.SUCCESS)
                 Result.success(Unit)
             }
             HttpStatusCode.Unauthorized -> {
-                platform.log("❌ Send Feedback Unauthorized", this, LogSeverity.ERROR)
+                platform.log("Send Feedback Unauthorized", this, LogSeverity.ERROR)
                 Result.failure(Exception("Unauthorized"))
             }
             else -> {
                 val bodyText = response.bodyAsText()
-                platform.log("❌ Send Feedback Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
+                platform.log("Send Feedback Error: ${response.status} - $bodyText", this, LogSeverity.ERROR)
                 Result.failure(Exception(bodyText.ifBlank { "Error sending feedback: ${response.status}" }))
             }
         }
     } catch (e: Exception) {
-        platform.log("❌ Send Feedback Exception: ${e.message}", this, LogSeverity.ERROR)
+        platform.log("Send Feedback Exception: ${e.message}", this, LogSeverity.ERROR)
         Result.failure(e)
     }
 }

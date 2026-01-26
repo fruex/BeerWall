@@ -27,9 +27,14 @@ import com.fruex.beerwall.ui.models.UserProfile
 import com.fruex.beerwall.ui.screens.balance.BalanceScreen
 import com.fruex.beerwall.ui.screens.cards.CardsScreen
 import com.fruex.beerwall.ui.screens.history.HistoryScreen
+import com.fruex.beerwall.ui.screens.profile.AboutScreen
+import com.fruex.beerwall.ui.screens.profile.ChangePasswordScreen
 import com.fruex.beerwall.ui.screens.profile.ProfileScreen
+import com.fruex.beerwall.ui.screens.profile.SupportScreen
 import com.fruex.beerwall.ui.theme.CardBackground
+import com.fruex.beerwall.ui.theme.DarkBackground
 import com.fruex.beerwall.ui.theme.GoldPrimary
+import com.fruex.beerwall.ui.theme.TextPrimary
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -68,6 +73,12 @@ sealed class BottomNavItem(
     )
 }
 
+enum class SheetType {
+    ChangePassword,
+    Support,
+    About
+}
+
 /**
  * Główny ekran aplikacji zawierający dolny pasek nawigacyjny.
  *
@@ -75,19 +86,14 @@ sealed class BottomNavItem(
  * @param onAddLocationClick Callback do dodawania lokalizacji.
  * @param onAddCardClick Callback do dodawania karty.
  * @param onLogoutClick Callback wylogowania.
- * @param onChangePasswordClick Callback zmiany hasła.
- * @param onSupportClick Callback pomocy.
- * @param onAboutClick Callback "O aplikacji".
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     onAddFundsClick: (premisesId: Int) -> Unit = {},
     onAddLocationClick: () -> Unit = {},
     onAddCardClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
-    onChangePasswordClick: () -> Unit = {},
-    onSupportClick: () -> Unit = {},
-    onAboutClick: () -> Unit = {},
 ) {
     // ViewModels for each tab
     val balanceViewModel = koinViewModel<BalanceViewModel>()
@@ -101,11 +107,14 @@ fun MainScreen(
     val cardsState by cardsViewModel.uiState.collectAsState()
     val historyState by historyViewModel.uiState.collectAsState()
     val authState by authViewModel.uiState.collectAsState()
+    val profileState by profileViewModel.uiState.collectAsState()
     val tiltAngle by profileViewModel.tiltAngle.collectAsState()
 
     val googleAuthProvider = rememberGoogleAuthProvider()
 
     var selectedTab by rememberSaveable { mutableStateOf(BottomNavItem.Balance.route) }
+    var activeSheet by remember { mutableStateOf<SheetType?>(null) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     LaunchedEffect(selectedTab) {
         when (selectedTab) {
@@ -150,10 +159,50 @@ fun MainScreen(
         onAddFundsClick = onAddFundsClick,
         onAddLocationClick = onAddLocationClick,
         onAddCardClick = onAddCardClick,
-        onChangePasswordClick = onChangePasswordClick,
-        onSupportClick = onSupportClick,
-        onAboutClick = onAboutClick
+        onChangePasswordClick = { activeSheet = SheetType.ChangePassword },
+        onSupportClick = { activeSheet = SheetType.Support },
+        onAboutClick = { activeSheet = SheetType.About }
     )
+
+    if (activeSheet != null) {
+        ModalBottomSheet(
+            onDismissRequest = { activeSheet = null },
+            sheetState = sheetState,
+            containerColor = DarkBackground,
+            contentColor = TextPrimary
+        ) {
+            when (activeSheet) {
+                SheetType.ChangePassword -> {
+                    ChangePasswordScreen(
+                        onDismiss = { activeSheet = null },
+                        onChangePassword = { old, new ->
+                            authViewModel.handleChangePassword(old, new) {
+                                activeSheet = null
+                            }
+                        },
+                        isLoading = authState.isLoading,
+                        errorMessage = authState.errorMessage
+                    )
+                }
+                SheetType.Support -> {
+                    SupportScreen(
+                        onDismiss = { activeSheet = null },
+                        onSendMessage = { profileViewModel.onSendMessage(it) },
+                        isLoading = profileState.isLoading,
+                        errorMessage = profileState.errorMessage,
+                        successMessage = profileState.successMessage,
+                        onClearState = { profileViewModel.onClearMessages() }
+                    )
+                }
+                SheetType.About -> {
+                    AboutScreen(
+                        onDismiss = { activeSheet = null }
+                    )
+                }
+                null -> {}
+            }
+        }
+    }
 }
 
 @Composable

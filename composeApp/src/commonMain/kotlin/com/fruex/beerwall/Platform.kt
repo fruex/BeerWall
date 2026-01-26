@@ -1,7 +1,11 @@
 package com.fruex.beerwall
 
-enum class LogSeverity {
-    DEBUG, INFO, WARN, ERROR
+enum class LogSeverity(val prefix: String) {
+    DEBUG("🔹 [DEBUG]"),
+    INFO("ℹ️ [INFO]"),
+    WARN("⚠️ [WARN]"),
+    ERROR("❌ [ERROR]"),
+    SUCCESS("✅ [SUCCESS]")
 }
 
 interface Platform {
