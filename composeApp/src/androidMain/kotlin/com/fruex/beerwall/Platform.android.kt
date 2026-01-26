@@ -7,11 +7,12 @@ class AndroidPlatform : Platform {
     override val name: String = "Android ${Build.VERSION.SDK_INT}"
     
     override fun log(message: String, tag: String, severity: LogSeverity) {
+        val fullMessage = "${severity.prefix} $message"
         when (severity) {
-            LogSeverity.DEBUG -> Log.d(tag, message)
-            LogSeverity.INFO -> Log.i(tag, message)
-            LogSeverity.WARN -> Log.w(tag, message)
-            LogSeverity.ERROR -> Log.e(tag, message)
+            LogSeverity.DEBUG, LogSeverity.SUCCESS -> Log.d(tag, fullMessage)
+            LogSeverity.INFO -> Log.i(tag, fullMessage)
+            LogSeverity.WARN -> Log.w(tag, fullMessage)
+            LogSeverity.ERROR -> Log.e(tag, fullMessage)
         }
     }
 }

@@ -25,26 +25,26 @@ class GoogleSignInUseCase(
      */
     suspend operator fun invoke(googleAuthProvider: GoogleAuthProvider): Result<AuthTokens> {
         return try {
-            println("📱 Google Sign In: Requesting fresh token from Google")
+            println("Google Sign In: Requesting fresh token from Google")
 
             // Wywołaj Google Sign In dialog - ZAWSZE pobiera świeży token
             val localUser = googleAuthProvider.signIn()
                 ?: return Result.failure(Exception("Anulowano logowanie Google"))
 
-            println("✅ Google Sign In: Received token from Google")
+            println("Google Sign In: Received token from Google")
 
             // Sprawdź czy token jest świeży
             if (localUser.isGoogleTokenExpired()) {
-                println("⚠️ Google token już wygasł podczas pobierania")
+                println("Google token już wygasł podczas pobierania")
                 return Result.failure(Exception("Token Google wygasł. Spróbuj ponownie."))
             }
 
-            println("📤 Sending Google token to .NET backend for verification")
+            println("Sending Google token to .NET backend for verification")
 
             // Wyślij ID Token do backendu w celu weryfikacji i uzyskania tokenu .NET
             authRepository.googleSignIn(localUser.idToken)
         } catch (e: Exception) {
-            println("❌ Google Sign In error: ${e.message}")
+            println("Google Sign In error: ${e.message}")
             Result.failure(e)
         }
     }
