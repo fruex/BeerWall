@@ -1,3 +1,5 @@
+@file:OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.util.*
@@ -86,6 +88,14 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.koin.test)
             implementation(libs.ktor.client.mock)
+            implementation(compose.uiTest)
+        }
+        val androidUnitTest by getting {
+            dependencies {
+                implementation(libs.robolectric)
+                implementation(libs.androidx.activity.compose)
+                implementation(libs.androidx.testExt.junit)
+            }
         }
     }
 }
