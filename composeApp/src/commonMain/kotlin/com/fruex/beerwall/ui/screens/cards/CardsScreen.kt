@@ -12,6 +12,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.ui.components.AppHeader
@@ -50,6 +51,7 @@ fun CardsScreen(
     // ⚡ Bolt Optimization: Hoist dialog state out of LazyColumn to prevent
     // creating state per item and decouple dialog from the item lifecycle.
     var selectedCard by remember { mutableStateOf<UserCard?>(null) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,
@@ -121,16 +123,27 @@ fun CardsScreen(
         }
     }
 
-    // Render dialog outside of LazyColumn
-    selectedCard?.let { card ->
-        CardDetailsDialog(
-            card = card,
-            onDismiss = { selectedCard = null },
-            onToggleStatus = {
-                onToggleCardStatus(card.cardGuid)
-                selectedCard = null
+    // Render sheet outside of LazyColumn
+    if (selectedCard != null) {
+        ModalBottomSheet(
+            onDismissRequest = { selectedCard = null },
+            sheetState = sheetState,
+            containerColor = CardBackground,
+            contentColor = TextPrimary,
+            shape = MaterialTheme.shapes.extraLarge
+        ) {
+            // Wrap in safe let to smart cast
+            selectedCard?.let { card ->
+                CardDetailsSheetContent(
+                    card = card,
+                    onDismiss = { selectedCard = null },
+                    onToggleStatus = {
+                        onToggleCardStatus(card.cardGuid)
+                        selectedCard = null
+                    }
+                )
             }
-        )
+        }
     }
 }
 
@@ -250,120 +263,123 @@ fun CardItemView(
 }
 
 @Composable
-fun CardDetailsDialog(
+fun CardDetailsSheetContent(
     card: UserCard,
     onDismiss: () -> Unit,
     onToggleStatus: () -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        icon = {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
+            .padding(bottom = 48.dp), // Add padding for bottom navigation
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        // Header with Icon
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             Icon(
                 imageVector = Icons.Default.CreditCard,
                 contentDescription = "Szczegóły karty",
                 tint = GoldPrimary,
                 modifier = Modifier.size(36.dp)
             )
-        },
-        title = {
             Text(
                 text = card.description,
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = TextPrimary
             )
-        },
-        text = {
-            Column(
+        }
+
+        HorizontalDivider(color = TextSecondary.copy(alpha = 0.2f))
+
+        // Card Type Info
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Typ",
+                style = MaterialTheme.typography.bodyLarge,
+                color = TextSecondary
+            )
+            Text(
+                text = if (card.isPhysical) "Karta fizyczna" else "Karta wirtualna",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = TextPrimary
+            )
+        }
+
+        // Status and Actions - Only for physical cards
+        if (card.isPhysical) {
+            // Status Row
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Card Type Info
+                Text(
+                    text = "Status",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = TextSecondary
+                )
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Typ",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = TextSecondary
+                    Icon(
+                        imageVector = if (card.isActive) Icons.Default.CheckCircle else Icons.Default.Cancel,
+                        contentDescription = null,
+                        tint = if (card.isActive) Success else TextSecondary,
+                        modifier = Modifier.size(20.dp)
                     )
                     Text(
-                        text = if (card.isPhysical) "Karta fizyczna" else "Karta wirtualna",
+                        text = if (card.isActive) "Aktywna" else "Nieaktywna",
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium,
-                        color = TextPrimary
-                    )
-                }
-
-                // Status and Actions - Only for physical cards
-                if (card.isPhysical) {
-                    // Status Row
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Status",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = TextSecondary
-                        )
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(6.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = if (card.isActive) Icons.Default.CheckCircle else Icons.Default.Cancel,
-                                contentDescription = null,
-                                tint = if (card.isActive) Success else TextSecondary,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Text(
-                                text = if (card.isActive) "Aktywna" else "Nieaktywna",
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.Medium,
-                                color = if (card.isActive) Success else TextSecondary
-                            )
-                        }
-                    }
-
-                    HorizontalDivider(color = TextSecondary.copy(alpha = 0.2f))
-
-                    // Toggle Status Button
-                    BeerWallButton(
-                        text = if (card.isActive) "Zablokuj kartę" else "Odblokuj kartę",
-                        onClick = onToggleStatus,
-                        icon = if (card.isActive) Icons.Default.Block else Icons.Default.LockOpen,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp)
+                        color = if (card.isActive) Success else TextSecondary
                     )
                 }
             }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(
-                    text = "Zamknij",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = GoldPrimary
-                )
-            }
-        },
-        containerColor = CardBackground,
-        iconContentColor = GoldPrimary,
-        titleContentColor = TextPrimary,
-        textContentColor = TextPrimary,
-        shape = MaterialTheme.shapes.extraLarge
-    )
+
+            HorizontalDivider(color = TextSecondary.copy(alpha = 0.2f))
+
+            // Toggle Status Button
+            BeerWallButton(
+                text = if (card.isActive) "Zablokuj kartę" else "Odblokuj kartę",
+                onClick = onToggleStatus,
+                icon = if (card.isActive) Icons.Default.Block else Icons.Default.LockOpen,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            )
+        }
+
+        // Close button at the bottom
+        TextButton(
+            onClick = onDismiss,
+            modifier = Modifier.fillMaxWidth().height(56.dp)
+        ) {
+            Text(
+                text = "Zamknij",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Medium,
+                color = GoldPrimary
+            )
+        }
+    }
 }
 
 @Preview
 @Composable
-fun CardDetailsDialogPhysicalPreview() {
+fun CardDetailsSheetPhysicalPreview() {
     BeerWallTheme {
-        CardDetailsDialog(
+        CardDetailsSheetContent(
             card = UserCard(
                 cardGuid = "1234567890",
                 description = "Moja karta fizyczna",
@@ -378,9 +394,9 @@ fun CardDetailsDialogPhysicalPreview() {
 
 @Preview
 @Composable
-fun CardDetailsDialogVirtualPreview() {
+fun CardDetailsSheetVirtualPreview() {
     BeerWallTheme {
-        CardDetailsDialog(
+        CardDetailsSheetContent(
             card = UserCard(
                 cardGuid = "0987654321",
                 description = "Karta wirtualna",

@@ -15,14 +15,10 @@ import com.fruex.beerwall.auth.rememberGoogleAuthProvider
 import com.fruex.beerwall.presentation.viewmodel.AuthViewModel
 import com.fruex.beerwall.presentation.viewmodel.BalanceViewModel
 import com.fruex.beerwall.presentation.viewmodel.CardsViewModel
-import com.fruex.beerwall.presentation.viewmodel.ProfileViewModel
 import com.fruex.beerwall.ui.screens.auth.AuthMode
 import com.fruex.beerwall.ui.screens.auth.AuthScreen
 import com.fruex.beerwall.ui.screens.balance.AddFundsScreen
 import com.fruex.beerwall.ui.screens.cards.AddCardScreen
-import com.fruex.beerwall.ui.screens.profile.AboutScreen
-import com.fruex.beerwall.ui.screens.profile.ChangePasswordScreen
-import com.fruex.beerwall.ui.screens.profile.SupportScreen
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -121,21 +117,6 @@ fun AppNavHost(
                     navController.navigate(NavigationDestination.Login.route) {
                         popUpTo(NavigationDestination.Main.route) { inclusive = true }
                     }
-                },
-                onChangePasswordClick = {
-                    navController.navigate(NavigationDestination.ChangePassword.route) {
-                        launchSingleTop = true
-                    }
-                },
-                onSupportClick = {
-                    navController.navigate(NavigationDestination.Support.route) {
-                        launchSingleTop = true
-                    }
-                },
-                onAboutClick = {
-                    navController.navigate(NavigationDestination.About.route) {
-                        launchSingleTop = true
-                    }
                 }
             )
         }
@@ -186,47 +167,6 @@ fun AppNavHost(
                     cardsViewModel.onSaveCard(cardId, description)
                     navController.popBackStack()
                 }
-            )
-        }
-
-        // Profile sub-screens
-        composable(NavigationDestination.ChangePassword.route) {
-            val authViewModel = koinViewModel<AuthViewModel>()
-            val uiState by authViewModel.uiState.collectAsState()
-
-            ChangePasswordScreen(
-                onBackClick = { navController.popBackStack() },
-                onChangePassword = { oldPassword, newPassword ->
-                    authViewModel.handleChangePassword(oldPassword, newPassword) {
-                        navController.popBackStack()
-                    }
-                },
-                isLoading = uiState.isLoading,
-                errorMessage = uiState.errorMessage
-            )
-        }
-
-        composable(NavigationDestination.Support.route) {
-            val profileViewModel = koinViewModel<ProfileViewModel>()
-            val uiState by profileViewModel.uiState.collectAsState()
-
-            SupportScreen(
-                onBackClick = { navController.popBackStack() },
-                onSendMessage = { message ->
-                    profileViewModel.onSendMessage(message)
-                },
-                isLoading = uiState.isLoading,
-                errorMessage = uiState.errorMessage,
-                successMessage = uiState.successMessage,
-                onClearState = {
-                    profileViewModel.onClearMessages()
-                }
-            )
-        }
-
-        composable(NavigationDestination.About.route) {
-            AboutScreen(
-                onBackClick = { navController.popBackStack() }
             )
         }
     }
