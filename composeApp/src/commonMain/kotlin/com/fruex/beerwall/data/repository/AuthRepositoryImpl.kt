@@ -6,6 +6,7 @@ import com.fruex.beerwall.domain.model.AuthTokens
 import com.fruex.beerwall.domain.model.SessionStatus
 import com.fruex.beerwall.auth.ISessionManager
 import com.fruex.beerwall.data.local.TokenManager
+import com.fruex.beerwall.domain.model.UserProfile
 import com.fruex.beerwall.data.local.ensureTimestamp
 import com.fruex.beerwall.data.local.decodeTokenPayload
 import com.fruex.beerwall.data.remote.api.AuthApiClient
@@ -203,5 +204,13 @@ class AuthRepositoryImpl(
     override suspend fun logout() {
         tokenManager.clearTokens()
         sessionManager.setLoggedIn(false)
+    }
+
+    override suspend fun getUserProfile(): UserProfile? {
+        return tokenManager.getUserProfile()
+    }
+
+    override suspend fun markFirstLaunchSeen() {
+        tokenManager.markFirstLaunchSeen()
     }
 }

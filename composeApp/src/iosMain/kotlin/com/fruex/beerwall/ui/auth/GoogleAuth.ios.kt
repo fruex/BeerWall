@@ -1,7 +1,9 @@
-package com.fruex.beerwall.auth
+package com.fruex.beerwall.ui.auth
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import com.fruex.beerwall.domain.auth.GoogleAuthProvider
+import com.fruex.beerwall.domain.model.GoogleUser
 
 class IosGoogleAuthProvider : GoogleAuthProvider {
     override suspend fun signIn(): GoogleUser? {
