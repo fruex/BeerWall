@@ -14,7 +14,7 @@ import com.fruex.beerwall.LogSeverity
 import com.fruex.beerwall.getPlatform
 import com.fruex.beerwall.log
 import com.fruex.beerwall.domain.model.AuthTokens
-import com.fruex.beerwall.ui.models.UserProfile
+import com.fruex.beerwall.domain.model.UserProfile
 import java.io.InputStream
 import java.io.OutputStream
 
