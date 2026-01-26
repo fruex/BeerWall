@@ -11,7 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.fruex.beerwall.auth.rememberGoogleAuthProvider
+import com.fruex.beerwall.ui.auth.rememberGoogleAuthProvider
 import com.fruex.beerwall.presentation.viewmodel.AuthViewModel
 import com.fruex.beerwall.presentation.viewmodel.BalanceViewModel
 import com.fruex.beerwall.presentation.viewmodel.CardsViewModel

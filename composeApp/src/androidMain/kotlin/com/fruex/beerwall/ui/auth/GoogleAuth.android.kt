@@ -1,4 +1,4 @@
-package com.fruex.beerwall.auth
+package com.fruex.beerwall.ui.auth
 
 import android.content.Context
 import androidx.compose.runtime.Composable
@@ -21,6 +21,8 @@ import com.fruex.beerwall.LogSeverity
 import com.fruex.beerwall.R
 import com.fruex.beerwall.getPlatform
 import com.fruex.beerwall.log
+import com.fruex.beerwall.domain.auth.GoogleAuthProvider
+import com.fruex.beerwall.domain.model.GoogleUser
 import java.io.InputStream
 import java.io.OutputStream
 

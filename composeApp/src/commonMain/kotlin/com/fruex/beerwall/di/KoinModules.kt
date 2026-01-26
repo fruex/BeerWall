@@ -63,6 +63,8 @@ val useCaseModule = module {
     singleOf(::CheckSessionUseCase)
     singleOf(::LogoutUseCase)
     singleOf(::ObserveSessionStateUseCase)
+    singleOf(::GetUserProfileUseCase)
+    singleOf(::MarkFirstLaunchSeenUseCase)
 
     // Balance
     singleOf(::GetBalancesUseCase)

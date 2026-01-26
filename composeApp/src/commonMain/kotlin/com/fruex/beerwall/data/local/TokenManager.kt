@@ -3,7 +3,7 @@ package com.fruex.beerwall.data.local
 import com.fruex.beerwall.LogSeverity
 import com.fruex.beerwall.domain.model.AuthTokens
 import com.fruex.beerwall.getPlatform
-import com.fruex.beerwall.ui.models.UserProfile
+import com.fruex.beerwall.domain.model.UserProfile
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 

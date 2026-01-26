@@ -1,7 +1,7 @@
 package com.fruex.beerwall.domain.usecase
 
 import com.fruex.beerwall.domain.model.AuthTokens
-import com.fruex.beerwall.auth.GoogleAuthProvider
+import com.fruex.beerwall.domain.auth.GoogleAuthProvider
 import com.fruex.beerwall.domain.repository.AuthRepository
 
 /**
