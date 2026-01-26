@@ -12,19 +12,20 @@ class UpdateCardUseCaseTest : BaseTest() {
     private val useCase = UpdateCardUseCase(fakeCardRepository)
 
     @Test
-    fun `should update card`() = kotlinx.coroutines.test.runTest {
+    fun `should update card description and status`() = kotlinx.coroutines.test.runTest {
         // Given
         val cardId = "card-1"
-        val newName = "New Name"
+        val newDescription = "New Name"
+        val newStatus = false
 
         // When
-        val result = useCase(cardId, newName, true)
+        val result = useCase(cardId, newDescription, newStatus)
 
         // Then
         assertTrue(result.isSuccess)
         val updatedCard = fakeCardRepository.fakeCards.first { it.cardGuid == cardId }
-        assertTrue(updatedCard.isActive)
-        assertEquals(newName, updatedCard.description)
+        assertEquals(newDescription, updatedCard.description)
+        assertEquals(newStatus, updatedCard.isActive)
     }
 
     @Test
@@ -34,7 +35,7 @@ class UpdateCardUseCaseTest : BaseTest() {
         fakeCardRepository.failureMessage = "Update failed"
 
         // When
-        val result = useCase("card-1", "Name", true)
+        val result = useCase("card-1", "Desc", true)
 
         // Then
         assertTrue(result.isFailure)
