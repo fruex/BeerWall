@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -186,7 +187,8 @@ fun AuthScreen(
                     ),
                     modifier = Modifier.fillMaxWidth(),
                     inputModifier = Modifier.focusRequester(emailFocusRequester),
-                    enabled = !isLoading && !showPasswordStep
+                    enabled = !isLoading && !showPasswordStep,
+                    contentType = if (isLogin) ContentType.Username else ContentType.EmailAddress
                 )
 
                 if (email.isNotEmpty() && !isEmailValid) {
@@ -237,7 +239,8 @@ fun AuthScreen(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         inputModifier = Modifier.focusRequester(passwordFocusRequester),
-                        enabled = !isLoading
+                        enabled = !isLoading,
+                        contentType = if (isLogin) ContentType.Password else ContentType.NewPassword
                     )
 
                     // Wyświetlanie wymagań hasła tylko przy rejestracji i gdy hasło nie jest puste

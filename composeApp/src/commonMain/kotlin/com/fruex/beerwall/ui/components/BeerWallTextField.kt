@@ -7,7 +7,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -52,7 +55,8 @@ fun BeerWallTextField(
     isError: Boolean = false,
     errorMessage: String? = null,
     enabled: Boolean = true,
-    textAlign: TextAlign = TextAlign.Start
+    textAlign: TextAlign = TextAlign.Start,
+    contentType: ContentType? = null
 ) {
     val effectiveVisualTransformation = if (isPassword) PasswordVisualTransformation() else visualTransformation
     Column(modifier = modifier) {
@@ -69,6 +73,13 @@ fun BeerWallTextField(
             },
             modifier = Modifier
                 .fillMaxWidth()
+                .then(
+                    if (contentType != null) {
+                        Modifier.semantics { this.contentType = contentType }
+                    } else {
+                        Modifier
+                    }
+                )
                 .then(inputModifier),
             visualTransformation = effectiveVisualTransformation,
             keyboardOptions = keyboardOptions,

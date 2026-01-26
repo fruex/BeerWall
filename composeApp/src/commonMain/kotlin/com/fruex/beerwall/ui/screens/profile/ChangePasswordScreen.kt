@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.domain.validation.PasswordValidator
@@ -63,7 +64,8 @@ fun ChangePasswordScreen(
             onValueChange = { oldPassword = it },
             placeholder = "Stare hasło",
             isPassword = true,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            contentType = ContentType.Password
         )
 
         BeerWallTextField(
@@ -71,7 +73,8 @@ fun ChangePasswordScreen(
             onValueChange = { newPassword = it },
             placeholder = "Nowe hasło",
             isPassword = true,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            contentType = ContentType.NewPassword
         )
 
         BeerWallTextField(
@@ -79,7 +82,8 @@ fun ChangePasswordScreen(
             onValueChange = { confirmPassword = it },
             placeholder = "Potwierdź hasło",
             isPassword = true,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            contentType = ContentType.NewPassword
         )
 
         if (newPassword.isNotEmpty() && !passwordValidation.isValid) {
