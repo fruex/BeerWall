@@ -82,3 +82,12 @@ jobs:
         prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload to Google Drive
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+      uses: adityak74/google-drive-upload-git-action@main
+      with:
+        credentials: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
+        filename: "beerwall-${{ github.ref_name }}.apk"
+        folderId: "1Xun-9TehQApNhio5gzxbmgDhjXjHm16B"
+        overwrite: "true"
