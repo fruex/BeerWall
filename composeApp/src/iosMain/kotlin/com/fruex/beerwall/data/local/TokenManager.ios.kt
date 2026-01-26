@@ -2,7 +2,7 @@ package com.fruex.beerwall.data.local
 
 import platform.Foundation.NSDate
 import platform.Foundation.timeIntervalSince1970
-import com.fruex.beerwall.ui.models.UserProfile
+import com.fruex.beerwall.domain.model.UserProfile
 import com.fruex.beerwall.domain.model.AuthTokens
 
 actual fun currentTimeSeconds(): Long = NSDate().timeIntervalSince1970.toLong()
