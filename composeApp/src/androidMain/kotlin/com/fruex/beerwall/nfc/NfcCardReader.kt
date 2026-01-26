@@ -38,34 +38,4 @@ object NfcCardReader {
             null
         }
     }
-
-    private fun ByteArray.toGuidString(): String {
-        return try {
-            if (this.size < GUID_MIN_LENGTH) throw IllegalArgumentException("Insufficient bytes for GUID")
-
-            // Convert bytes to C# GUID format (mixed-endian)
-            // Format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-
-            // First 4 bytes (little-endian) - Data1
-            val part1 = "%02x%02x%02x%02x".format(this[3], this[2], this[1], this[0])
-
-            // Next 2 bytes (little-endian) - Data2
-            val part2 = "%02x%02x".format(this[5], this[4])
-
-            // Next 2 bytes (little-endian) - Data3
-            val part3 = "%02x%02x".format(this[7], this[6])
-
-            // Next 2 bytes (big-endian) - Data4[0-1]
-            val part4 = "%02x%02x".format(this[8], this[9])
-
-            // Last 6 bytes (big-endian) - Data4[2-7]
-            val part5 = "%02x%02x%02x%02x%02x%02x".format(this[10], this[11], this[12], this[13], this[14], this[15])
-
-            "$part1-$part2-$part3-$part4-$part5"
-        } catch (e: Exception) {
-            platform.log("Error creating GUID: ${e.message}", this, LogSeverity.ERROR)
-            // Fallback to raw hex string if conversion fails
-            this.joinToString(":") { "%02X".format(it) }
-        }
-    }
 }
