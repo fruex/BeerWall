@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -13,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.ui.components.AppHeader
 import com.fruex.beerwall.ui.components.BeerWallButton
@@ -91,15 +93,24 @@ fun CardsScreen(
                 }
             }
 
-            items(
-                items = cards,
-                key = { it.cardGuid },
-                contentType = { "card" }
-            ) { card ->
-                CardItemView(
-                    card = card,
-                    onClick = { selectedCard = card }
-                )
+            if (cards.isEmpty()) {
+                item(
+                    key = "empty_state",
+                    contentType = "empty"
+                ) {
+                    CardsEmptyState()
+                }
+            } else {
+                items(
+                    items = cards,
+                    key = { it.cardGuid },
+                    contentType = { "card" }
+                ) { card ->
+                    CardItemView(
+                        card = card,
+                        onClick = { selectedCard = card }
+                    )
+                }
             }
 
             item(
@@ -224,7 +235,7 @@ fun CardItemView(
                     ) {
                         Icon(
                             imageVector = if (card.isActive) Icons.Default.CheckCircle else Icons.Default.Cancel,
-                            contentDescription = if (card.isActive) "Status: Aktywna" else "Status: Zablokowana",
+                            contentDescription = null,
                             tint = if (card.isActive) Success else TextSecondary,
                             modifier = Modifier.size(16.dp)
                         )
@@ -241,7 +252,7 @@ fun CardItemView(
 
             Icon(
                 imageVector = Icons.Default.ChevronRight,
-                contentDescription = "Zobacz szczegóły",
+                contentDescription = null,
                 tint = TextSecondary,
                 modifier = Modifier.size(24.dp)
             )
@@ -401,6 +412,45 @@ fun NFCInfoCard() {
         description = "Twoje fizyczne karty są połączone z Twoim kontem. Po prostu użyj dowolnej fizycznej karty przy kranie IgiBeer, aby nalać i zapłacić.",
         iconBackground = InfoCardIconBackground
     )
+}
+
+@Composable
+fun CardsEmptyState() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(80.dp)
+                .background(VirtualCardIconBackground, CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.CreditCard,
+                contentDescription = null,
+                tint = GoldPrimary,
+                modifier = Modifier.size(40.dp)
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Nie masz jeszcze żadnych kart",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = TextPrimary
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Dodaj swoją pierwszą kartę, aby zacząć korzystać z BeerWall.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextSecondary,
+            textAlign = TextAlign.Center
+        )
+    }
 }
 
 @Preview
