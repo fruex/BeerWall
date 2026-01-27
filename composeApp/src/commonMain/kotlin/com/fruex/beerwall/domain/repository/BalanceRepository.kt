@@ -1,20 +1,12 @@
 package com.fruex.beerwall.domain.repository
 
 import com.fruex.beerwall.domain.model.Balance
-import com.fruex.beerwall.domain.model.GdprClause
 import com.fruex.beerwall.domain.model.PaymentOperator
 
 /**
  * Interfejs repozytorium do zarządzania saldami i płatnościami.
  */
 interface BalanceRepository {
-    /**
-     * Pobiera treść klauzuli RODO (wymagane dla Paynow White Label).
-     *
-     * @return [Result] zawierający [GdprClause] lub błąd.
-     */
-    suspend fun getGdprClause(): Result<GdprClause>
-
     /**
      * Pobiera listę sald użytkownika w różnych lokalach.
      *

@@ -13,8 +13,6 @@ import com.fruex.beerwall.log
 import com.fruex.beerwall.data.remote.dto.balance.*
 import com.fruex.beerwall.data.remote.dto.operators.GetPaymentOperatorsEnvelope
 import com.fruex.beerwall.data.remote.dto.operators.PaymentOperatorResponse
-import com.fruex.beerwall.data.remote.dto.payments.GdprClauseResponse
-import com.fruex.beerwall.data.remote.dto.payments.GetGdprClauseEnvelope
 
 import io.ktor.client.HttpClient
 
@@ -89,18 +87,6 @@ class BalanceApiClient(
     suspend fun getPaymentOperators(): Result<List<PaymentOperatorResponse>> =
         safeCallWithAuth<GetPaymentOperatorsEnvelope, List<PaymentOperatorResponse>> {
             get("$baseUrl/${ApiRoutes.Payments.OPERATORS}") {
-                addAuthToken()
-            }.body()
-        }
-
-    /**
-     * Pobiera klauzulę RODO.
-     *
-     * @return Result zawierający [GdprClauseResponse] lub błąd.
-     */
-    suspend fun getGdprClause(): Result<GdprClauseResponse> =
-        safeCallWithAuth<GetGdprClauseEnvelope, GdprClauseResponse> {
-            get("$baseUrl/${ApiRoutes.Payments.GDPR_CLAUSE}") {
                 addAuthToken()
             }.body()
         }
