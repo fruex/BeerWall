@@ -1,13 +1,13 @@
 package com.fruex.beerwall.fakes
 
+import com.fruex.beerwall.domain.model.AuthTokens
+import com.fruex.beerwall.domain.model.SessionStatus
+import com.fruex.beerwall.domain.model.UserProfile
+import com.fruex.beerwall.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import com.fruex.beerwall.domain.model.AuthTokens
-import com.fruex.beerwall.domain.model.SessionStatus
-import com.fruex.beerwall.domain.repository.AuthRepository
-import com.fruex.beerwall.domain.model.UserProfile
 
 class FakeAuthRepository : AuthRepository {
     var shouldFail = false
