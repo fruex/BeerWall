@@ -70,6 +70,7 @@ val useCaseModule = module {
     singleOf(::GetBalancesUseCase)
     singleOf(::TopUpBalanceUseCase)
     singleOf(::GetPaymentOperatorsUseCase)
+    singleOf(::GetGdprClauseUseCase)
 
     // Cards
     singleOf(::GetCardsUseCase)
