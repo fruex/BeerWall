@@ -7,7 +7,7 @@ import com.fruex.beerwall.data.remote.api.AuthApiClient
 import com.fruex.beerwall.data.remote.dto.auth.RefreshTokenResponse
 import com.fruex.beerwall.data.remote.dto.auth.RefreshTokenEnvelope
 import com.fruex.beerwall.domain.model.AuthTokens
-import com.fruex.beerwall.ui.models.UserProfile
+import com.fruex.beerwall.domain.model.UserProfile
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
