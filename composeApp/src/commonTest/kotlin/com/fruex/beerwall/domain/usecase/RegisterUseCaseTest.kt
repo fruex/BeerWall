@@ -2,6 +2,7 @@ package com.fruex.beerwall.domain.usecase
 
 import com.fruex.beerwall.domain.model.AuthTokens
 import com.fruex.beerwall.domain.model.SessionStatus
+import com.fruex.beerwall.domain.model.UserProfile
 import com.fruex.beerwall.domain.repository.AuthRepository
 import com.fruex.beerwall.test.BaseTest
 import kotlinx.coroutines.flow.Flow
@@ -61,5 +62,7 @@ class RegisterUseCaseTest : BaseTest() {
         override suspend fun refreshToken(): Result<AuthTokens> = TODO("Not yet implemented")
         override suspend fun isUserLoggedIn(): Boolean = false
         override suspend fun logout() {}
+        override suspend fun getUserProfile(): UserProfile? = null
+        override suspend fun markFirstLaunchSeen() {}
     }
 }

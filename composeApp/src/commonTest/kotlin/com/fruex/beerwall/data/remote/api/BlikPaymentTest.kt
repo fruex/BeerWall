@@ -4,7 +4,7 @@ import com.fruex.beerwall.LogSeverity
 import com.fruex.beerwall.Platform
 import com.fruex.beerwall.data.local.TokenManager
 import com.fruex.beerwall.domain.model.AuthTokens
-import com.fruex.beerwall.ui.models.UserProfile
+import com.fruex.beerwall.domain.model.UserProfile
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
