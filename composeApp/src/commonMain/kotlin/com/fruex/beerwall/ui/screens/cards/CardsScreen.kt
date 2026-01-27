@@ -57,6 +57,21 @@ fun CardsScreen(
     var selectedCard by remember { mutableStateOf<UserCard?>(null) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
+    // ⚡ Bolt Optimization: Hoist CardColors and Modifier to prevent allocation per item
+    val physicalCardColors = CardDefaults.cardColors(containerColor = CardBackground)
+    val virtualCardColors = CardDefaults.cardColors(containerColor = VirtualCardBackground)
+
+    val physicalCardModifier = remember { Modifier.fillMaxWidth() }
+    val virtualCardModifier = remember {
+        Modifier
+            .fillMaxWidth()
+            .border(
+                width = 1.dp,
+                color = VirtualCardBorderColor,
+                shape = CardShape
+            )
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -101,45 +116,47 @@ fun CardsScreen(
                     }
                 }
 
-            if (cards.isEmpty()) {
-                item(
-                    key = "empty_state",
-                    contentType = "empty"
-                ) {
-                    CardsEmptyState()
+                if (cards.isEmpty()) {
+                    item(
+                        key = "empty_state",
+                        contentType = "empty"
+                    ) {
+                        CardsEmptyState()
+                    }
+                } else {
+                    items(
+                        items = cards,
+                        key = { it.cardGuid },
+                        contentType = { "card" }
+                    ) { card ->
+                        CardItemView(
+                            card = card,
+                            onClick = { selectedCard = card },
+                            colors = if (card.isPhysical) physicalCardColors else virtualCardColors,
+                            modifier = if (card.isPhysical) physicalCardModifier else virtualCardModifier
+                        )
+                    }
                 }
-            } else {
-                items(
-                    items = cards,
-                    key = { it.cardGuid },
-                    contentType = { "card" }
-                ) { card ->
-                    CardItemView(
-                        card = card,
-                        onClick = { selectedCard = card }
+
+                item(
+                    key = "add_card_button",
+                    contentType = "button"
+                ) {
+                    BeerWallButton(
+                        text = "Dodaj nową kartę",
+                        onClick = onAddCardClick,
                     )
                 }
-            }
 
-            item(
-                key = "add_card_button",
-                contentType = "button"
-            ) {
-                BeerWallButton(
-                    text = "Dodaj nową kartę",
-                    onClick = onAddCardClick,
-                )
-            }
-
-            item(
-                key = "nfc_info",
-                contentType = "info"
-            ) {
-                NFCInfoCard()
+                item(
+                    key = "nfc_info",
+                    contentType = "info"
+                ) {
+                    NFCInfoCard()
+                }
             }
         }
     }
-}
 
     // Render sheet outside of LazyColumn
     if (selectedCard != null) {
@@ -169,34 +186,13 @@ fun CardsScreen(
 fun CardItemView(
     card: UserCard,
     onClick: () -> Unit,
+    colors: CardColors,
+    modifier: Modifier
 ) {
-    // Determine card style based on type
-    val cardBackground = if (card.isPhysical) {
-        CardBackground
-    } else {
-        // Glass effect for virtual cards - transparent with golden tint
-        VirtualCardBackground
-    }
-
-    val cardModifier = if (card.isPhysical) {
-        Modifier.fillMaxWidth()
-    } else {
-        // Add border for glass effect
-        Modifier
-            .fillMaxWidth()
-            .border(
-                width = 1.dp,
-                color = VirtualCardBorderColor,
-                shape = CardShape
-            )
-    }
-
     Card(
-        modifier = cardModifier,
+        modifier = modifier,
         shape = CardShape,
-        colors = CardDefaults.cardColors(
-            containerColor = cardBackground
-        ),
+        colors = colors,
         onClick = onClick
     ) {
         Row(

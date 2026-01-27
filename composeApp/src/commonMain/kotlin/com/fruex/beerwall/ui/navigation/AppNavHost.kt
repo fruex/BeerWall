@@ -148,7 +148,8 @@ fun AppNavHost(
                     balanceViewModel.onCancelTopUp()
                 },
                 isLoading = uiState.isLoading,
-                premisesName = premises?.premisesName
+                premisesName = premises?.premisesName,
+                gdprClause = uiState.gdprClause
             )
         }
 
