@@ -90,12 +90,4 @@ class FakeAuthRepository : AuthRepository {
     fun setLoggedIn(loggedIn: Boolean) {
         _sessionState.update { loggedIn }
     }
-
-    override suspend fun getUserProfile(): UserProfile? {
-        return null
-    }
-
-    override suspend fun markFirstLaunchSeen() {
-        // no-op
-    }
 }

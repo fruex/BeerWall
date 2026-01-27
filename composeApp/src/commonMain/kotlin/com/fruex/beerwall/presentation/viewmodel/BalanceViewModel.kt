@@ -7,9 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import com.fruex.beerwall.domain.model.GdprClause
 import com.fruex.beerwall.domain.usecase.GetBalancesUseCase
-import com.fruex.beerwall.domain.usecase.GetGdprClauseUseCase
 import com.fruex.beerwall.domain.usecase.GetPaymentOperatorsUseCase
 import com.fruex.beerwall.domain.usecase.TopUpBalanceUseCase
 import com.fruex.beerwall.presentation.mapper.toUi
@@ -28,8 +26,7 @@ import com.fruex.beerwall.ui.models.PremisesBalance
 class BalanceViewModel(
     private val getBalancesUseCase: GetBalancesUseCase,
     private val topUpBalanceUseCase: TopUpBalanceUseCase,
-    private val getPaymentOperatorsUseCase: GetPaymentOperatorsUseCase,
-    private val getGdprClauseUseCase: GetGdprClauseUseCase
+    private val getPaymentOperatorsUseCase: GetPaymentOperatorsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BalanceUiState())
@@ -38,7 +35,6 @@ class BalanceViewModel(
     init {
         refreshBalance()
         loadPaymentMethods()
-        loadGdprClause()
     }
 
     fun refreshBalance() {
@@ -116,19 +112,6 @@ class BalanceViewModel(
         }
     }
 
-    private fun loadGdprClause() {
-        viewModelScope.launch {
-            try {
-                getGdprClauseUseCase()
-                    .onSuccess { clause ->
-                        _uiState.update { it.copy(gdprClause = clause) }
-                    }
-            } catch (_: Exception) {
-                // Ignore errors
-            }
-        }
-    }
-
     fun onClearError() {
         _uiState.update { it.copy(errorMessage = null) }
     }
@@ -141,7 +124,6 @@ class BalanceViewModel(
 data class BalanceUiState(
     val balances: List<PremisesBalance> = emptyList(),
     val paymentMethods: List<PaymentMethod> = emptyList(),
-    val gdprClause: GdprClause? = null,
     val isRefreshing: Boolean = false,
     val isLoading: Boolean = false,
     val isTopUpSuccess: Boolean = false,
