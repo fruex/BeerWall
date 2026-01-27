@@ -18,8 +18,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.ui.components.AppHeader
+import com.fruex.beerwall.ui.components.BackgroundGlow
 import com.fruex.beerwall.ui.components.BeerWallButton
 import com.fruex.beerwall.ui.components.BeerWallInfoCard
+import com.fruex.beerwall.ui.components.SectionHeader
 import com.fruex.beerwall.ui.models.UserCard
 import com.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -55,45 +57,49 @@ fun CardsScreen(
     var selectedCard by remember { mutableStateOf<UserCard?>(null) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    PullToRefreshBox(
-        isRefreshing = isRefreshing,
-        onRefresh = onRefresh,
-        modifier = Modifier.fillMaxSize()
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(DarkBackground)
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(DarkBackground),
-            contentPadding = PaddingValues(24.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            // Header
-            item(
-                key = "app_header",
-                contentType = "header"
-            ) {
-                AppHeader()
-            }
+        BackgroundGlow()
 
-            item(
-                key = "section_title",
-                contentType = "title"
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(24.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Column {
-                    Text(
-                        text = "Moje karty",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "${cards.size} karty połączone",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
+                // Header
+                item(
+                    key = "app_header",
+                    contentType = "header"
+                ) {
+                    AppHeader()
                 }
-            }
+
+                item(
+                    key = "section_title",
+                    contentType = "title"
+                ) {
+                    Column {
+                        SectionHeader(
+                            text = "Moje karty",
+                            icon = Icons.Default.CreditCard
+                        )
+                        Text(
+                            text = "${cards.size} karty połączone",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary,
+                            modifier = Modifier.padding(start = 28.dp, bottom = 4.dp)
+                        )
+                    }
+                }
 
             if (cards.isEmpty()) {
                 item(
@@ -133,6 +139,7 @@ fun CardsScreen(
             }
         }
     }
+}
 
     // Render sheet outside of LazyColumn
     if (selectedCard != null) {
