@@ -68,8 +68,7 @@ class GdprClauseTest {
             {
                 "data": {
                     "title": "Title",
-                    "content": "Content",
-                    "locale": "pl"
+                    "content": "Content"
                 },
                 "error": null
             }
@@ -84,6 +83,5 @@ class GdprClauseTest {
         val clause = result.getOrNull()
         assertEquals("Title", clause?.title)
         assertEquals("Content", clause?.content)
-        assertEquals("pl", clause?.locale)
     }
 }
