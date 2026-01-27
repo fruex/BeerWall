@@ -142,11 +142,6 @@ class AuthPlugin private constructor(
                 install(ContentNegotiation) {
                     json(HttpClientFactory.json)
                 }
-                install(HttpTimeout) {
-                    requestTimeoutMillis = 30_000
-                    connectTimeoutMillis = 15_000
-                    socketTimeoutMillis = 30_000
-                }
             }
 
             val response: HttpResponse = client.get("${com.fruex.beerwall.BuildKonfig.BASE_URL}/mobile/auth/refreshToken") {

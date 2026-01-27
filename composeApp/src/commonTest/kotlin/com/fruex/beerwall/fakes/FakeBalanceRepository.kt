@@ -2,7 +2,6 @@ package com.fruex.beerwall.fakes
 
 import com.fruex.beerwall.domain.model.Balance
 import com.fruex.beerwall.domain.repository.BalanceRepository
-import com.fruex.beerwall.domain.model.GdprClause
 import com.fruex.beerwall.domain.model.PaymentOperator
 
 class FakeBalanceRepository : BalanceRepository {
@@ -37,10 +36,5 @@ class FakeBalanceRepository : BalanceRepository {
     override suspend fun getPaymentOperators(): Result<List<PaymentOperator>> {
         if (shouldFail) return Result.failure(Exception(failureMessage))
         return Result.success(emptyList())
-    }
-
-    override suspend fun getGdprClause(): Result<GdprClause> {
-        if (shouldFail) return Result.failure(Exception(failureMessage))
-        return Result.success(GdprClause("Test Title", "Test Content", "pl"))
     }
 }
