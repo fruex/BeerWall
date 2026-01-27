@@ -14,9 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.ui.components.AppHeader
-import com.fruex.beerwall.ui.components.BackgroundGlow
 import com.fruex.beerwall.ui.components.BeerWallInfoCard
-import com.fruex.beerwall.ui.components.SectionHeader
 import com.fruex.beerwall.ui.models.PremisesBalance
 import com.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -48,41 +46,37 @@ fun BalanceScreen(
         containerColor = GoldPrimary
     )
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(DarkBackground)
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        modifier = Modifier.fillMaxSize()
     ) {
-        BackgroundGlow()
-
-        PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = onRefresh,
-            modifier = Modifier.fillMaxSize()
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(DarkBackground),
+            contentPadding = PaddingValues(24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentPadding = PaddingValues(24.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+            // Header
+            item(
+                key = "app_header",
+                contentType = "header"
             ) {
-                // Header
-                item(
-                    key = "app_header",
-                    contentType = "header"
-                ) {
-                    AppHeader()
-                }
+                AppHeader()
+            }
 
-                item(
-                    key = "section_title",
-                    contentType = "title"
-                ) {
-                    SectionHeader(
-                        text = "Dostępne saldo",
-                        icon = Icons.Default.AccountBalanceWallet
-                    )
-                }
+            item(
+                key = "section_title",
+                contentType = "title"
+            ) {
+                Text(
+                    text = "Dostępne saldo",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+            }
 
             items(
                 items = balances,
@@ -106,7 +100,6 @@ fun BalanceScreen(
             }
         }
     }
-}
 }
 
 @Composable

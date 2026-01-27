@@ -15,8 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.ui.components.AppHeader
-import com.fruex.beerwall.ui.components.BackgroundGlow
-import com.fruex.beerwall.ui.components.SectionHeader
 import com.fruex.beerwall.ui.models.DailyTransactions
 import com.fruex.beerwall.ui.models.Transaction
 import com.fruex.beerwall.ui.theme.*
@@ -43,61 +41,70 @@ fun HistoryScreen(
         containerColor = CardBackground
     )
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(DarkBackground)
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        modifier = Modifier.fillMaxSize()
     ) {
-        BackgroundGlow()
-
-        PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = onRefresh,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            if (transactionGroups.isEmpty()) {
-                // Header + Empty View
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(24.dp)
+        if (transactionGroups.isEmpty()) {
+            // Header + Empty View
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(DarkBackground)
+                    .padding(24.dp)
+            ) {
+                AppHeader()
+                
+                Box(
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    EmptyHistoryView()
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(DarkBackground),
+                contentPadding = PaddingValues(24.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Header
+                item(
+                    key = "app_header",
+                    contentType = "header"
                 ) {
                     AppHeader()
-
-                    Box(
-                        modifier = Modifier.weight(1f).fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        EmptyHistoryView()
-                    }
                 }
-            } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentPadding = PaddingValues(24.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    // Header
-                    item(
-                        key = "app_header",
-                        contentType = "header"
-                    ) {
-                        AppHeader()
-                    }
 
-                    transactionGroups.forEach { group ->
-                        item(
-                            key = "header_${group.date}",
-                            contentType = "group_header"
+                transactionGroups.forEach { group ->
+                    item(
+                        key = "header_${group.date}",
+                        contentType = "group_header"
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                         ) {
-                            SectionHeader(
+                            Icon(
+                                imageVector = Icons.Default.CalendarToday,
+                                contentDescription = null,
+                                tint = GoldPrimary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
                                 text = group.date,
-                                icon = Icons.Default.CalendarToday
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = GoldPrimary
                             )
                         }
+                    }
 
-                        items(
+                    items(
                         items = group.transactions,
                         key = { it.transactionId },
                         contentType = { "transaction" }
@@ -111,7 +118,6 @@ fun HistoryScreen(
             }
         }
     }
-}
 }
 
 @Composable
