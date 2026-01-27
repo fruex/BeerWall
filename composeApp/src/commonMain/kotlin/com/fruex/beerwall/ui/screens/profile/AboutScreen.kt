@@ -2,7 +2,6 @@ package com.fruex.beerwall.ui.screens.profile
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -11,7 +10,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.BuildKonfig
 import com.fruex.beerwall.ui.theme.BeerWallTheme
-import com.fruex.beerwall.ui.theme.CardBackground
 import com.fruex.beerwall.ui.theme.TextSecondary
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -35,77 +33,62 @@ fun AboutScreen(
 
         HorizontalDivider(color = TextSecondary.copy(alpha = 0.2f))
 
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = CardBackground
-            )
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    text = "IgiBeer",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
-                )
+        Text(
+            text = "IgiBeer",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
+        )
 
-                Text(
-                    text = "Wersja ${BuildKonfig.APP_VERSION}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
-                )
+        Text(
+            text = "Wersja ${BuildKonfig.APP_VERSION}",
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextSecondary
+        )
 
-                Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(0.dp))
 
-                Text(
-                    text = "IgiBeer to innowacyjny system samoobsługowy umożliwiający nalewanie piwa z wykorzystaniem technologii NFC i zarządzania saldem online.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
-                )
+        Text(
+            text = "IgiBeer to innowacyjny system samoobsługowy umożliwiający nalewanie piwa z wykorzystaniem technologii NFC i zarządzania saldem online.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextSecondary
+        )
 
-                Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(0.dp))
 
-                Text(
-                    text = "Funkcje aplikacji:",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
+        Text(
+            text = "Funkcje aplikacji:",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold
+        )
 
-                Text(
-                    text = "• Zarządzanie saldem online\n" +
-                            "• Szybkie płatności BLIK\n" +
-                            "• Program lojalnościowy\n" +
-                            "• Integracja z kartami NFC\n" +
-                            "• Historia transakcji\n" +
-                            "• Wielolokalizacyjność",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
-                )
+        Text(
+            text = "• Zarządzanie saldem online\n" +
+                    "• Szybkie płatności BLIK\n" +
+                    "• Program lojalnościowy\n" +
+                    "• Integracja z kartami NFC\n" +
+                    "• Historia transakcji\n" +
+                    "• Wielolokalizacyjność",
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextSecondary
+        )
 
-                Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(0.dp))
 
-                HorizontalDivider(color = TextSecondary.copy(alpha = 0.2f))
+        HorizontalDivider(color = TextSecondary.copy(alpha = 0.2f))
 
-                Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(0.dp))
 
-                Text(
-                    text = "© 2026 Beer Wall. Wszystkie prawa zastrzeżone.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = TextSecondary
-                )
+        Text(
+            text = "© 2026 Beer Wall. Wszystkie prawa zastrzeżone.",
+            style = MaterialTheme.typography.bodySmall,
+            color = TextSecondary
+        )
 
-                Text(
-                    text = "Aplikacja stworzona z wykorzystaniem Kotlin Multiplatform i Jetpack Compose.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = TextSecondary
-                )
-            }
-        }
+        Text(
+            text = "Aplikacja stworzona z wykorzystaniem Kotlin Multiplatform i Jetpack Compose.",
+            style = MaterialTheme.typography.bodySmall,
+            color = TextSecondary
+        )
     }
 }
 
