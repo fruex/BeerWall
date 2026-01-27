@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.update
 import com.fruex.beerwall.domain.model.AuthTokens
 import com.fruex.beerwall.domain.model.SessionStatus
 import com.fruex.beerwall.domain.repository.AuthRepository
+import com.fruex.beerwall.domain.model.UserProfile
 
 class FakeAuthRepository : AuthRepository {
     var shouldFail = false
@@ -73,6 +74,16 @@ class FakeAuthRepository : AuthRepository {
 
     override suspend fun logout() {
         _sessionState.update { false }
+    }
+
+    override suspend fun getUserProfile(): UserProfile? {
+        if (shouldFail) return null
+        if (!_sessionState.value) return null
+        return UserProfile(name = "${fakeTokens.firstName} ${fakeTokens.lastName}")
+    }
+
+    override suspend fun markFirstLaunchSeen() {
+        // No-op for tests
     }
 
     // Metoda pomocnicza do ustawiania stanu w testach

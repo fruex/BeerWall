@@ -5,6 +5,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import com.fruex.beerwall.domain.model.AuthTokens
+import com.fruex.beerwall.domain.model.GoogleUser
 
 /**
  * Testy dla TokenManager sprawdzające podstawowe operacje na tokenach
