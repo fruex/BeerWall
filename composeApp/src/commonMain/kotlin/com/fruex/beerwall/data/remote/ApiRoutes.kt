@@ -38,6 +38,7 @@ object ApiRoutes {
         private const val BASE = "$MOBILE/payments"
         const val TOP_UP = "$BASE/topUp"
         const val OPERATORS = "$BASE/operators"
+        const val GDPR_CLAUSE = "$BASE/gdprClause"
     }
 
     /**
