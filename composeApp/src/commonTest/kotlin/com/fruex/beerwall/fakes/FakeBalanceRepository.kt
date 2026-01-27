@@ -41,6 +41,6 @@ class FakeBalanceRepository : BalanceRepository {
 
     override suspend fun getGdprClause(): Result<GdprClause> {
         if (shouldFail) return Result.failure(Exception(failureMessage))
-        return Result.success(GdprClause("Test Title", "Test Content", "pl"))
+        return Result.success(GdprClause("Test Title", "Test Content"))
     }
 }
