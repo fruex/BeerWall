@@ -17,7 +17,7 @@ fun AppLogo(modifier: Modifier = Modifier) {
     Image(
         painter = painterResource(Res.drawable.logo),
         contentDescription = "IGI BEER",
-        modifier = modifier.height(80.dp),
+        modifier = modifier.height(60.dp),
         contentScale = ContentScale.Fit
     )
 }
