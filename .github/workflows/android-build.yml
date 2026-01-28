@@ -53,6 +53,9 @@ jobs:
     - name: Run Tests
       run: ./gradlew test
 
+    - name: Run Lint
+      run: ./gradlew :composeApp:lintDebug
+
     - name: Prepare Artifacts
       run: |
         if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
