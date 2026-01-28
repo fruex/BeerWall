@@ -13,6 +13,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -46,6 +47,7 @@ fun CardsScreen(
     onRefresh: () -> Unit = {},
     onAddCardClick: () -> Unit,
     onToggleCardStatus: (String) -> Unit,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     // ⚡ Bolt Optimization: Hoist dialog state out of LazyColumn to prevent
     // creating state per item and decouple dialog from the item lifecycle.
@@ -67,6 +69,16 @@ fun CardsScreen(
             )
     }
 
+    val layoutDirection = LocalLayoutDirection.current
+    val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
+
+    val mergedPadding = PaddingValues(
+        start = 24.dp + contentPadding.calculateStartPadding(layoutDirection) + systemBarsPadding.calculateStartPadding(layoutDirection),
+        top = 24.dp + contentPadding.calculateTopPadding() + systemBarsPadding.calculateTopPadding(),
+        end = 24.dp + contentPadding.calculateEndPadding(layoutDirection) + systemBarsPadding.calculateEndPadding(layoutDirection),
+        bottom = 24.dp + contentPadding.calculateBottomPadding() + systemBarsPadding.calculateBottomPadding()
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -82,7 +94,7 @@ fun CardsScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize(),
-                contentPadding = PaddingValues(24.dp),
+                contentPadding = mergedPadding,
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // Header

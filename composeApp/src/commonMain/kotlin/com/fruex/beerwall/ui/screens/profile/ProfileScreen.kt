@@ -19,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.ui.components.AppHeader
@@ -48,8 +49,17 @@ fun ProfileScreen(
     onChangePasswordClick: () -> Unit,
     onSupportClick: () -> Unit,
     onAboutClick: () -> Unit,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val fillLevel = remember { Animatable(0f) }
+
+    val layoutDirection = LocalLayoutDirection.current
+    val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
+
+    val topPadding = 24.dp + contentPadding.calculateTopPadding() + systemBarsPadding.calculateTopPadding()
+    val bottomPadding = 24.dp + contentPadding.calculateBottomPadding() + systemBarsPadding.calculateBottomPadding()
+    val startPadding = 24.dp + contentPadding.calculateStartPadding(layoutDirection) + systemBarsPadding.calculateStartPadding(layoutDirection)
+    val endPadding = 24.dp + contentPadding.calculateEndPadding(layoutDirection) + systemBarsPadding.calculateEndPadding(layoutDirection)
 
     LaunchedEffect(Unit) {
         fillLevel.animateTo(
@@ -69,7 +79,12 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(24.dp),
+                .padding(
+                    start = startPadding,
+                    top = topPadding,
+                    end = endPadding,
+                    bottom = bottomPadding
+                ),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             // Header

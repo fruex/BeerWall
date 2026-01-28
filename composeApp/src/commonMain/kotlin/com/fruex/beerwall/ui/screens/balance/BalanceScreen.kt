@@ -11,6 +11,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.ui.components.AppHeader
@@ -42,10 +43,21 @@ fun BalanceScreen(
     onRefresh: () -> Unit = {},
     onAddFundsClick: (premisesId: Int) -> Unit,
     onAddLocationClick: () -> Unit,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     // ⚡ Bolt Optimization: Hoist CardColors to prevent allocation per item in LazyColumn
     val balanceCardColors = CardDefaults.cardColors(
         containerColor = GoldPrimary
+    )
+
+    val layoutDirection = LocalLayoutDirection.current
+    val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
+
+    val mergedPadding = PaddingValues(
+        start = 24.dp + contentPadding.calculateStartPadding(layoutDirection) + systemBarsPadding.calculateStartPadding(layoutDirection),
+        top = 24.dp + contentPadding.calculateTopPadding() + systemBarsPadding.calculateTopPadding(),
+        end = 24.dp + contentPadding.calculateEndPadding(layoutDirection) + systemBarsPadding.calculateEndPadding(layoutDirection),
+        bottom = 24.dp + contentPadding.calculateBottomPadding() + systemBarsPadding.calculateBottomPadding()
     )
 
     Box(
@@ -63,7 +75,7 @@ fun BalanceScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize(),
-                contentPadding = PaddingValues(24.dp),
+                contentPadding = mergedPadding,
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // Header
