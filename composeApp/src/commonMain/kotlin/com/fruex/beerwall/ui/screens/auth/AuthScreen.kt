@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -84,6 +85,14 @@ fun AuthScreen(
     // Walidacja email
     val isEmailValid = remember(email) { EmailValidator.validate(email) }
 
+    val layoutDirection = LocalLayoutDirection.current
+    val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
+
+    val topPadding = 80.dp + systemBarsPadding.calculateTopPadding()
+    val bottomPadding = 24.dp + systemBarsPadding.calculateBottomPadding()
+    val startPadding = 24.dp + systemBarsPadding.calculateStartPadding(layoutDirection)
+    val endPadding = 24.dp + systemBarsPadding.calculateEndPadding(layoutDirection)
+
     LaunchedEffect(showEmailAuth) {
         if (showEmailAuth) {
             emailFocusRequester.requestFocus()
@@ -110,7 +119,12 @@ fun AuthScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(start = 24.dp, end = 24.dp, bottom = 24.dp, top = 80.dp),
+                .padding(
+                    start = startPadding,
+                    end = endPadding,
+                    bottom = bottomPadding,
+                    top = topPadding
+                ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AppLogo()

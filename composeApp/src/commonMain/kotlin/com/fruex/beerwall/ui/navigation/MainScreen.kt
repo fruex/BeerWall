@@ -271,9 +271,10 @@ fun MainScreenContent(
                     )
                 }
             }
-        }
+        },
+        contentWindowInsets = WindowInsets(0.dp)
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
+        Box(modifier = Modifier) {
             when (selectedTab) {
                 BottomNavItem.Balance.route -> {
                     BalanceScreen(
@@ -281,7 +282,8 @@ fun MainScreenContent(
                         isRefreshing = isBalanceRefreshing,
                         onRefresh = onBalanceRefresh,
                         onAddFundsClick = onAddFundsClick,
-                        onAddLocationClick = onAddLocationClick
+                        onAddLocationClick = onAddLocationClick,
+                        contentPadding = paddingValues
                     )
                 }
                 BottomNavItem.Cards.route -> {
@@ -290,14 +292,16 @@ fun MainScreenContent(
                         isRefreshing = isCardsRefreshing,
                         onRefresh = onCardsRefresh,
                         onAddCardClick = onAddCardClick,
-                        onToggleCardStatus = onToggleCardStatus
+                        onToggleCardStatus = onToggleCardStatus,
+                        contentPadding = paddingValues
                     )
                 }
                 BottomNavItem.History.route -> {
                     HistoryScreen(
                         transactionGroups = transactionGroups,
                         isRefreshing = isHistoryRefreshing,
-                        onRefresh = onHistoryRefresh
+                        onRefresh = onHistoryRefresh,
+                        contentPadding = paddingValues
                     )
                 }
                 BottomNavItem.Profile.route -> {
@@ -308,7 +312,8 @@ fun MainScreenContent(
                             onLogoutClick = onLogoutClick,
                             onChangePasswordClick = onChangePasswordClick,
                             onSupportClick = onSupportClick,
-                            onAboutClick = onAboutClick
+                            onAboutClick = onAboutClick,
+                            contentPadding = paddingValues
                         )
                     } else {
                         Box(

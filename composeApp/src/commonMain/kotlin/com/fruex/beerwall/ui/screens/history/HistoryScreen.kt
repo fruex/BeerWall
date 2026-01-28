@@ -12,6 +12,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.ui.components.AppHeader
@@ -36,11 +37,22 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun HistoryScreen(
     transactionGroups: List<DailyTransactions>,
     isRefreshing: Boolean = false,
-    onRefresh: () -> Unit = {}
+    onRefresh: () -> Unit = {},
+    contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
     // ⚡ Bolt Optimization: Hoist CardColors to prevent allocation per item in LazyColumn
     val transactionCardColors = CardDefaults.cardColors(
         containerColor = CardBackground
+    )
+
+    val layoutDirection = LocalLayoutDirection.current
+    val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
+
+    val mergedPadding = PaddingValues(
+        start = 24.dp + contentPadding.calculateStartPadding(layoutDirection) + systemBarsPadding.calculateStartPadding(layoutDirection),
+        top = 24.dp + contentPadding.calculateTopPadding() + systemBarsPadding.calculateTopPadding(),
+        end = 24.dp + contentPadding.calculateEndPadding(layoutDirection) + systemBarsPadding.calculateEndPadding(layoutDirection),
+        bottom = 24.dp + contentPadding.calculateBottomPadding() + systemBarsPadding.calculateBottomPadding()
     )
 
     Box(
@@ -60,7 +72,12 @@ fun HistoryScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(24.dp)
+                        .padding(
+                            start = mergedPadding.calculateStartPadding(layoutDirection),
+                            top = mergedPadding.calculateTopPadding(),
+                            end = mergedPadding.calculateEndPadding(layoutDirection),
+                            bottom = mergedPadding.calculateBottomPadding()
+                        )
                 ) {
                     AppHeader()
                     
@@ -75,7 +92,7 @@ fun HistoryScreen(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize(),
-                    contentPadding = PaddingValues(24.dp),
+                    contentPadding = mergedPadding,
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     // Header

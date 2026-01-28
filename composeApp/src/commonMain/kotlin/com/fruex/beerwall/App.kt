@@ -1,6 +1,7 @@
 package com.fruex.beerwall
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
@@ -48,10 +49,11 @@ fun App() {
                 }
             } else {
                 Scaffold(
-                    snackbarHost = { SnackbarHost(snackbarHostState) }
+                    snackbarHost = { SnackbarHost(snackbarHostState) },
+                    contentWindowInsets = WindowInsets(0, 0, 0, 0)
                 ) { paddingValues ->
                     AppNavHost(
-                        modifier = Modifier.padding(paddingValues),
+                        modifier = Modifier,
                         startDestination =
                         if (authState.isLoggedIn)
                             NavigationDestination.Main.route
