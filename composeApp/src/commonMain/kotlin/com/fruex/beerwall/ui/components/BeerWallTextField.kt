@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -56,9 +58,27 @@ fun BeerWallTextField(
     errorMessage: String? = null,
     enabled: Boolean = true,
     textAlign: TextAlign = TextAlign.Start,
-    contentType: ContentType? = null
+    contentType: ContentType? = null,
+    showClearButton: Boolean = true
 ) {
     val effectiveVisualTransformation = if (isPassword) PasswordVisualTransformation() else visualTransformation
+
+    val effectiveTrailingIcon = if (trailingIcon != null) {
+        trailingIcon
+    } else if (showClearButton && value.isNotEmpty() && enabled) {
+        {
+            IconButton(onClick = { onValueChange("") }) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Wyczyść tekst",
+                    tint = TextSecondary
+                )
+            }
+        }
+    } else {
+        null
+    }
+
     Column(modifier = modifier) {
         TextField(
             value = value,
@@ -85,7 +105,7 @@ fun BeerWallTextField(
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
             leadingIcon = leadingIcon,
-            trailingIcon = trailingIcon,
+            trailingIcon = effectiveTrailingIcon,
             isError = isError,
             enabled = enabled,
             colors = TextFieldDefaults.colors(
