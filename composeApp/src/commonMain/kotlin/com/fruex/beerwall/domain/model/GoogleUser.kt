@@ -6,7 +6,7 @@ import com.fruex.beerwall.getPlatform
 import com.fruex.beerwall.log
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
-import kotlin.time.Clock
+import kotlinx.datetime.Clock
 
 /**
  * Model użytkownika Google (zwracany przez Google Sign-In).

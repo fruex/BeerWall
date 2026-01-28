@@ -30,7 +30,7 @@ fun List<Transaction>.toUi(): List<com.fruex.beerwall.ui.models.Transaction> {
 fun List<Transaction>.groupByDate(): List<DailyTransactions> {
     return groupBy { it.startDateTime.date }
         .map { (date, transactions) ->
-            val formattedDate = "${date.day} ${monthNames[date.month.number - 1]}"
+            val formattedDate = "${date.dayOfMonth} ${monthNames[date.month.number - 1]}"
 
             DailyTransactions(
                 date = formattedDate,
