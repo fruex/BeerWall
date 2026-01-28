@@ -19,9 +19,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.fruex.beerwall.domain.model.GdprClause
 import com.fruex.beerwall.ui.models.PaymentMethod
 import com.fruex.beerwall.ui.components.BeerWallButton
 import com.fruex.beerwall.ui.components.BeerWallTextField
+import com.fruex.beerwall.ui.components.HtmlText
 import com.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -34,6 +36,7 @@ fun AddFundsScreen(
     onCancelTopUp: () -> Unit = {},
     isLoading: Boolean = false,
     premisesName: String? = null,
+    gdprClause: GdprClause? = null
 ) {
     var selectedAmount by rememberSaveable { mutableStateOf("") }
     var customAmount by rememberSaveable { mutableStateOf("") }
@@ -292,6 +295,16 @@ fun AddFundsScreen(
                     },
                     enabled = isPaymentReady
                 )
+
+                if (gdprClause != null) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    HtmlText(
+                        text = gdprClause.content,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary,
+                        linkColor = GoldPrimary
+                    )
+                }
             }
         }
     }
