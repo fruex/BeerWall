@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -38,6 +39,7 @@ fun AddFundsScreen(
     premisesName: String? = null,
     gdprClause: GdprClause? = null
 ) {
+    val focusManager = LocalFocusManager.current
     var selectedAmount by rememberSaveable { mutableStateOf("") }
     var customAmount by rememberSaveable { mutableStateOf("") }
     var blikCode by rememberSaveable { mutableStateOf("") }
@@ -262,6 +264,9 @@ fun AddFundsScreen(
                         onValueChange = { newValue ->
                             if (newValue.length <= 6 && newValue.all { it.isDigit() }) {
                                 blikCode = newValue
+                                if (newValue.length == 6) {
+                                    focusManager.clearFocus()
+                                }
                             }
                         },
                         placeholder = "000 000",
