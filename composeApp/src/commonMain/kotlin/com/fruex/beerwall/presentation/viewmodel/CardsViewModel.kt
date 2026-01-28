@@ -103,10 +103,11 @@ class CardsViewModel(
 
     fun onSaveCard(cardId: String, description: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isRefreshing = true, errorMessage = null) }
+            _uiState.update { it.copy(isSaving = true, isSaveSuccess = false, errorMessage = null) }
             try {
                 assignCardUseCase(cardId, description)
                     .onSuccess {
+                        _uiState.update { it.copy(isSaveSuccess = true) }
                         refreshCards()
                     }
                     .onFailure { error ->
@@ -115,9 +116,13 @@ class CardsViewModel(
             } catch (e: Exception) {
                 _uiState.update { it.copy(errorMessage = "Nie udało się zapisać karty: ${e.message}") }
             } finally {
-                _uiState.update { it.copy(isRefreshing = false) }
+                _uiState.update { it.copy(isSaving = false) }
             }
         }
+    }
+
+    fun onSaveSuccessConsumed() {
+        _uiState.update { it.copy(isSaveSuccess = false) }
     }
 
     private fun updateCardStatus(cardId: String, isActive: Boolean) {
@@ -133,6 +138,8 @@ class CardsViewModel(
 data class CardsUiState(
     val cards: List<UserCard> = emptyList(),
     val isRefreshing: Boolean = false,
+    val isSaving: Boolean = false,
+    val isSaveSuccess: Boolean = false,
     val errorMessage: String? = null,
     val scannedCardId: String? = null,
     val isNfcEnabled: Boolean = false
