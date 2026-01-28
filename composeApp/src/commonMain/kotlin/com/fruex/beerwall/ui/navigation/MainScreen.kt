@@ -336,13 +336,17 @@ fun MainScreenPreview() {
                     premisesId = 1,
                     premisesName = "Pub Centrum",
                     balance = 45.50,
-                    loyaltyPoints = 120
+                    loyaltyPoints = 120,
+                    formattedBalance = "45.50 zł",
+                    formattedLoyaltyPoints = "120 pkt"
                 ),
                 PremisesBalance(
                     premisesId = 2,
                     premisesName = "Bar przy Rynku",
                     balance = 12.00,
-                    loyaltyPoints = 50
+                    loyaltyPoints = 50,
+                    formattedBalance = "12.00 zł",
+                    formattedLoyaltyPoints = "50 pkt"
                 )
             ),
             isBalanceRefreshing = false,
