@@ -6,7 +6,6 @@ import com.fruex.beerwall.domain.model.GdprClause
 fun GdprClauseResponse.toDomain(): GdprClause {
     return GdprClause(
         title = title,
-        content = content,
-        locale = locale
+        content = content
     )
 }

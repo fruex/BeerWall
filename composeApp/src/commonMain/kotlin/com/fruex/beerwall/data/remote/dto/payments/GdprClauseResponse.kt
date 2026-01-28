@@ -6,8 +6,7 @@ import com.fruex.beerwall.data.remote.common.ApiEnvelope
 @Serializable
 data class GdprClauseResponse(
     val title: String,
-    val content: String,
-    val locale: String
+    val content: String
 )
 
 typealias GetGdprClauseEnvelope = ApiEnvelope<GdprClauseResponse>
