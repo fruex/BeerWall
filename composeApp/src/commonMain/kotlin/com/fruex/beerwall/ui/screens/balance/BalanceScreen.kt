@@ -91,8 +91,8 @@ fun BalanceScreen(
                 ) { premisesBalance ->
                     BalanceCard(
                         premisesName = premisesBalance.premisesName,
-                        balance = premisesBalance.balance,
-                        loyaltyPoints = premisesBalance.loyaltyPoints,
+                        formattedBalance = premisesBalance.formattedBalance,
+                        formattedLoyaltyPoints = premisesBalance.formattedLoyaltyPoints,
                         onAddFundsClick = { onAddFundsClick(premisesBalance.premisesId) },
                         colors = balanceCardColors
                     )
@@ -112,8 +112,8 @@ fun BalanceScreen(
 @Composable
 fun BalanceCard(
     premisesName: String,
-    balance: Double,
-    loyaltyPoints: Int,
+    formattedBalance: String,
+    formattedLoyaltyPoints: String,
     onAddFundsClick: () -> Unit,
     colors: CardColors = CardDefaults.cardColors(
         containerColor = GoldPrimary
@@ -189,7 +189,7 @@ fun BalanceCard(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "${balance} zł",
+                            text = formattedBalance,
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = DarkBackground
@@ -208,7 +208,7 @@ fun BalanceCard(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "$loyaltyPoints pkt",
+                            text = formattedLoyaltyPoints,
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = DarkBackground
@@ -239,13 +239,17 @@ fun BalanceScreenPreview() {
                     premisesId = 1,
                     premisesName = "Pub Centrum",
                     balance = 45.50,
-                    loyaltyPoints = 120
+                    loyaltyPoints = 120,
+                    formattedBalance = "45.50 zł",
+                    formattedLoyaltyPoints = "120 pkt"
                 ),
                 PremisesBalance(
                     premisesId = 2,
                     premisesName = "Bar przy Rynku",
                     balance = 12.00,
-                    loyaltyPoints = 50
+                    loyaltyPoints = 50,
+                    formattedBalance = "12.00 zł",
+                    formattedLoyaltyPoints = "50 pkt"
                 )
             ),
             onAddFundsClick = {},

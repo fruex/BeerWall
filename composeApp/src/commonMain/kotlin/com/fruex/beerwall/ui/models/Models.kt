@@ -8,7 +8,10 @@ data class PremisesBalance(
     val premisesId: Int,
     val premisesName: String,
     val balance: Double,
-    val loyaltyPoints: Int
+    val loyaltyPoints: Int,
+    // Pre-formatted strings to avoid allocation during lazy list rendering
+    val formattedBalance: String,
+    val formattedLoyaltyPoints: String
 )
 
 // Card models
