@@ -10,6 +10,7 @@ import com.fruex.beerwall.domain.model.UserProfile
 import com.fruex.beerwall.data.local.ensureTimestamp
 import com.fruex.beerwall.data.local.decodeTokenPayload
 import com.fruex.beerwall.data.remote.api.AuthApiClient
+import com.fruex.beerwall.domain.exceptions.UnauthorizedException
 import com.fruex.beerwall.domain.repository.AuthRepository
 import com.fruex.beerwall.getPlatform
 import com.fruex.beerwall.log
@@ -55,10 +56,20 @@ class AuthRepositoryImpl(
                 sessionManager.setLoggedIn(true)
                 return SessionStatus.Authenticated
             } else {
-                // Odświeżanie nie powiodło się (np. token unieważniony po stronie serwera)
-                platform.log("Token refresh failed during session check", this, LogSeverity.WARN)
-                tokenManager.clearTokens()
-                return SessionStatus.Expired
+                val exception = refreshResult.exceptionOrNull()
+                if (exception is UnauthorizedException) {
+                    // Token unieważniony po stronie serwera
+                    platform.log("Refresh token rejected: ${exception.message}", this, LogSeverity.WARN)
+                    tokenManager.clearTokens()
+                    return SessionStatus.Expired
+                } else {
+                    // Błąd sieci lub inny błąd - nie wylogowuj użytkownika
+                    platform.log("Token refresh failed (network/other): ${exception?.message}", this, LogSeverity.WARN)
+                    // Zakładamy, że sesja jest ważna (offline), choć token wygasł.
+                    // Aplikacja powinna obsłużyć błędy sieci przy kolejnych żądaniach.
+                    sessionManager.setLoggedIn(true)
+                    return SessionStatus.Authenticated
+                }
             }
         }
 
