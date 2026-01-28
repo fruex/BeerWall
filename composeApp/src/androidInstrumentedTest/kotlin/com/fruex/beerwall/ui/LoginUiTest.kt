@@ -9,18 +9,11 @@ import androidx.compose.ui.test.runComposeUiTest
 import com.fruex.beerwall.ui.screens.auth.AuthMode
 import com.fruex.beerwall.ui.screens.auth.AuthScreen
 import com.fruex.beerwall.ui.theme.BeerWallTheme
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
-import org.junit.runner.RunWith
 import kotlin.test.Test
-import kotlin.test.Ignore
 
 @OptIn(ExperimentalTestApi::class)
-@RunWith(RobolectricTestRunner::class)
-@Config(manifest = "src/androidMain/AndroidManifest.xml")
 class LoginUiTest {
 
-    @Ignore // Ignoring until Robolectric environment is fully configured for ComponentActivity
     @Test
     fun testLoginFlow_UI_Elements_Exist() = runComposeUiTest {
         setContent {

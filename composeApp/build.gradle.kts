@@ -97,6 +97,14 @@ kotlin {
                 implementation(libs.androidx.testExt.junit)
             }
         }
+        val androidInstrumentedTest by getting {
+            dependencies {
+                implementation(libs.androidx.testExt.junit)
+                implementation(libs.androidx.espresso.core)
+                implementation(compose.uiTest)
+                implementation(libs.kotlin.test)
+            }
+        }
     }
 }
 
