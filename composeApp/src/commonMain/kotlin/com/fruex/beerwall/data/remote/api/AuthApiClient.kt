@@ -6,6 +6,7 @@ import com.fruex.beerwall.data.remote.ApiRoutes
 import com.fruex.beerwall.data.remote.BaseApiClient
 import com.fruex.beerwall.data.remote.dto.auth.*
 import com.fruex.beerwall.log
+import com.fruex.beerwall.domain.exceptions.UnauthorizedException
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -201,10 +202,28 @@ class AuthApiClient(
      * @param refreshToken Token odświeżania.
      * @return Result zawierający [RefreshTokenResponse] lub błąd.
      */
-    suspend fun refreshToken(refreshToken: String): Result<RefreshTokenResponse> =
-        safeCall<RefreshTokenEnvelope, RefreshTokenResponse> {
-            get("$baseUrl/${ApiRoutes.Auth.REFRESH_TOKEN}") {
-                header(HttpHeaders.Authorization, "Bearer $refreshToken")
-            }.body()
+    suspend fun refreshToken(refreshToken: String): Result<RefreshTokenResponse> = try {
+        val httpResponse = client.get("$baseUrl/${ApiRoutes.Auth.REFRESH_TOKEN}") {
+            header(HttpHeaders.Authorization, "Bearer $refreshToken")
         }
+
+        when (httpResponse.status) {
+            HttpStatusCode.OK -> {
+                val envelope: RefreshTokenEnvelope = httpResponse.body()
+                if (envelope.data != null) {
+                    Result.success(envelope.data)
+                } else {
+                    Result.failure(Exception(envelope.error?.message ?: "Unknown error"))
+                }
+            }
+            HttpStatusCode.Unauthorized -> {
+                Result.failure(UnauthorizedException("Refresh token rejected"))
+            }
+            else -> {
+                Result.failure(Exception("HTTP ${httpResponse.status.value}"))
+            }
+        }
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
 }
