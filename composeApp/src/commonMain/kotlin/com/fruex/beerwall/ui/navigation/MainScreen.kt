@@ -127,8 +127,11 @@ fun MainScreen(
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner, selectedTab) {
         val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
-            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME && selectedTab == BottomNavItem.Balance.route) {
-                balanceViewModel.refreshBalance()
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                when (selectedTab) {
+                    BottomNavItem.Balance.route -> balanceViewModel.refreshBalance()
+                    BottomNavItem.Cards.route -> cardsViewModel.refreshCards()
+                }
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)

@@ -37,6 +37,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun AddCardScreen(
     scannedCardId: String?,
     isNfcEnabled: Boolean,
+    isSaving: Boolean,
+    errorMessage: String?,
     onBackClick: () -> Unit,
     onStartScanning: () -> Unit,
     onStopScanning: () -> Unit,
@@ -85,12 +87,20 @@ fun AddCardScreen(
                                 }
                             }
                         },
-                        enabled = canSave
+                        enabled = canSave && !isSaving
                     ) {
-                        Text(
-                            text = "Zapisz",
-                            color = if (canSave) GoldPrimary else TextSecondary
-                        )
+                        if (isSaving) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = GoldPrimary,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text(
+                                text = "Zapisz",
+                                color = if (canSave) GoldPrimary else TextSecondary
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -105,6 +115,33 @@ fun AddCardScreen(
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                if (errorMessage != null) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = errorMessage,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        }
+                    }
+                }
+
                 if (!isNfcEnabled) {
                     Card(
                         modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
@@ -241,7 +278,8 @@ fun AddCardScreen(
                                 scannedCardId,
                                 cardName.ifBlank { "Karta NFC" }
                             )
-                        }
+                        },
+                        isLoading = isSaving
                     )
                 }
             }
@@ -287,6 +325,8 @@ fun AddCardScreenPreview() {
         AddCardScreen(
             scannedCardId = null,
             isNfcEnabled = true,
+            isSaving = false,
+            errorMessage = null,
             onBackClick = {},
             onStartScanning = {},
             onStopScanning = {},

@@ -158,15 +158,23 @@ fun AppNavHost(
             val cardsViewModel = koinViewModel<CardsViewModel>()
             val uiState by cardsViewModel.uiState.collectAsState()
 
+            LaunchedEffect(uiState.isSaveSuccess) {
+                if (uiState.isSaveSuccess) {
+                    cardsViewModel.onSaveSuccessConsumed()
+                    navController.popBackStack()
+                }
+            }
+
             AddCardScreen(
                 scannedCardId = uiState.scannedCardId,
                 isNfcEnabled = uiState.isNfcEnabled,
+                isSaving = uiState.isSaving,
+                errorMessage = uiState.errorMessage,
                 onBackClick = { navController.popBackStack() },
                 onStartScanning = { cardsViewModel.startNfcListening() },
                 onStopScanning = { cardsViewModel.stopNfcListening() },
                 onSaveCard = { cardId, description ->
                     cardsViewModel.onSaveCard(cardId, description)
-                    navController.popBackStack()
                 }
             )
         }
