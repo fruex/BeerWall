@@ -2,6 +2,8 @@ package com.fruex.beerwall.ui.screens.profile
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -9,6 +11,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.domain.validation.PasswordValidator
 import com.fruex.beerwall.ui.components.BeerWallButton
@@ -65,7 +68,8 @@ fun ChangePasswordScreen(
             placeholder = "Stare hasło",
             isPassword = true,
             modifier = Modifier.fillMaxWidth(),
-            contentType = ContentType.Password
+            contentType = ContentType.Password,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
         )
 
         BeerWallTextField(
@@ -74,7 +78,8 @@ fun ChangePasswordScreen(
             placeholder = "Nowe hasło",
             isPassword = true,
             modifier = Modifier.fillMaxWidth(),
-            contentType = ContentType.NewPassword
+            contentType = ContentType.NewPassword,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
         )
 
         BeerWallTextField(
@@ -83,7 +88,15 @@ fun ChangePasswordScreen(
             placeholder = "Potwierdź hasło",
             isPassword = true,
             modifier = Modifier.fillMaxWidth(),
-            contentType = ContentType.NewPassword
+            contentType = ContentType.NewPassword,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    if (isValid && !isLoading) {
+                        onChangePassword(oldPassword, newPassword)
+                    }
+                }
+            )
         )
 
         if (newPassword.isNotEmpty() && !passwordValidation.isValid) {
