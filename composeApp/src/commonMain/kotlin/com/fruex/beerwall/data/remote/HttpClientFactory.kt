@@ -52,8 +52,7 @@ object HttpClientFactory {
             install(Logging) {
                 logger = object : Logger {
                     override fun log(message: String) {
-                        val sanitizedMessage = LogSanitizer.sanitize(message)
-                        platform.log(sanitizedMessage, "KtorClient", LogSeverity.DEBUG)
+                        platform.log(message, "KtorClient", LogSeverity.DEBUG)
                     }
                 }
                 level = LogLevel.ALL
