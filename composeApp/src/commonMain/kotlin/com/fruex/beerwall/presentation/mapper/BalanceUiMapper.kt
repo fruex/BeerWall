@@ -8,9 +8,7 @@ fun Balance.toUi(): PremisesBalance {
         premisesId = premisesId,
         premisesName = premisesName,
         balance = balance,
-        loyaltyPoints = loyaltyPoints,
-        formattedBalance = "${balance} zł",
-        formattedLoyaltyPoints = "$loyaltyPoints pkt"
+        loyaltyPoints = loyaltyPoints
     )
 }
 
