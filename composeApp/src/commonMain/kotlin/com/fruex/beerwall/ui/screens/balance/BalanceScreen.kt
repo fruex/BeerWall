@@ -14,7 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fruex.beerwall.ui.components.AppHeader
+import com.fruex.beerwall.ui.components.BackgroundGlow
 import com.fruex.beerwall.ui.components.BeerWallInfoCard
+import com.fruex.beerwall.ui.components.SectionHeader
 import com.fruex.beerwall.ui.models.PremisesBalance
 import com.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -46,57 +48,62 @@ fun BalanceScreen(
         containerColor = GoldPrimary
     )
 
-    PullToRefreshBox(
-        isRefreshing = isRefreshing,
-        onRefresh = onRefresh,
-        modifier = Modifier.fillMaxSize()
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(DarkBackground)
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(DarkBackground),
-            contentPadding = PaddingValues(24.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+        BackgroundGlow()
+
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+            modifier = Modifier.fillMaxSize()
         ) {
-            // Header
-            item(
-                key = "app_header",
-                contentType = "header"
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(24.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                AppHeader()
-            }
+                // Header
+                item(
+                    key = "app_header",
+                    contentType = "header"
+                ) {
+                    AppHeader()
+                }
 
-            item(
-                key = "section_title",
-                contentType = "title"
-            ) {
-                Text(
-                    text = "Dostępne saldo",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(bottom = 4.dp)
-                )
-            }
+                item(
+                    key = "section_title",
+                    contentType = "title"
+                ) {
+                    SectionHeader(
+                        text = "Dostępne saldo",
+                        icon = Icons.Default.AccountBalanceWallet
+                    )
+                }
 
-            items(
-                items = balances,
-                key = { it.premisesId },
-                contentType = { "balance_card" }
-            ) { premisesBalance ->
-                BalanceCard(
-                    premisesName = premisesBalance.premisesName,
-                    formattedBalance = premisesBalance.formattedBalance,
-                    formattedLoyaltyPoints = premisesBalance.formattedLoyaltyPoints,
-                    onAddFundsClick = { onAddFundsClick(premisesBalance.premisesId) },
-                    colors = balanceCardColors
-                )
-            }
+                items(
+                    items = balances,
+                    key = { it.premisesId },
+                    contentType = { "balance_card" }
+                ) { premisesBalance ->
+                    BalanceCard(
+                        premisesName = premisesBalance.premisesName,
+                        balance = premisesBalance.balance,
+                        loyaltyPoints = premisesBalance.loyaltyPoints,
+                        onAddFundsClick = { onAddFundsClick(premisesBalance.premisesId) },
+                        colors = balanceCardColors
+                    )
+                }
 
-            item(
-                key = "info_card",
-                contentType = "info"
-            ) {
-                InfoCard()
+                item(
+                    key = "info_card",
+                    contentType = "info"
+                ) {
+                    InfoCard()
+                }
             }
         }
     }
@@ -105,8 +112,8 @@ fun BalanceScreen(
 @Composable
 fun BalanceCard(
     premisesName: String,
-    formattedBalance: String,
-    formattedLoyaltyPoints: String,
+    balance: Double,
+    loyaltyPoints: Int,
     onAddFundsClick: () -> Unit,
     colors: CardColors = CardDefaults.cardColors(
         containerColor = GoldPrimary
@@ -182,7 +189,7 @@ fun BalanceCard(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = formattedBalance,
+                            text = "${balance} zł",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = DarkBackground
@@ -201,7 +208,7 @@ fun BalanceCard(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = formattedLoyaltyPoints,
+                            text = "$loyaltyPoints pkt",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = DarkBackground
@@ -232,17 +239,13 @@ fun BalanceScreenPreview() {
                     premisesId = 1,
                     premisesName = "Pub Centrum",
                     balance = 45.50,
-                    loyaltyPoints = 120,
-                    formattedBalance = "45.50 zł",
-                    formattedLoyaltyPoints = "120 pkt"
+                    loyaltyPoints = 120
                 ),
                 PremisesBalance(
                     premisesId = 2,
                     premisesName = "Bar przy Rynku",
                     balance = 12.00,
-                    loyaltyPoints = 50,
-                    formattedBalance = "12.00 zł",
-                    formattedLoyaltyPoints = "50 pkt"
+                    loyaltyPoints = 50
                 )
             ),
             onAddFundsClick = {},

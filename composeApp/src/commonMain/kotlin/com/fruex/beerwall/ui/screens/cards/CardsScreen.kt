@@ -13,13 +13,10 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.fruex.beerwall.ui.components.AppHeader
-import com.fruex.beerwall.ui.components.BeerWallButton
-import com.fruex.beerwall.ui.components.BeerWallInfoCard
+import com.fruex.beerwall.ui.components.*
 import com.fruex.beerwall.ui.models.UserCard
 import com.fruex.beerwall.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -70,83 +67,88 @@ fun CardsScreen(
             )
     }
 
-    PullToRefreshBox(
-        isRefreshing = isRefreshing,
-        onRefresh = onRefresh,
-        modifier = Modifier.fillMaxSize()
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(DarkBackground)
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(DarkBackground),
-            contentPadding = PaddingValues(24.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+        BackgroundGlow()
+
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+            modifier = Modifier.fillMaxSize()
         ) {
-            // Header
-            item(
-                key = "app_header",
-                contentType = "header"
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(24.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                AppHeader()
-            }
-
-            item(
-                key = "section_title",
-                contentType = "title"
-            ) {
-                Column {
-                    Text(
-                        text = "Moje karty",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "${cards.size} karty połączone",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                }
-            }
-
-            if (cards.isEmpty()) {
+                // Header
                 item(
-                    key = "empty_state",
-                    contentType = "empty"
+                    key = "app_header",
+                    contentType = "header"
                 ) {
-                    CardsEmptyState()
+                    AppHeader()
                 }
-            } else {
-                items(
-                    items = cards,
-                    key = { it.cardGuid },
-                    contentType = { "card" }
-                ) { card ->
-                    CardItemView(
-                        card = card,
-                        onClick = { selectedCard = card },
-                        colors = if (card.isPhysical) physicalCardColors else virtualCardColors,
-                        modifier = if (card.isPhysical) physicalCardModifier else virtualCardModifier
+
+                item(
+                    key = "section_title",
+                    contentType = "title"
+                ) {
+                    Column {
+                        SectionHeader(
+                            text = "Moje karty",
+                            icon = Icons.Default.CreditCard
+                        )
+                        Text(
+                            text = "${cards.size} karty połączone",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary,
+                            modifier = Modifier.padding(start = 28.dp, bottom = 4.dp)
+                        )
+                    }
+                }
+
+                if (cards.isEmpty()) {
+                    item(
+                        key = "empty_state",
+                        contentType = "empty"
+                    ) {
+                        CardsEmptyState()
+                    }
+                } else {
+                    items(
+                        items = cards,
+                        key = { it.cardGuid },
+                        contentType = { "card" }
+                    ) { card ->
+                        CardItemView(
+                            card = card,
+                            onClick = { selectedCard = card },
+                            colors = if (card.isPhysical) physicalCardColors else virtualCardColors,
+                            modifier = if (card.isPhysical) physicalCardModifier else virtualCardModifier
+                        )
+                    }
+                }
+
+                item(
+                    key = "add_card_button",
+                    contentType = "button"
+                ) {
+                    BeerWallButton(
+                        text = "Dodaj nową kartę",
+                        onClick = onAddCardClick,
                     )
                 }
-            }
 
-            item(
-                key = "add_card_button",
-                contentType = "button"
-            ) {
-                BeerWallButton(
-                    text = "Dodaj nową kartę",
-                    onClick = onAddCardClick,
-                )
-            }
-
-            item(
-                key = "nfc_info",
-                contentType = "info"
-            ) {
-                NFCInfoCard()
+                item(
+                    key = "nfc_info",
+                    contentType = "info"
+                ) {
+                    NFCInfoCard()
+                }
             }
         }
     }
